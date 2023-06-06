@@ -12,4 +12,11 @@ fs.readdirSync(path.join(__dirname, "models")).forEach((file) => {
   db[model.name] = model;
 });
 
+db.User.belongsTo(db.Company)
+db.User.belongsTo(db.Role)
+db.Role.hasMany(db.User)
+db.Status.hasMany(db.Transaction)
+db.Company.hasMany(db.User)
+db.Transaction.belongsTo(db.Status)
+
 module.exports = db;

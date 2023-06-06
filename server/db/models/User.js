@@ -1,4 +1,6 @@
-const { Model, DataTypes } = require("sequelize");
+const { Model, DataTypes, literal } = require("sequelize");
+const Role = require("./Role");
+const Company = require("./Company");
 
 module.exports = function (connection) {
   class User extends Model {
@@ -19,7 +21,6 @@ module.exports = function (connection) {
     {
       lastname: DataTypes.STRING,
       firstname: DataTypes.STRING,
-      role: DataTypes.STRING,
       email: {
         type: DataTypes.STRING,
         unique: true,
@@ -41,10 +42,22 @@ module.exports = function (connection) {
           is: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
         },
       },
+      isValid: DataTypes.BOOLEAN,
+      createdAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+        field: 'created_at',
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+        onUpdate : DataTypes.NOW,
+        field: 'updated_at',
+      },
     },
     {
       sequelize: connection,
-      tableName: "users",
+      tableName: "user",
     }
   );
 
