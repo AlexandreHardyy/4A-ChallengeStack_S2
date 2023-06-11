@@ -1,0 +1,56 @@
+version: '3.6'
+
+services:
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - ./PaymentProjet:/usr/local/PaymentProjet
+      - db-data:/data/db
+    working_dir: /usr/local/PaymentProjet
+
+  db:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: app
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+  server:
+    image: node
+    ports:
+      - 3000:3000
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/app
+      JWT_SECRET: ImAstrongSecretBoi
+    working_dir: /usr/src/app
+    volumes:
+      - ./server:/usr/src/app
+    command: npm run dev
+  
+  psp:
+    image: node
+    ports:
+      - 3001:3001
+    working_dir: /usr/src/psp
+    volumes:
+      - ./psp:/usr/src/psp
+    command: npm run dev
+  
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+volumes:
+  db-data: {}
+  pg-data: {}
