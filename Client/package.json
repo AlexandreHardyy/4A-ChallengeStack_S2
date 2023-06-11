@@ -9,7 +9,14 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
+    "@invictus.codes/nuxt-vuetify": "^0.2.20",
+    "@nuxtjs/tailwindcss": "^6.7.0",
     "@types/node": "^18",
-    "nuxt": "^3.5.1"
+    "nuxt": "^3.5.1",
+    "sass": "^1.62.1"
+  },
+  "dependencies": {
+    "vee-validate": "^4.9.6",
+    "yup": "^1.2.0"
   }
 }
