@@ -1,5 +1,4 @@
-const { Model, DataTypes } = require("sequelize");
-const User = require("./User");
+const { Model, DataTypes } = require("sequelize")
 
 module.exports = function (connection) {
   class Role extends Model {}
@@ -12,7 +11,7 @@ module.exports = function (connection) {
       sequelize: connection,
       tableName: "role",
     }
-  );
+  )
 
-  return Role;
-};
+  return Role
+}

@@ -1,6 +1,6 @@
-const { connection } = require("./db");
+const { connection } = require("./db")
 
 connection.sync({ force: true }).then(() => {
-  console.log("Database synchronized");
-  connection.close();
-});
+  console.log("Database synchronized")
+  connection.close()
+})

@@ -1,19 +1,18 @@
-const { Model, DataTypes, literal } = require("sequelize");
-const Role = require("./Role");
-const Company = require("./Company");
+const { Model, DataTypes } = require("sequelize")
+
 
 module.exports = function (connection) {
   class User extends Model {
     async checkPassword(password) {
-      const bcrypt = require("bcryptjs");
-      return bcrypt.compare(password, this.password);
+      const bcrypt = require("bcryptjs")
+      return bcrypt.compare(password, this.password)
     }
 
     generateToken() {
-      const jwt = require("jsonwebtoken");
-      return jwt.sign({ id: this.id }, process.env.JWT_SECRET, {
+      const jwt = require("jsonwebtoken")
+      return jwt.sign({ id: this.id, role: this.RoleId }, process.env.JWT_SECRET, {
         expiresIn: "1y",
-      });
+      })
     }
   }
 
@@ -29,7 +28,7 @@ module.exports = function (connection) {
           isEmail: true,
           isNotNull: function (value) {
             if (value === null) {
-              throw new Error("Email cannot be null");
+              throw new Error("Email cannot be null")
             }
           },
         },
@@ -39,7 +38,7 @@ module.exports = function (connection) {
         allowNull: false,
         validate: {
           min: 8,
-          is: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
+          is: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*\.])/,
         },
       },
       isValid: DataTypes.BOOLEAN,
@@ -59,20 +58,20 @@ module.exports = function (connection) {
       sequelize: connection,
       tableName: "user",
     }
-  );
+  )
 
   async function encryptPassword(user, options) {
     if (!options?.fields.includes("password")) {
-      return;
+      return
     }
-    const bcrypt = require("bcryptjs");
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(user.password, salt);
-    user.password = hash;
+    const bcrypt = require("bcryptjs")
+    const salt = await bcrypt.genSalt(10)
+    const hash = await bcrypt.hash(user.password, salt)
+    user.password = hash
   }
 
-  User.addHook("beforeCreate", encryptPassword);
-  User.addHook("beforeUpdate", encryptPassword);
+  User.addHook("beforeCreate", encryptPassword)
+  User.addHook("beforeUpdate", encryptPassword)
 
-  return User;
-};
+  return User
+}

@@ -1,12 +1,16 @@
-const { Router } = require("express");
-const userController = require("../controllers/user");
-const router = Router();
+const { Router } = require("express")
+const userController = require("../controllers/user")
+const { userAuth } = require("../middlewares/auth")
+const router = Router()
 
-router.get("/", userController.cget);
-router.post("/", userController.post);
-router.get("/:id", userController.get);
-router.put("/:id", userController.put);
-router.patch("/:id", userController.patch);
-router.delete("/:id", userController.delete);
+// no auth on post
+router.post("/", userController.post)
 
-module.exports = router;
+router.use(userAuth)
+router.get("/", userController.cget)
+router.get("/:id", userController.get)
+router.put("/:id", userController.put)
+router.patch("/:id", userController.patch)
+router.delete("/:id", userController.delete)
+
+module.exports = router

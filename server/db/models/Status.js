@@ -1,5 +1,4 @@
-const { Model, DataTypes } = require("sequelize");
-const Transaction = require("./Transaction");
+const { Model, DataTypes } = require("sequelize")
 
 module.exports = function (connection) {
   class Status extends Model {}
@@ -12,7 +11,7 @@ module.exports = function (connection) {
       sequelize: connection,
       tableName: "status",
     }
-  );
+  )
 
-  return Status;
-};
+  return Status
+}
