@@ -1,16 +1,15 @@
-const fs = require("fs");
-const path = require("path");
-const Sequelize = require("sequelize");
-const connection = new Sequelize(process.env.DATABASE_URL);
+const fs = require("fs")
+const path = require("path")
+const Sequelize = require("sequelize")
+const connection = new Sequelize(process.env.DATABASE_URL)
 const db = {
   connection,
-};
+}
 
 fs.readdirSync(path.join(__dirname, "models")).forEach((file) => {
-  const model = require(path.join(__dirname, "models", file))(connection);
-  console.log(model.name, model.prototype.constructor.name);
-  db[model.name] = model;
-});
+  const model = require(path.join(__dirname, "models", file))(connection)
+  db[model.name] = model
+})
 
 db.User.belongsTo(db.Company)
 db.User.belongsTo(db.Role)
@@ -19,4 +18,4 @@ db.Status.hasMany(db.Transaction)
 db.Company.hasMany(db.User)
 db.Transaction.belongsTo(db.Status)
 
-module.exports = db;
+module.exports = db

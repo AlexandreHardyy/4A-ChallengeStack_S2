@@ -1,19 +1,20 @@
-const express = require("express");
-const app = express();
-const userService = require("./services/user");
+const express = require("express")
+const app = express()
+const userService = require("./services/user")
 
-app.use(express.json());
+app.use(express.json())
 
-app.use(require("./routes/security")(userService));
+app.use(require("./routes/security")(userService))
 
-app.use("/users", require("./routes/user"));
+app.use("/role", require("./routes/role"))
+app.use("/user", require("./routes/user"))
 
 app.get("/", (req, res) => {
-  res.send("API payment working !");
+  return res.send("API payment working !")
+})
+
+app.use(function(req, res, next) {
+  return res.status(404).json({ error: 'this route doesn\'t exist.' })
 });
 
-app.post("/", (req, res) => {
-  res.json(req.body);
-});
-
-app.listen(3000, () => console.log("Server started on port 3000"));
+app.listen(3000, () => console.log("Server started on port 3000"))
