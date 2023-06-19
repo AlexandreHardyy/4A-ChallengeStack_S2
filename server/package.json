@@ -23,6 +23,8 @@
   },
   "devDependencies": {
     "jest": "^29.5.0",
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "sequelize-mock": "^0.10.2",
+    "supertest": "^6.3.3"
   }
 }
