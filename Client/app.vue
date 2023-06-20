@@ -3,7 +3,7 @@
 <template>
   <div>
     <NuxtLayout>
-      <NuxtPage />
+      <NuxtPage/>
     </NuxtLayout>
   </div>
 </template>
@@ -30,10 +30,15 @@ a {
   color: inherit;
 }
 
+:deep(.p-password-input) {
+  width: 100%;
+}
+
 .page-enter-active,
 .page-leave-active {
   transition: all 0.3s;
 }
+
 .page-enter-from,
 .page-leave-to {
   opacity: 0;
@@ -44,6 +49,7 @@ a {
 .layout-leave-active {
   transition: all 0.4s;
 }
+
 .layout-enter-from,
 .layout-leave-to {
   opacity: 0;

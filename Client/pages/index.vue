@@ -17,21 +17,7 @@
     </section>
     <section id="services" class="tw-px-20">
       <div class="tw-flex tw-gap-10">
-        <v-card
-          title="Card title"
-          text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi, ratione debitis quis est labore voluptatibus! Eaque cupiditate minima, at placeat totam, magni doloremque veniam neque porro libero rerum unde voluptatem!"
-          variant="outlined"
-        ></v-card>
-        <v-card
-          title="Card title"
-          text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi, ratione debitis quis est labore voluptatibus! Eaque cupiditate minima, at placeat totam, magni doloremque veniam neque porro libero rerum unde voluptatem!"
-          variant="outlined"
-        ></v-card>
-        <v-card
-          title="Card title"
-          text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi, ratione debitis quis est labore voluptatibus! Eaque cupiditate minima, at placeat totam, magni doloremque veniam neque porro libero rerum unde voluptatem!"
-          variant="outlined"
-        ></v-card>
+        
       </div>
     </section>
   </main>
