@@ -1,25 +1,27 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+const selected = ref(1);
+</script>
 
 <template>
   <div class="tw-flex tw-min-h-screen">
     <nav
-      class="tw-bg-primary-light tw-w-52 tw-flex tw-flex-col tw-items-center tw-justify-between tw-p-8 tw-text-background"
+        class="tw-bg-primary-light tw-w-52 tw-h-screen tw-flex tw-flex-col tw-items-center tw-justify-between tw-p-8 tw-text-background"
     >
-      <img src="~/assets/logo_black.png" class="tw-h-20" alt="logo" />
+      <img src="~/assets/logo_black.png" class="tw-h-20" alt="logo"/>
       <ul>
         <nuxt-link :to="{ path: '/back/dashboard' }">
-          <li class="btn">Dashboard</li>
+          <li @click="selected = 1" class="btn" :class="{ active: selected == 1 }">Dashboard</li>
         </nuxt-link>
         <nuxt-link :to="{ path: '/back/transactions' }">
-          <li class="btn">Transactions</li>
+          <li @click="selected = 2" class="btn" :class="{ active: selected == 2 }">Transactions</li>
         </nuxt-link>
       </ul>
       <nuxt-link :to="{ path: '/login' }">
-        <v-btn prepend-icon="mdi-power">Disconnect</v-btn>
+        <Button severity="secondary">Disconnect</Button>
       </nuxt-link>
     </nav>
-    <div class="tw-p-6">
-      <slot />
+    <div class="tw-p-6 tw-w-full tw-h-screen tw-overflow-scroll">
+      <slot/>
     </div>
   </div>
 </template>
@@ -28,13 +30,18 @@
 .btn {
   padding: 5px 15px;
   cursor: pointer;
-  border-radius: 5px;
   transition: all 0.1s;
   font-size: 1.2rem;
   font-weight: bold;
-  border: 3px solid transparent;
+  border-left: 4px solid transparent;
+  margin-bottom: 10px;
+
   &:hover {
     border-color: theme("colors.background");
   }
+}
+
+.active {
+  border-left: 4px solid theme("colors.background");
 }
 </style>
