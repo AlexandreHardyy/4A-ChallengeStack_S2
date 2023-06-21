@@ -4,6 +4,9 @@ import InputText from 'primevue/inputtext'
 import Toast from 'primevue/toast'
 import Password from "primevue/password";
 import ToastService from 'primevue/toastservice'
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Tag from 'primevue/tag';
 
 export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.use(PrimeVue, {ripple: true})
@@ -12,5 +15,8 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.component('InputText', InputText)
     nuxtApp.vueApp.component('Toast', Toast)
     nuxtApp.vueApp.component('Password', Password)
+    nuxtApp.vueApp.component('DataTable', DataTable)
+    nuxtApp.vueApp.component('Column', Column)
+    nuxtApp.vueApp.component('Tag', Tag)
     //other components that you need
 })
