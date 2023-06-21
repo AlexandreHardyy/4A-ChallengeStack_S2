@@ -53,8 +53,8 @@ if (process.client) {
 
 <template>
   <div>
-    <div class="tw-w-full tw-flex tw-justify-between tw-gap-5 tw-flex-wrap">
-      <div class="cardStats stat1">
+    <div class="grid tw-w-full">
+      <div class="card cardStats stat1">
         <p class="tw-text-4xl tw-font-bold tw-p-3">30200</p>
         <p class="tw-text-sm tw-pl-3 tw-pb-3">Total transaction</p>
         <div>
@@ -64,7 +64,7 @@ if (process.client) {
           </div>
         </div>
       </div>
-      <div class="cardStats stat2">
+      <div class="card cardStats stat2">
         <p class="tw-text-4xl tw-font-bold tw-p-3">30200</p>
         <p class="tw-text-sm tw-pl-3 tw-pb-3">Total sales</p>
         <div class="tw-bg-primary-light">
@@ -74,7 +74,7 @@ if (process.client) {
           </div>
         </div>
       </div>
-      <div class="cardStats stat3">
+      <div class="card cardStats stat3">
         <p class="tw-text-4xl tw-font-bold tw-p-3">30200</p>
         <p class="tw-text-sm tw-pl-3 tw-pb-3">Total transaction</p>
         <div class="tw-bg-primary-light">
@@ -84,7 +84,7 @@ if (process.client) {
           </div>
         </div>
       </div>
-      <div class="cardStats stat4">
+      <div class="card cardStats stat4">
         <p class="tw-text-4xl tw-font-bold tw-p-3">30200</p>
         <p class="tw-text-sm tw-pl-3 tw-pb-3">Total transaction</p>
         <div class="tw-bg-primary-light">
@@ -94,43 +94,72 @@ if (process.client) {
           </div>
         </div>
       </div>
-    </div>
-    <div>
-      <canvas ref="chart"></canvas>
+      <div class="card cardGraph">
+        <h2 class="tw-text-2xl tw-font-bold">Sales</h2>
+        <p>Lorem</p>
+        <canvas ref="chart"></canvas>
+      </div>
+      <div class="card test">test</div>
     </div>
   </div>
 </template>
 
 <style scoped>
 
-.cardStats {
-  flex: 1 1 20%;
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 20px;
+  grid-template-areas:
+  "stat1 stat2 stat3 stat4"
+  "graph graph test test"
+  "graph graph test test";
+}
+
+.card {
   background-color: #565656;
   border-radius: 4px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  min-width: 210px;
+}
+
+.cardGraph {
+  grid-area: graph;
+  padding: 20px;
+}
+
+.test {
+  grid-area: test;
 }
 
 .cardStats.stat1 {
+  grid-area: stat1;
+
   div:first-child {
     background-color: theme("colors.primary-light");
   }
 }
 
 .cardStats.stat2 {
+  grid-area: stat2;
+
   div:first-child {
     background-color: theme("colors.primary-light");
   }
 }
 
 .cardStats.stat3 {
+  grid-area: stat3;
+
   div:first-child {
     background-color: #59d359;
   }
 }
 
 .cardStats.stat4 {
+  grid-area: stat4;
+
   div:first-child {
     background-color: #f36d6d;
   }

@@ -5,15 +5,12 @@ const selected = ref(1);
 <template>
   <div class="tw-flex tw-min-h-screen">
     <nav
-        class="tw-bg-primary-light tw-w-52 tw-h-screen tw-flex tw-flex-col tw-items-center tw-justify-between tw-p-8 tw-text-background"
+        class="nav tw-w-52 tw-h-screen tw-flex tw-flex-col tw-items-center tw-justify-between tw-p-8 tw-text-background"
     >
       <img src="~/assets/logo_black.png" class="tw-h-20" alt="logo"/>
       <div class="tw-flex tw-flex-col">
-        <nuxt-link class="btn" :to="{ path: '/back/dashboard' }">
-          Dashboard
-        </nuxt-link>
         <nuxt-link class="btn" :to="{ path: '/back/transactions' }">
-          Transactions
+          Merchant
         </nuxt-link>
       </div>
       <nuxt-link :to="{ path: '/login' }">
@@ -27,6 +24,10 @@ const selected = ref(1);
 </template>
 
 <style lang="scss" scoped>
+nav {
+  background-color: #ffe47a;
+}
+
 .btn {
   padding: 5px 15px;
   cursor: pointer;
