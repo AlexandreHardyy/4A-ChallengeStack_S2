@@ -15,8 +15,18 @@ db.User.belongsTo(db.Company, {
 })
 db.User.belongsTo(db.Role)
 db.Role.hasMany(db.User)
-db.Status.hasMany(db.Transaction)
 db.Company.hasMany(db.User)
-db.Transaction.belongsTo(db.Status)
+
+db.Company.hasMany(db.Transaction, {
+  foreignKey: 'companyId'
+})
+
+db.Transaction.hasMany(db.Operation, {
+  foreignKey: 'transactionId'
+})
+
+// db.Status.hasMany(db.Operation, {
+//   foreignKey: 'statusId'
+// })
 
 module.exports = db

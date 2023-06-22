@@ -1,4 +1,5 @@
 const { Model, DataTypes, literal } = require("sequelize")
+const Operation = require("./Operation")
 
 module.exports = function (connection) {
   class Transaction extends Model {}
@@ -7,14 +8,14 @@ module.exports = function (connection) {
     {
         name: DataTypes.STRING,
         email: DataTypes.STRING,
-        bankCode1: DataTypes.STRING,
-        bankCode2: DataTypes.STRING,
+        // bankCode1: DataTypes.STRING,
+        // bankCode2: DataTypes.STRING,
         amount: DataTypes.STRING,
         currency: DataTypes.STRING,
         urlDirectionConfirm: DataTypes.STRING,
         urlDirectionCancel: DataTypes.STRING,
-        clientToken: DataTypes.STRING,
-        clientSecret: DataTypes.STRING,
+        // clientToken: DataTypes.STRING,
+        // clientSecret: DataTypes.STRING,
         createdAt: {
           type: DataTypes.DATE,
           defaultValue: DataTypes.NOW,
