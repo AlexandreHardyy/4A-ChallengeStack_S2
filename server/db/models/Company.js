@@ -1,12 +1,21 @@
-const { Model, DataTypes, literal } = require("sequelize")
+const { Model, DataTypes } = require('sequelize')
+const { v4: uuidv4 } = require('uuid')
 
 module.exports = function (connection) {
-  class Company extends Model {}
+  class Company extends Model {
+    static generateToken() {
+      return uuidv4()
+    }
+  }
 
   Company.init(
     {
         name: DataTypes.STRING,
-        kbis: DataTypes.STRING,
+        kbis: {
+          type: DataTypes.STRING,
+          unique: true,
+          allowNull: false
+        },
         address: DataTypes.STRING,
         urlDirectionConfirm: DataTypes.STRING,
         urlDirectionCancel: DataTypes.STRING,
@@ -29,6 +38,8 @@ module.exports = function (connection) {
       tableName: "company",
     }
   )
+
+  
 
   return Company
 }

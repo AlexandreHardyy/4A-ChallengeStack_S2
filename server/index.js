@@ -8,6 +8,8 @@ app.use(require("./routes/security")(userService))
 
 app.use("/role", require("./routes/role"))
 app.use("/user", require("./routes/user"))
+app.use("/company", require("./routes/company"))
+
 
 app.get("/", (req, res) => {
   return res.send("API payment working !")
