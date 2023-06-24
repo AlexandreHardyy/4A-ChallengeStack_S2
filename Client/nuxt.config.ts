@@ -22,8 +22,16 @@ export default defineNuxtConfig({
         '~/assets/css/theme.css',
         '~/assets/css/base.css',
     ],
-    modules: ["@nuxtjs/tailwindcss"],
+    modules: [
+        "@nuxtjs/tailwindcss",
+        "@pinia/nuxt"
+    ],
     build: {
         transpile: ['primevue']
     },
+    runtimeConfig: {
+        public: {
+          apiBase: process.env.API_BASE || 'http://localhost:3000',
+        }
+    }
 });
