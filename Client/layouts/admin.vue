@@ -1,5 +1,5 @@
-<script lang="ts" setup>
-const selected = ref(1);
+<script setup>
+import userService from '~/services/user';
 </script>
 
 <template>
@@ -14,7 +14,7 @@ const selected = ref(1);
         </nuxt-link>
       </div>
       <nuxt-link :to="{ path: '/login' }">
-        <Button severity="secondary">Disconnect</Button>
+        <Button severity="secondary" @click="userService.logout()">Disconnect</Button>
       </nuxt-link>
     </nav>
     <div class="tw-p-6 tw-w-full tw-h-screen tw-overflow-scroll">
