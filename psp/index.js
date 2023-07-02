@@ -3,7 +3,7 @@ const app = express();
 
 app.use(express.json());
 
-app.use("/transaction", require("./routes/masterclass"))
+app.use("/transaction-approuval", require("./routes/masterclass"))
 
 app.get("/", (req, res) => {
   res.send("PSP response !");

@@ -11,6 +11,13 @@ module.exports = {
   findById: async function (id) {
     return Company.findByPk(id)
   },
+  findByToken: async function (clientToken) {
+    return Company.findOne({
+      where: {
+        clientToken
+      }
+    })
+  },
   create: async function (data) {
     console.log({ 
         ...data, 
