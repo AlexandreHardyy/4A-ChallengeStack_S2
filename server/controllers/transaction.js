@@ -131,11 +131,14 @@ module.exports = {
 
     if (lastOperations[0].status !== 'waiting-psp-validation') { return res.sendStatus(400) }
 
+    const commission = transaction.amount * 0.011
+
     try {
       await operationService.create({
         transactionId: transaction.id,
         status: 'finished'
-      })          
+      })
+      await transactionService.update({ id: transaction.id }, { commission })         
     } catch (err) {
       next(err)
     }
