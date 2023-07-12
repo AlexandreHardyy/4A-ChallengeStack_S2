@@ -20,7 +20,7 @@ module.exports = function (connection) {
         urlDirectionConfirm: DataTypes.STRING,
         urlDirectionCancel: DataTypes.STRING,
         clientToken: DataTypes.STRING,
-        clientSecret: DataTypes.STRING,
+        apiToken: DataTypes.STRING,
         createdAt: {
           type: DataTypes.DATE,
           defaultValue: DataTypes.NOW,

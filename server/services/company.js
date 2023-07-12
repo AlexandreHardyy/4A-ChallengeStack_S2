@@ -11,10 +11,10 @@ module.exports = {
   findById: async function (id) {
     return Company.findByPk(id)
   },
-  findByToken: async function (clientToken) {
+  findByApiToken: async function (apiToken) {
     return Company.findOne({
       where: {
-        clientToken
+        apiToken
       }
     })
   },
@@ -22,13 +22,13 @@ module.exports = {
     console.log({ 
         ...data, 
         clientToken: Company.generateToken(), 
-        clientSecret: Company.generateToken(),
+        apiToken: Company.generateToken(),
         isValid: false
     })
     return Company.create({ 
         ...data, 
         clientToken: Company.generateToken(), 
-        clientSecret: Company.generateToken(),
+        apiToken: Company.generateToken(),
         isValid: false
     })
   },

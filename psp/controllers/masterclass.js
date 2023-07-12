@@ -5,9 +5,9 @@ module.exports = {
 
         if (!req.body) { return res.sendStatus(404) }
 
-        const { transactionId, cbNumber, cbName, price, currency } = req.body
+        const { transactionToken, cbNumber, cbName, price, currency } = req.body
 
-        if ( !transactionId || !cbNumber || !cbName || !price || !currency) {
+        if ( !transactionToken || !cbNumber || !cbName || !price || !currency) {
             return res.sendStatus(404)
         }
 
@@ -24,10 +24,10 @@ module.exports = {
             return res.sendStatus(400)
         }
 
-        res.sendStatus(200)
+        res.sendStatus(202)
 
         setTimeout(async () => {
-            axios.get(`http://server:3000/transaction/psp-confirm/${transactionId}`, {})
+            axios.post(`http://server:3000/transaction/psp-confirm/${transactionToken}`, {})
         }, 100000)
     }
 }

@@ -1,9 +1,7 @@
 const axios = require('axios');
 
-const db = require("../db")
 
 const transactionService = require("../services/transaction")
-const companyService = require("../services/company")
 const operationService = require("../services/operation")
 
 module.exports = {
@@ -22,7 +20,7 @@ module.exports = {
         urlDirectionConfirm: company.urlDirectionConfirm,
         urlDirectionCancel: company.urlDirectionCancel
       })
-      const operation = await operationService.create({
+      await operationService.create({
         transactionId: transaction.id,
         status: 'created'
       })
@@ -45,7 +43,6 @@ module.exports = {
         offset: (_page - 1) * _itemsPerPage,
         limit: _itemsPerPage,
         order: _sort,
-        include: db.Operation
       })
       res.json(transactions)
     } catch (err) {
@@ -54,9 +51,7 @@ module.exports = {
   },
   get: async (req, res, next) => {
     try {
-      const transaction = await transactionService.findById(parseInt(req.params.id), {
-        include: db.Operation
-      })
+      const transaction = await transactionService.findByToken(req.params.token)
       if (!transaction) return res.sendStatus(404)
       res.json(transaction)
     } catch (err) {
@@ -66,9 +61,7 @@ module.exports = {
   confirm: async (req, res, next) => {
     if (!req.body) { return res.sendStatus(422) }
     
-    const transaction = await transactionService.findById(parseInt(req.params.id), {
-      include: db.Operation
-    })
+    const transaction = await transactionService.findByToken(req.params.token)
 
     if (!transaction) { return res.sendStatus(404) }
 
@@ -84,20 +77,18 @@ module.exports = {
 
     try {
       axios.post('http://psp:3001/transaction-approuval', {
-        transactionId: transaction.id,
+        transactionToken: transaction.token,
         cbNumber,
         cbName,
         price: parseInt(transaction.amount),
         currency: transaction.currency
       }).then(async (response) => {
-        if (response.status === 200) {
+        if (response.status === 202) {
           await operationService.create({
             transactionId: transaction.id,
             status: 'waiting-psp-validation'
           })          
-          return res.status(200).json(await transactionService.findById(parseInt(transaction.id), {
-            include: db.Operation
-          }))
+          return res.status(200).json(await transactionService.findById(parseInt(transaction.id)))
         } else {
           await operationService.create({
             transactionId: transaction.id,
@@ -105,9 +96,7 @@ module.exports = {
           })
           
           // Another HTTP code ?
-          return res.status(200).json(await transactionService.findById(parseInt(transaction.id), {
-            include: db.Operation
-          }))
+          return res.status(400).json(await transactionService.findById(parseInt(transaction.id)))
         }
       }).catch((error) => {
         return res.sendStatus(500)
@@ -117,9 +106,7 @@ module.exports = {
     }
   },
   cancel: async (req, res, next) => {
-    const transaction = await transactionService.findById(parseInt(req.params.id), {
-      include: db.Operation
-    })
+    const transaction = await transactionService.findByToken(req.params.token)
 
     if (!transaction) { return res.sendStatus(404) }
 
@@ -128,17 +115,13 @@ module.exports = {
         transactionId: transaction.id,
         status: 'canceled'
       })          
-      return res.status(200).json(await transactionService.findById(parseInt(transaction.id), {
-        include: db.Operation
-      }))
+      return res.status(200).json(await transactionService.findById(parseInt(transaction.id)))
     } catch (err) {
       next(err)
     }
   },
   pspConfirm: async (req, res, next) => {
-    const transaction = await transactionService.findById(parseInt(req.params.id), {
-      include: db.Operation
-    })
+    const transaction = await transactionService.findByToken(req.params.token)
 
     if (!transaction) { return res.sendStatus(404) }
 

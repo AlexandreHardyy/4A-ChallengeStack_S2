@@ -1,11 +1,16 @@
 const { Model, DataTypes, literal } = require("sequelize")
-const Operation = require("./Operation")
+const { v4: uuidv4 } = require('uuid')
 
 module.exports = function (connection) {
-  class Transaction extends Model {}
+  class Transaction extends Model {
+    static generateToken() {
+      return uuidv4()
+    }
+  }
 
   Transaction.init(
     {
+        token: DataTypes.STRING,
         name: DataTypes.STRING,
         email: DataTypes.STRING,
         // bankCode1: DataTypes.STRING,
