@@ -4,13 +4,13 @@ const { checkCompanyToken } = require("../middlewares/company-token-check")
 const router = Router()
 
 router.get("/", transactionController.cget)
-router.get("/:id", transactionController.get)
-router.get("/psp-confirm/:id",transactionController.pspConfirm)
+router.get("/:token", transactionController.get)
+router.post("/psp-confirm/:token",transactionController.pspConfirm)
 
 // check company token for transaction process
 router.use(checkCompanyToken)
 router.post("/", transactionController.post)
-router.post("/confirm/:id", transactionController.confirm)
-router.post("/cancel/:id", transactionController.cancel)
+router.post("/confirm/:token", transactionController.confirm)
+router.post("/cancel/:token", transactionController.cancel)
 
 module.exports = router
