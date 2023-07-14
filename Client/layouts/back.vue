@@ -9,6 +9,9 @@ import userService from '~/services/user';
     >
       <img src="~/assets/logo_black.png" class="tw-h-20" alt="logo"/>
       <div class="tw-flex tw-flex-col">
+        <nuxt-link class="btn" :to="{ path: '/back/profile' }">
+          Profile
+        </nuxt-link>
         <nuxt-link class="btn" :to="{ path: '/back/dashboard' }">
           Dashboard
         </nuxt-link>

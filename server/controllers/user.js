@@ -36,6 +36,15 @@ module.exports = {
       next(err)
     }
   },
+  getCurrent: async (req, res, next) => {
+    try {
+      const user = await userService.findById(parseInt(req.user.id))
+      if (!user) return res.sendStatus(404)
+      res.json(user)
+    } catch (err) {
+      next(err)
+    }
+  },
   put: async (req, res, next) => {
     try {
       const nbRemoved = await userService.remove({
@@ -51,9 +60,10 @@ module.exports = {
     }
   },
   patch: async (req, res, next) => {
+    const id = req.user.isAdmin ? req.params.id : req.user.id
     try {
       const [user] = await userService.update(
-        { id: parseInt(req.params.id) },
+        { id: parseInt(id) },
         req.body
       )
       if (!user) return res.sendStatus(404)

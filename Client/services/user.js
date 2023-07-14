@@ -2,12 +2,6 @@ import { useUserStore } from "~/store/user"
 import { useCustomFetch } from "./use-fetch"
 
 const userService = {
-    async register(body) {
-        return useCustomFetch('user', {
-            method: 'POST', 
-            body: JSON.stringify(body)
-        })
-    },
     async login(body) {
         return useCustomFetch('login', {
             method: 'POST', 
@@ -16,7 +10,18 @@ const userService = {
     },
     logout() {
         useUserStore().logout()
-    }
+    },
+    async update(body) {
+        return useCustomFetch(`user/${body.id}`, {
+            method: 'PATCH', 
+            body: JSON.stringify(body)
+        })
+    },
+    async getCurrentUser() {
+        return useCustomFetch('user/current', {
+            method: 'GET'
+        })
+    },
 }
 
 export default userService

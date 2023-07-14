@@ -6,14 +6,12 @@ const router = Router()
 // no auth on post
 router.post("/", companyController.post)
 
-router.use(userAuth)
-router.get("/:id", companyController.get)
-router.put("/:id", companyController.put)
-router.patch("/:id", companyController.patch)
-router.delete("/:id", companyController.delete)
+router.get("/:id", userAuth, companyController.get)
+router.put("/:id", userAuth, companyController.put)
+router.patch("/:id", userAuth, companyController.patch)
+router.delete("/:id", userAuth, companyController.delete)
 
-router.use(adminAuth)
-router.get("/", companyController.cget)
+router.get("/", companyController.cget, adminAuth)
 
 
 module.exports = router

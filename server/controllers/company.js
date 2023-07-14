@@ -57,9 +57,10 @@ module.exports = {
     }
   },
   patch: async (req, res, next) => {
+    const id = req.user.isAdmin ? req.params.id : req.user.companyId
     try {
       const [company] = await companyService.update(
-        { id: parseInt(req.params.id) },
+        { id: parseInt(id) },
         req.body
       )
       if (!company) return res.sendStatus(404)

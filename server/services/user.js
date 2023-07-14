@@ -1,4 +1,4 @@
-const { User } = require("../db")
+const { User, Company } = require("../db")
 
 module.exports = {
   findAll: async function (criteria, options = {}) {
@@ -9,7 +9,14 @@ module.exports = {
     })
   },
   findById: async function (id) {
-    return User.findByPk(id)
+    return User.findByPk(id, {
+      include: [{
+        model: Company,
+        attributes: { exclude: ['clientSecret', 'clientToken', 'urlDirectionCancel', 'urlDirectionConfirm'] },
+        required: true
+      }],
+      attributes: { exclude: ['password'] },
+    })
   },
   create: async function (data) {
     return User.create(data)

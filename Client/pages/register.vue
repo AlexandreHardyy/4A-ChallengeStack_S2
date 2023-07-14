@@ -1,16 +1,17 @@
 <script setup>
 import {useField, useForm} from "vee-validate";
-import userService from "@/services/user";
 import * as yup from "yup";
+import companyService from "~/services/company";
 
-const {handleSubmit, handleReset} = useForm({
+const { handleSubmit } = useForm({
   validationSchema: yup.object({
     firstname: yup.string().required(),
     lastname: yup.string().required(),
     name: yup.string().required().label('Company Name'),
     kbis: yup.string().required(),
+    address: yup.string(),
     email: yup.string().required().email(),
-    password: yup.string().required().min(8),
+    password: yup.string().required().matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*\.])/),
     confirmPassword: yup
         .string()
         .required()
@@ -22,13 +23,14 @@ const firstname = useField("firstname");
 const lastname = useField("lastname");
 const companyName = useField("name");
 const kbis = useField("kbis");
+const address = useField("address");
 const email = useField("email");
 const password = useField("password");
 const confirmPassword = useField("confirmPassword");
 const registerError = ref(null);
 
 const submit = handleSubmit(async (values) => {
-  const { error, data } = await userService.register(values)
+  const { error, data } = await companyService.create(values)
   if (error.value !== null || !data.value?.id) {
     registerError.value = "kbis or email are already used"
     return
@@ -68,6 +70,11 @@ const submit = handleSubmit(async (values) => {
         <label for="username">KBIS</label>
         <InputText v-model="kbis.value.value"/>
         <small class="p-error" id="text-error">{{ kbis.errorMessage.value || '&nbsp;' }}</small>
+      </div>
+      <div class="tw-flex tw-flex-col tw-gap-1">
+        <label for="username">Address</label>
+        <InputText v-model="address.value.value"/>
+        <small class="p-error" id="text-error">{{ address.errorMessage.value || '&nbsp;' }}</small>
       </div>
       <div class="tw-flex tw-flex-col tw-gap-1">
         <label for="username">Password</label>

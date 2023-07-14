@@ -11,7 +11,7 @@ const formatErrorPassword = (err) => {
 const {handleSubmit, handleReset} = useForm({
   validationSchema: yup.object({
     email: yup.string().required().email(),
-    password: yup.string().required().matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*\.])/)
+    password: yup.string().required()
   }),
 });
 

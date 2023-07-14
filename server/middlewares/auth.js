@@ -19,7 +19,7 @@ const authProcess = (req, res, next, isAdmin = false) => {
     if (err) return res.sendStatus(403)
     req.user = user
 
-    if (isAdmin && (!req.user.role || req.user.role !== 'admin')) return res.sendStatus(403)
+    if (isAdmin && !req.user.isAdmin) return res.sendStatus(403)
 
     next()
   })
