@@ -1,9 +1,15 @@
 const { Transaction, ...db } = require("../db")
+const { Op } = require('sequelize');
 
 module.exports = {
   findAll: async function (criteria, options = {}) {
+    const where = criteria.from !== 'undefined' && criteria.to !== 'undefined' ? {
+      createdAt: {
+        [Op.between]: [new Date(criteria.from).setHours(0,0,0), new Date(criteria.to).setHours(23,59,59)]
+      }
+     } : undefined
     return Transaction.findAll({
-      where: criteria,
+      where,
       ...options,
       include: db.Operation,
       order: Object.entries(options.order || {}),

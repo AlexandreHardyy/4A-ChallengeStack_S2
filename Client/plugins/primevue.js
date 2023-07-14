@@ -7,6 +7,8 @@ import ToastService from 'primevue/toastservice'
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Tag from 'primevue/tag';
+import Card from 'primevue/card';
+import Calendar from 'primevue/calendar';
 
 export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.use(PrimeVue, {ripple: true})
@@ -18,5 +20,7 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.component('DataTable', DataTable)
     nuxtApp.vueApp.component('Column', Column)
     nuxtApp.vueApp.component('Tag', Tag)
+    nuxtApp.vueApp.component('Card', Card)
+    nuxtApp.vueApp.component('Calendar', Calendar)
     //other components that you need
 })
