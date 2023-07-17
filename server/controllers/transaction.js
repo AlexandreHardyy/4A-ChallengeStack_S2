@@ -8,9 +8,7 @@ module.exports = {
 
     if (!req.body) { return res.sendStatus(422) }
 
-    const { name, email, amount, currency, company } = ( req.body )
-
-    if ( !name || !email || !amount || !currency || !company ) { return res.sendStatus(422) }
+    const { company } = ( req.body )
 
     try {
       const newTransaction = {
