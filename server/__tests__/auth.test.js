@@ -5,8 +5,8 @@ const res = {
         return status
     }
 }
-const next = () => true
 
+const next = () => true
 describe("Auth User", () => {  
     it("Should be 401", () => {
         const req = { headers: {} }

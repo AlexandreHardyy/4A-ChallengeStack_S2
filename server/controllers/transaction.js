@@ -1,6 +1,5 @@
 const axios = require('axios');
 
-
 const transactionService = require("../services/transaction")
 const operationService = require("../services/operation")
 
@@ -92,13 +91,13 @@ module.exports = {
         } else {
           await operationService.create({
             transactionId: transaction.id,
-            status: 'psp-validation-failur'
+            status: 'psp-validation-failure'
           })
           
           // Another HTTP code ?
           return res.status(400).json(await transactionService.findById(parseInt(transaction.id)))
         }
-      }).catch((error) => {
+      }).catch(() => {
         return res.sendStatus(500)
       })
     } catch (err) {
@@ -142,5 +141,33 @@ module.exports = {
     } catch (err) {
       next(err)
     }
+  },
+  refund: async (req, res, next) => {
+    //On récupère la transaction
+    const transaction = await transactionService.findByToken(req.params.token)
+
+    if (!transaction) return res.sendStatus(404)
+    //On vérifie que la transaction est bien en status finished
+    const lastOperations = transaction.Operations.sort(function(a,b){
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    })
+
+    if (lastOperations[0].status !== 'finished') return res.sendStatus(400)
+    //On crée une opération de refund
+    try {
+      await operationService.create({
+        transactionId: transaction.id,
+        status: 'refund'
+      })
+
+      //On met à jour la transaction avec le montant du refund
+      await transactionService.update({id: transaction.id}, {refund: transaction.amount})
+    } catch (err) {
+      next(err)
+    }
+    //On retourne la transaction
+    return res.status(200).json(
+      await transactionService.findById(parseInt(transaction.id))
+    )
   }
 }

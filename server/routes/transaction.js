@@ -12,5 +12,6 @@ router.use(checkCompanyToken)
 router.post("/", transactionController.post)
 router.post("/confirm/:token", transactionController.confirm)
 router.post("/cancel/:token", transactionController.cancel)
+router.post("/refund/:token", transactionController.refund)
 
 module.exports = router
