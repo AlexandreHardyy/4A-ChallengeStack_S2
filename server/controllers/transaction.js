@@ -1,6 +1,5 @@
 const axios = require('axios');
 
-
 const transactionService = require("../services/transaction")
 const operationService = require("../services/operation")
 
@@ -14,12 +13,15 @@ module.exports = {
     if ( !name || !email || !amount || !currency || !company ) { return res.sendStatus(422) }
 
     try {
-      const transaction = await transactionService.create({
+      const newTransaction = {
         ...req.body,
         companyId: company.id,
         urlDirectionConfirm: company.urlDirectionConfirm,
         urlDirectionCancel: company.urlDirectionCancel
-      })
+      }
+
+      delete newTransaction.company
+      const transaction = await transactionService.create(newTransaction)
       await operationService.create({
         transactionId: transaction.id,
         status: 'created'
@@ -76,7 +78,7 @@ module.exports = {
     if (!cbNumber || !cbName) { return res.sendStatus(422) }
 
     try {
-      axios.post('http://psp:3001/transaction-approuval', {
+      await axios.post('http://psp:3001/transaction-approuval', {
         transactionToken: transaction.token,
         cbNumber,
         cbName,
@@ -87,8 +89,8 @@ module.exports = {
           await operationService.create({
             transactionId: transaction.id,
             status: 'waiting-psp-validation'
-          })          
-          return res.status(200).json(await transactionService.findById(parseInt(transaction.id)))
+          })
+          return res.status(201).json(await transactionService.findById(parseInt(transaction.id)))
         } else {
           await operationService.create({
             transactionId: transaction.id,
@@ -110,12 +112,18 @@ module.exports = {
 
     if (!transaction) { return res.sendStatus(404) }
 
+    const lastOperations = transaction.Operations.sort(function(a,b){
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    })
+
+    if (lastOperations[0].status !== 'created') { return res.sendStatus(400) }
+
     try {
       await operationService.create({
         transactionId: transaction.id,
         status: 'canceled'
       })          
-      return res.status(200).json(await transactionService.findById(parseInt(transaction.id)))
+      return res.status(201).json(await transactionService.findById(parseInt(transaction.id)))
     } catch (err) {
       next(err)
     }
@@ -139,6 +147,7 @@ module.exports = {
         status: 'finished'
       })
       await transactionService.update({ id: transaction.id }, { commission })         
+      return res.status(201)
     } catch (err) {
       next(err)
     }
