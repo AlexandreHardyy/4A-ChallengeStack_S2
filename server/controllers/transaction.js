@@ -94,13 +94,13 @@ module.exports = {
         } else {
           await operationService.create({
             transactionId: transaction.id,
-            status: 'psp-validation-failur'
+            status: 'psp-validation-failure'
           })
           
           // Another HTTP code ?
           return res.status(400).json(await transactionService.findById(parseInt(transaction.id)))
         }
-      }).catch((error) => {
+      }).catch(() => {
         return res.sendStatus(500)
       })
     } catch (err) {
@@ -151,5 +151,30 @@ module.exports = {
     } catch (err) {
       next(err)
     }
+  },
+  refund: async (req, res, next) => {
+    //get transaction
+    const transaction = await transactionService.findByToken(req.params.token)
+
+    if (!transaction) return res.sendStatus(404)
+    //check if last operation is finished
+    const lastOperations = transaction.Operations.sort(function(a,b){
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    })
+
+    if (lastOperations[0].status !== 'finished') return res.sendStatus(400)
+    //create operation with status refund
+    try {
+      await operationService.create({
+        transactionId: transaction.id,
+        status: 'refund'
+      })
+    } catch (err) {
+      next(err)
+    }
+
+    return res.status(200).json(
+      await transactionService.findById(parseInt(transaction.id))
+    )
   }
 }
