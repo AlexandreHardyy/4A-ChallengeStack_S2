@@ -1,5 +1,6 @@
 const { Model, DataTypes, literal } = require("sequelize")
 const { v4: uuidv4 } = require('uuid')
+const TransactionMongo = require('../aggregates/Transaction')
 
 module.exports = function (connection) {
   class Transaction extends Model {
@@ -39,6 +40,16 @@ module.exports = function (connection) {
       tableName: "transaction",
     }
   )
+
+  Transaction.addHook('afterCreate', (process, options) => {
+    const transaction = process.dataValues
+    const aggregate = new TransactionMongo({
+      ...transaction,
+      operations: [],
+      id: transaction.id
+    })
+    aggregate.save()
+  });
 
   return Transaction
 }

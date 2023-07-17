@@ -33,7 +33,6 @@ module.exports = {
       returning: true,
       individualHooks: true,
     })
-    console.log(nb, users)
     return users
   },
   remove: async function (criteria) {
