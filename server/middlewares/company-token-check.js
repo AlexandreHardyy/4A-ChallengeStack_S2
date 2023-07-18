@@ -1,7 +1,7 @@
 const companyService = require("../services/company")
 
 // TODO: I think that is not the good way to check that !!!!
-const checkCompanyToken = async (req, res, next) => {
+const checkCompanyApiToken = async (req, res, next) => {
     const token = req.body.apiToken
 
     if (!token) { return res.sendStatus(422) }
@@ -15,4 +15,18 @@ const checkCompanyToken = async (req, res, next) => {
     next()
 }
 
-module.exports = { checkCompanyToken }
+const checkCompanyClientToken = async (req, res, next) => {
+    const token = req.body.clientToken
+
+    if (!token) { return res.sendStatus(422) }
+
+    const company =  await companyService.findByClientToken(token)
+
+    if (!company) { return res.sendStatus(403) }
+
+    req.body.company = company
+
+    next()
+}
+
+module.exports = { checkCompanyApiToken, checkCompanyClientToken }

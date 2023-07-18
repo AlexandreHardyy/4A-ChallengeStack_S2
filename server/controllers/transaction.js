@@ -1,11 +1,8 @@
-const axios = require('axios');
-
 const transactionService = require("../services/transaction")
 const operationService = require("../services/operation")
 
 const TransactionController = {
   post: async (req, res, next) => {
-
     if (!req.body) { return res.sendStatus(422) }
 
     const { company } = ( req.body )
@@ -78,17 +75,27 @@ const TransactionController = {
 
     if (transaction.operations[0].status !== 'created') { return res.sendStatus(400) }
 
-    const { cbNumber, cbName } = req.body
+    const { cbNumber, cbName, expirationDate, cvc } = req.body
 
-    if (!cbNumber || !cbName) { return res.sendStatus(422) }
+    if (!cbNumber || !cbName || !expirationDate || !cvc) { return res.sendStatus(422) }
 
     try {
-      await axios.post('http://psp:3001/transaction-approuval', {
-        transactionToken: transaction.token,
-        cbNumber,
-        cbName,
-        price: parseInt(transaction.amount),
-        currency: transaction.currency
+      await fetch('http://psp:3001/transaction-approuval', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(
+          {
+            transactionToken: transaction.token,
+            cbNumber,
+            cbName,
+            expirationDate,
+            cvc,
+            price: parseInt(transaction.amount),
+            currency: transaction.currency
+          }
+        )
       }).then(async (response) => {
         if (response.status === 202) {
           await operationService.create({

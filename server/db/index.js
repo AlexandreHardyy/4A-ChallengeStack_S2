@@ -3,8 +3,6 @@ const path = require("path")
 const Sequelize = require("sequelize")
 const mongoose = require('mongoose');
 
-
-
 mongoose.connect(process.env.DATABASE_MONGO_URL).catch(err => {
   console.log(err)
   return

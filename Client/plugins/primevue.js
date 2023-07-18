@@ -13,8 +13,9 @@ import Chart from 'primevue/chart';
 import DialogService from "primevue/dialogservice";
 import DynamicDialog from "primevue/dynamicdialog";
 import Tooltip from "primevue/tooltip";
-import ConfirmPopup from 'primevue/confirmpopup';
 import ConfirmationService from 'primevue/confirmationservice';
+import ConfirmPopup from 'primevue/confirmpopup';
+import InputMask from 'primevue/inputmask';
 
 export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.use(PrimeVue, {ripple: true})
@@ -34,5 +35,6 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.component('Chart', Chart)
     nuxtApp.vueApp.component('DynamicDialog', DynamicDialog)
     nuxtApp.vueApp.component('ConfirmPopup', ConfirmPopup)
+    nuxtApp.vueApp.component('InputMask', InputMask)
     //other components that you need
 })
