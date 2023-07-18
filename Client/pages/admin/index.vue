@@ -13,6 +13,7 @@
     const revenues = ref();
     const createdTransactions = ref();
     const confirmedTransactions = ref();
+    const refundTransactions = ref();
 
     const retrieveRevenues = (transactions) => {
         if (!transactions) { return 0 }
@@ -36,12 +37,31 @@
         }).length
     }
 
-    const formatteDate = (date) => {
-      const formattedDate = new Date(date)
-      const year = formattedDate.getFullYear()
-      const month = formattedDate.getUTCMonth() + 1
-      const day = formattedDate.getDate()
-      return `${year}-${month}-${day}`
+    const retrieveRefundTransactions = (transactions) => {
+        if (!transactions) { return 0 }
+        return transactions.filter(transaction => {
+            return transaction.Operations.find(operation => operation.status === 'refund')
+        }).length
+    }
+
+    const formatDate = (date) => {
+      const formattedDate = new Date(date);
+      const year = formattedDate.getFullYear();
+      let month = formattedDate.getUTCMonth() + 1;
+      let day = formattedDate.getDate();
+      if (day < 10) day = `0${day}`;
+      if (month < 10) month = `0${month}`;
+      return `${year}-${month}-${day}`;
+    }
+
+    const formatDateFr = (date) => {
+      const formattedDate = new Date(date);
+      const year = formattedDate.getFullYear();
+      let month = formattedDate.getUTCMonth() + 1;
+      let day = formattedDate.getDate();
+      if (day < 10) day = `0${day}`;
+      if (month < 10) month = `0${month}`;
+      return `${day}/${month}/${year}`;
     }
 
     const buildDateArray = (dates) => {
@@ -51,11 +71,11 @@
       const endDate = dates[1].getTime()
 
       while (currentDate < endDate) {
-        dateArray.push({ x:formatteDate(currentDate), y: 0})
+        dateArray.push({ x:formatDate(currentDate), y: 0})
         currentDate += 24 * 60 * 60 * 1000
       }
 
-      dateArray.push({ x:formatteDate(endDate), y: 0})
+      dateArray.push({ x:formatDate(endDate), y: 0})
       return dateArray
     }
 
@@ -76,7 +96,6 @@
         }
       }
 
-
       if (chartRef.value) {
         chartRef.value.destroy()
       }
@@ -88,7 +107,7 @@
     }
 
     const buildChartRevenues = (transactions) => {
-      if (!transactions) { return undefined }
+      if (!transactions) return undefined
       
       const finishedTransactions = transactions.filter(transaction => transaction.Operations.find(operation => operation.status === 'finished'))
 
@@ -96,7 +115,7 @@
 
       for (const transaction of finishedTransactions) {
         const finishedOperation = transaction.Operations.find(operation => operation.status === 'finished')
-        const date = formatteDate(finishedOperation.createdAt)
+        const date = formatDate(finishedOperation.createdAt)
 
         const index = data.map(elem => elem.x).indexOf(date)
 
@@ -112,13 +131,13 @@
     }
     
     const buildChartCreatedTransaction = (transactions) => {
-      if (!transactions) { return undefined }
+      if (!transactions) return undefined
 
       const data = buildDateArray(dates.value)
 
       for (const transaction of transactions) {
         const createdOperation = transaction.Operations.find(operation => operation.status === 'created')
-        const date = formatteDate(createdOperation.createdAt)
+        const date = formatDate(createdOperation.createdAt)
 
         const index = data.map(elem => elem.x).indexOf(date)
 
@@ -134,7 +153,7 @@
     }
 
     const buildChartConfirmedTransaction = (transactions) => {
-      if (!transactions) { return undefined }
+      if (!transactions) return undefined
 
       const finishedTransactions = transactions.filter(transaction => transaction.Operations.find(operation => operation.status === 'finished'))
     
@@ -142,7 +161,7 @@
 
       for (const transaction of finishedTransactions) {
         const createdOperation = transaction.Operations.find(operation => operation.status === 'finished')
-        const date = formatteDate(createdOperation.createdAt)
+        const date = formatDate(createdOperation.createdAt)
 
         const index = data.map(elem => elem.x).indexOf(date)
 
@@ -157,9 +176,33 @@
       buildChart(data)
     }
 
+    const buildChartRefundTransaction = (transactions) => {
+      if (!transactions) return undefined
+
+      const refundTransactions = transactions.filter(transaction => transaction.Operations.find(operation => operation.status === 'refund'))
+
+      const data = buildDateArray(dates.value)
+
+      for (const transaction of refundTransactions) {
+        const createdOperation = transaction.Operations.find(operation => operation.status === 'finished')
+        const date = formatDate(createdOperation.createdAt)
+
+        const index = data.map(elem => elem.x).indexOf(date)
+
+        if (index > 0) {
+          data[index] = {
+            ...data[index],
+            y: data[index].y + 1
+          }
+        }
+      }
+
+      buildChart(data)
+    }
+
     const onDateChange = async (event) => {
         if (!event[0] || !event[1]) { return }
-        const { data, error } = await useFetch(`http://localhost:3000/transaction?from=${event[0]}&to=${event[1]}`)
+        const { data } = await useFetch(`http://localhost:3000/transaction?from=${event[0]}&to=${event[1]}`)
         transactionData.value = data.value
         
         revenues.value = retrieveRevenues(data.value)
@@ -168,22 +211,24 @@
 
         createdTransactions.value = retrieveCreatedTransactions(data.value)
         confirmedTransactions.value = retrieveConfirmedTransactions(data.value)
+        refundTransactions.value = retrieveRefundTransactions(data.value)
     }
 
     const onSelectedMetricChange = (metric) => {
       selectedMetric.value = metric
 
-      if (metric === 'Revenues') { buildChartRevenues(transactionData.value) }
-      if (metric === 'Created Transaction') { buildChartCreatedTransaction(transactionData.value) }
-      if (metric === 'Confirmed Transaction') { buildChartConfirmedTransaction(transactionData.value) }
+      if (metric === 'Revenues') buildChartRevenues(transactionData.value)
+      if (metric === 'Created transaction') buildChartCreatedTransaction(transactionData.value)
+      if (metric === 'Confirmed transaction') buildChartConfirmedTransaction(transactionData.value)
+      if (metric === 'Refund transaction') buildChartRefundTransaction(transactionData.value)
     }
 
     definePageMeta({
-    layout: "admin",
+      layout: "admin",
     });
 
     onMounted(async () => {
-      const { data, error } = await useFetch(`http://localhost:3000/transaction?from=${dates.value[0]}&to=${dates.value[1]}`)
+      const { data } = await useFetch(`http://localhost:3000/transaction?from=${dates.value[0]}&to=${dates.value[1]}`)
       transactionData.value = data.value
 
       revenues.value = retrieveRevenues(data.value)
@@ -191,40 +236,52 @@
 
       createdTransactions.value = retrieveCreatedTransactions(data.value)
       confirmedTransactions.value = retrieveConfirmedTransactions(data.value)
+      refundTransactions.value = retrieveRefundTransactions(data.value)
     })
 </script>
 
 <template>
   <div>
-      <Calendar v-model="dates" selectionMode="range" :manualInput="false" showButtonBar @update:modelValue="onDateChange"/>
-      <div class="tw-grid tw-grid-cols-3 tw-gap-4">
+      <div class="tw-flex tw-items-center tw-gap-1.5">
+        <h2>Datas from : </h2>
+        <Calendar v-model="dates" selectionMode="range" :manualInput="false" showButtonBar @update:modelValue="onDateChange"/>
+      </div>
+      <div class="tw-grid tw-grid-cols-4 tw-gap-4 tw-mt-4">
           <Card @click="onSelectedMetricChange('Revenues')">
-              <template #title> Revenues </template>
+              <template #title>Revenues</template>
               <template #content>
                   <p>
                       {{revenues}}
                   </p>
               </template>
           </Card>
-          <Card @click="onSelectedMetricChange('Created Transaction')">
-              <template #title> Created Transaction </template>
+          <Card @click="onSelectedMetricChange('Created transaction')">
+              <template #title>Created Transaction</template>
               <template #content>
                   <p>
                       {{createdTransactions}}
                   </p>
               </template>
           </Card>
-          <Card @click="onSelectedMetricChange('Confirmed Transaction')">
-              <template #title> Confirmed Transaction </template>
+          <Card @click="onSelectedMetricChange('Confirmed transaction')">
+              <template #title>Confirmed Transaction</template>
               <template #content>
                   <p>
                       {{confirmedTransactions}}
                   </p>
               </template>
           </Card>
+          <Card @click="onSelectedMetricChange('Refund transaction')">
+              <template #title>Refunded transaction</template>
+              <template #content>
+                  <p>
+                      {{refundTransactions}}
+                  </p>
+              </template>
+          </Card>
       </div>
       <Card class="tw-mt-4">
-        <template #title> {{selectedMetric}} {{`${formatteDate(dates[0])} to ${formatteDate(dates[1])}`}}</template>
+        <template #title> {{selectedMetric}} from {{`${formatDateFr(dates[0])} to ${formatDateFr(dates[1])}`}}</template>
         <template #content>
           <canvas ref="chart"></canvas>
         </template>

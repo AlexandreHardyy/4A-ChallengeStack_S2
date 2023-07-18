@@ -9,6 +9,7 @@ import Column from 'primevue/column';
 import Tag from 'primevue/tag';
 import Card from 'primevue/card';
 import Calendar from 'primevue/calendar';
+import Chart from 'primevue/chart';
 
 export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.use(PrimeVue, {ripple: true})
@@ -22,5 +23,6 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.component('Tag', Tag)
     nuxtApp.vueApp.component('Card', Card)
     nuxtApp.vueApp.component('Calendar', Calendar)
+    nuxtApp.vueApp.component('Chart', Chart)
     //other components that you need
 })
