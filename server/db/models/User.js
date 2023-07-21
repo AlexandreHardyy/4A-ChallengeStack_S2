@@ -1,11 +1,12 @@
 const { Model, DataTypes } = require("sequelize")
+const bcrypt = require("bcryptjs");
 
 
 module.exports = function (connection) {
   class User extends Model {
     async checkPassword(password) {
       const bcrypt = require("bcryptjs")
-      return bcrypt.compare(password, this.password)
+      return await bcrypt.compare(password, this.password)
     }
 
     generateToken() {
@@ -41,7 +42,10 @@ module.exports = function (connection) {
           is: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*\.])/,
         },
       },
-      isValid: DataTypes.BOOLEAN,
+      isValid: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
       createdAt: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,

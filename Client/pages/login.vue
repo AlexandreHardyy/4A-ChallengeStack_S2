@@ -3,6 +3,7 @@ import {useField, useForm} from "vee-validate";
 import * as yup from "yup";
 import userService from "@/services/user";
 import { useUserStore } from "@/store/user";
+import jwt_decode from 'jwt-decode';
 
 const formatErrorPassword = (err) => {
   return err?.includes('password must match') ? 'required: 1 maj, 1 min, 1 number and 1 character special' : err
@@ -27,7 +28,11 @@ const submit = handleSubmit(async (values) => {
     return
   }
   setToken(data.value.token)
-  navigateTo("/back/dashboard");
+  let decoded = jwt_decode(data.value.token);
+  if (decoded.role === 'admin')
+    navigateTo("/admin/merchants");
+  else
+    navigateTo("/back/dashboard");
 });
 
 </script>

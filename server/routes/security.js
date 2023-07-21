@@ -9,7 +9,8 @@ module.exports = function (userService) {
     if (!user) {
       return res.sendStatus(401)
     }
-    if (!user.checkPassword(password)) {
+
+    if (!await user.checkPassword(password)) {
       return res.sendStatus(401)
     }
 
