@@ -10,6 +10,8 @@ import Tag from 'primevue/tag';
 import Card from 'primevue/card';
 import Calendar from 'primevue/calendar';
 import Chart from 'primevue/chart';
+import ConfirmPopup from 'primevue/confirmpopup';
+import ConfirmationService from 'primevue/confirmationservice';
 
 export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.use(PrimeVue, {ripple: true})
@@ -24,5 +26,7 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.component('Card', Card)
     nuxtApp.vueApp.component('Calendar', Calendar)
     nuxtApp.vueApp.component('Chart', Chart)
+    nuxtApp.vueApp.component('ConfirmPopup', ConfirmPopup)
+    nuxtApp.vueApp.use(ConfirmationService)
     //other components that you need
 })
