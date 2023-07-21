@@ -1,9 +1,12 @@
 <script setup>
 import { ref } from 'vue';
 import {FilterMatchMode} from "primevue/api";
+import transactionService from '~/services/transaction';
+import { useUserStore } from '~/store/user';
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 
+const { user } = useUserStore()
 
 definePageMeta({
   layout: "back",
@@ -27,187 +30,15 @@ const confirmRefund = (event) => {
   });
 };
 
-const transactionHeaders = ref([
-  {
-    name: 'Name',
-    align: 'start',
-    sortable: false,
-    key: 'name',
-  },
-  { name: 'Email', key: 'email', align: 'end' },
-  { name: 'Amount', key: 'amount', align: 'end' },
-  { name: 'Currency', key: 'currency', align: 'end' },
-  {
-    name: 'Status',
-    key: 'status',
-    align: 'end',
-    sortable: false,
-  },
-  {
-    name: 'Created At',
-    key: 'createdAt',
-    align: 'end',
-    sortable: false,
-  },
-  {
-    name: 'Updated At',
-    key: 'updatedAt',
-    align: 'end',
-    sortable: false,
-  },
-  {
-    name: 'Actions',
-    key: 'actions',
-    align: 'end',
-    sortable: false,
-  }
-]);
+const transactions = reactive([])
 
-const transactionDatas = [
-  {
-    name: "John Doe",
-    email: "johndoe@gmail.com",
-    amount: 100000,
-    currency: "EUR",
-    status: "confirm",
-    createdAt: "2021-08-01",
-    updatedAt: "2021-08-01",
-    action: "refund"
-  },
-  {
-    name: "Jane Doe",
-    email: "johndoe@gmail.com",
-    amount: 100000,
-    currency: "EUR",
-    status: "refund",
-    createdAt: "2021-08-01",
-    updatedAt: "2021-08-01",
-    action: "refund"
-  },
-  {
-    name: "John Doe",
-    email: "johndoe@gmail.com",
-    amount: 100000,
-    currency: "EUR",
-    status: "cancel",
-    createdAt: "2021-08-01",
-    updatedAt: "2021-08-01",
-    action: "refund"
-  },
-  {
-    name: "John Doe",
-    email: "johndoe@gmail.com",
-    amount: 100000,
-    currency: "EUR",
-    status: "cancel",
-    createdAt: "2021-08-01",
-    updatedAt: "2021-08-01",
-    action: "refund"
-  },
-  {
-    name: "John Doe",
-    email: "johndoe@gmail.com",
-    amount: 100000,
-    currency: "EUR",
-    status: "confirm",
-    createdAt: "2021-08-01",
-    updatedAt: "2021-08-01",
-    action: "refund"
-  },
-  {
-    name: "John Doe",
-    email: "johndoe@gmail.com",
-    amount: 100000,
-    currency: "EUR",
-    status: "cancel",
-    createdAt: "2021-08-01",
-    updatedAt: "2021-08-01",
-    action: "refund"
-  },
-  {
-    name: "John Doe",
-    email: "johndoe@gmail.com",
-    amount: 100000,
-    currency: "EUR",
-    status: "confirm",
-    createdAt: "2021-08-01",
-    updatedAt: "2021-08-01",
-    action: "refund"
-  },
-  {
-    name: "John Doe",
-    email: "johndoe@gmail.com",
-    amount: 100000,
-    currency: "EUR",
-    status: "refund",
-    createdAt: "2021-08-01",
-    updatedAt: "2021-08-01",
-    action: "refund"
-  },
-  {
-    name: "John Doe",
-    email: "johndoe@gmail.com",
-    amount: 100000,
-    currency: "EUR",
-    status: "refund",
-    createdAt: "2021-08-01",
-    updatedAt: "2021-08-01",
-    action: "refund"
-  },
-  {
-    name: "John Doe",
-    email: "johndoe@gmail.com",
-    amount: 100000,
-    currency: "EUR",
-    status: "confirm",
-    createdAt: "2021-08-01",
-    updatedAt: "2021-08-01",
-    action: "refund"
-  },
-  {
-    name: "John Doe",
-    email: "johndoe@gmail.com",
-    amount: 100000,
-    currency: "EUR",
-    status: "refund",
-    createdAt: "2021-08-01",
-    updatedAt: "2021-08-01",
-    action: "refund"
-  },
-  {
-    name: "John Doe",
-    email: "johndoe@gmail.com",
-    amount: 100000,
-    currency: "EUR",
-    status: "refund",
-    createdAt: "2021-08-01",
-    updatedAt: "2021-08-01",
-    action: "refund"
-  },
-  {
-    name: "John Doe",
-    email: "johndoe@gmail.com",
-    amount: 100000,
-    currency: "EUR",
-    status: "cancel",
-    createdAt: "2021-08-01",
-    updatedAt: "2021-08-01",
-    action: "refund"
-  },
-  {
-    name: "John Doe",
-    email: "johndoe@gmail.com",
-    amount: 100000,
-    currency: "EUR",
-    status: "refund",
-    createdAt: "2021-08-01",
-    updatedAt: "2021-08-01",
-    action: "refund"
-  },
-];
+onMounted( async () => {
+  const { data } = await transactionService.getByComanyId(user.company.id)
+  transactions.value = data.value
+})
 
-const getSeverity = (data) => {
-  switch (data.status) {
+const getSeverity = (transaction) => {
+  switch (transaction.operations[0].status) {
     case 'confirm':
       return 'success';
 
@@ -230,16 +61,18 @@ const filters = ref({
 
 <template>
   <div class="card">
-    <DataTable :value="transactionDatas"
-               tableStyle="min-width: 50rem"
-               removableSort
-               paginator
-               :rows="15"
-               :rowsPerPageOptions="[15, 25, 50]"
-               scrollable
-               scrollHeight="flex"
-               v-model:filters="filters"
-               :globalFilterFields="['name', 'currency', 'status']"
+    <DataTable
+      v-if="transactions.length !== 0"
+      :value="transactions"             
+      tableStyle="min-width: 50rem"
+      removableSort
+      paginator
+      :rows="15"
+      :rowsPerPageOptions="[15, 25, 50]"
+      scrollable
+      scrollHeight="flex"
+      v-model:filters="filters"
+      :globalFilterFields="['name', 'currency', 'status']"
     >
       <template #header>
         <div class="flex justify-content-end">
@@ -255,7 +88,7 @@ const filters = ref({
       <Column field="currency" header="Currency" sortable/>
       <Column header="Status" sortable>
         <template #body="slotProps">
-          <Tag :value="slotProps.data.status" :severity="getSeverity(slotProps.data)"/>
+          <Tag :value="slotProps.data.operations[0].status" :severity="getSeverity(slotProps.data)"/>
         </template>
       </Column>
       <Column field="createdAt" header="Created At" sortable/>
@@ -267,6 +100,9 @@ const filters = ref({
         </template>
       </Column>
     </DataTable>
+    <div v-else>
+      <h1 class="tw-text-4xl tw-font-bold tw-mb-12">There is no transactions yet ..</h1>
+    </div>
   </div>
 </template>
 

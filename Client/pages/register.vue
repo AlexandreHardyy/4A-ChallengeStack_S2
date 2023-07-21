@@ -31,7 +31,7 @@ const registerError = ref(null);
 
 const submit = handleSubmit(async (values) => {
   const { error, data } = await companyService.create(values)
-  if (error.value !== null || !data.value?.id) {
+  if (error.value !== null || !data?.value[0].id) {
     registerError.value = "kbis or email are already used"
     return
   }

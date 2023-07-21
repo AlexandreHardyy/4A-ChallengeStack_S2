@@ -19,12 +19,6 @@ module.exports = {
     })
   },
   create: async function (data) {
-    console.log({ 
-        ...data, 
-        clientToken: Company.generateToken(), 
-        apiToken: Company.generateToken(),
-        isValid: false
-    })
     return Company.create({ 
         ...data, 
         clientToken: Company.generateToken(), 
