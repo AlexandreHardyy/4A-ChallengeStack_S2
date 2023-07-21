@@ -10,12 +10,17 @@ import Tag from 'primevue/tag';
 import Card from 'primevue/card';
 import Calendar from 'primevue/calendar';
 import Chart from 'primevue/chart';
+import DialogService from "primevue/dialogservice";
+import DynamicDialog from "primevue/dynamicdialog";
+import Tooltip from "primevue/tooltip";
 import ConfirmPopup from 'primevue/confirmpopup';
 import ConfirmationService from 'primevue/confirmationservice';
 
 export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.use(PrimeVue, {ripple: true})
     nuxtApp.vueApp.use(ToastService)
+    nuxtApp.vueApp.use(DialogService)
+    nuxtApp.vueApp.directive('tooltip', Tooltip);
     nuxtApp.vueApp.component('Button', Button)
     nuxtApp.vueApp.component('InputText', InputText)
     nuxtApp.vueApp.component('Toast', Toast)
@@ -26,7 +31,6 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.component('Card', Card)
     nuxtApp.vueApp.component('Calendar', Calendar)
     nuxtApp.vueApp.component('Chart', Chart)
-    nuxtApp.vueApp.component('ConfirmPopup', ConfirmPopup)
-    nuxtApp.vueApp.use(ConfirmationService)
+    nuxtApp.vueApp.component('DynamicDialog', DynamicDialog)
     //other components that you need
 })
