@@ -2,6 +2,8 @@
 
 <template>
   <div>
+    <Toast></Toast>
+    <ConfirmPopup></ConfirmPopup>
     <NuxtLayout>
       <NuxtPage/>
     </NuxtLayout>

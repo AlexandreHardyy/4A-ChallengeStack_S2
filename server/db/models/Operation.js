@@ -1,4 +1,5 @@
 const { Model, DataTypes } = require("sequelize")
+const TransactionMongo = require('../aggregates/Transaction')
 
 module.exports = function (connection) {
   class Operation extends Model {}
@@ -23,6 +24,15 @@ module.exports = function (connection) {
       tableName: "operation",
     }
   )
+
+  Operation.addHook('afterCreate', async (process, options) => {
+    const operation = process.dataValues
+    const aggregate = await TransactionMongo.findOne({ id: operation.transactionId })
+    if (aggregate.id) {
+      aggregate.operations.unshift(operation)
+    }
+    aggregate.save()
+  });
 
   return Operation
 }

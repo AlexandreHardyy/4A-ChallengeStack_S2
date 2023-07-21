@@ -1,6 +1,15 @@
 const fs = require("fs")
 const path = require("path")
 const Sequelize = require("sequelize")
+const mongoose = require('mongoose');
+
+
+
+mongoose.connect(process.env.DATABASE_MONGO_URL).catch(err => {
+  console.log(err)
+  return
+});
+
 const connection = new Sequelize(process.env.DATABASE_URL)
 
 const db = { connection }
@@ -28,5 +37,7 @@ db.Transaction.hasMany(db.Operation, {
 // db.Status.hasMany(db.Operation, {
 //   foreignKey: 'statusId'
 // })
+
+
 
 module.exports = db

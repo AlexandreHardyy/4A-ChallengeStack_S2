@@ -3,16 +3,17 @@ import {useCustomFetch} from "~/services/use-fetch";
 import {useDialog} from "primevue/usedialog";
 import MerchantDetails from "~/components/merchants/MerchantDetails.vue";
 import useFormatDate from "../../../services/format/useFormatDate";
+
 definePageMeta({
   layout: "admin",
 });
 
 const dialog = useDialog();
-const merchants = ref();
+const companies = ref();
 
 onMounted(async () => {
   const res = await useCustomFetch("user");
-  merchants.value = res.data.value;
+  companies.value = res.data.value;
 });
 
 const showMerchantDetails = (id) => {
@@ -37,18 +38,24 @@ const showMerchantDetails = (id) => {
 
 <template>
   <div class="card">
-    <DataTable :value="merchants"
-               tableStyle="min-width: 50rem"
-               removableSort
-               paginator
-               :rows="15"
-               :rowsPerPageOptions="[15, 25, 50]"
-               scrollable
-               scrollHeight="flex"
-               :globalFilterFields="['name', 'currency', 'status']"
+    <DataTable 
+      :value="companies"
+      tableStyle="min-width: 50rem"
+      removableSort
+      paginator
+      :rows="15"
+      :rowsPerPageOptions="[15, 25, 50]"
+      scrollable
+      scrollHeight="flex"
+      :globalFilterFields="['name', 'currency', 'status']"
     >
       <Column field="id" header="ID" sortable/>
       <Column field="email" header="Email" sortable/>
+      <Column header="Company name" sortable>
+        <template #body="slotProps">
+          <span>{{ slotProps.data.Company.name }}</span>
+        </template>
+      </Column>
       <Column field="createdAt" header="Created At" sortable>
         <template #body="slotProps">
           <span>{{ useFormatDate(slotProps.data.createdAt) }}</span>
@@ -62,7 +69,7 @@ const showMerchantDetails = (id) => {
       <Column header="Action" >
         <template #body="slotProps">
           <div class="tw-flex tw-gap-3">
-            <nuxt-link :to="{ path: '/back/dashboard'}">
+            <nuxt-link :to="{ path: `/admin/company/${slotProps.data.id}`}">
               <Button  v-tooltip.bottom="'Show is view'" type="button" class="tw-mr-2" severity="info">
                 <i class="pi pi-eye"/>
               </Button>

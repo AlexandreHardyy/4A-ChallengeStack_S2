@@ -1,4 +1,3 @@
-import { useUserStore } from "~/store/user"
 import { useCustomFetch } from "./use-fetch"
 
 const companyService = {

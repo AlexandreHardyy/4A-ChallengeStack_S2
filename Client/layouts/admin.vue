@@ -12,8 +12,8 @@ import userService from '~/services/user';
         <nuxt-link class="btn" :to="{ path: '/admin' }">
           Dashboard
         </nuxt-link>
-        <nuxt-link class="btn" :to="{ path: '/admin/merchants' }">
-          Merchant
+        <nuxt-link class="btn" :to="{ path: '/admin/company' }">
+          Companies
         </nuxt-link>
       </div>
       <nuxt-link :to="{ path: '/login' }">

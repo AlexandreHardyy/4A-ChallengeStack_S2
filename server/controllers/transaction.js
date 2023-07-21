@@ -3,14 +3,12 @@ const axios = require('axios');
 const transactionService = require("../services/transaction")
 const operationService = require("../services/operation")
 
-module.exports = {
+const TransactionController = {
   post: async (req, res, next) => {
 
     if (!req.body) { return res.sendStatus(422) }
 
-    const { name, email, amount, currency, company } = ( req.body )
-
-    if ( !name || !email || !amount || !currency || !company ) { return res.sendStatus(422) }
+    const { company } = ( req.body )
 
     try {
       const newTransaction = {
@@ -60,6 +58,17 @@ module.exports = {
       next(err)
     }
   },
+  getByCompanyId: async (req, res, next) => {
+    if (!req.params.id) {
+      return res.sendStatus(422)
+    }
+    if (!req.params.id !== req.user.companyId) {
+      return res.sendStatus(403)
+    }
+    req.query.companyId = req.params.id 
+
+    return TransactionController.cget(req, res, next)
+  },
   confirm: async (req, res, next) => {
     if (!req.body) { return res.sendStatus(422) }
     
@@ -67,11 +76,7 @@ module.exports = {
 
     if (!transaction) { return res.sendStatus(404) }
 
-    const lastOperations = transaction.Operations.sort(function(a,b){
-      return new Date(b.createdAt) - new Date(a.createdAt);
-    })
-
-    if (lastOperations[0].status !== 'created') { return res.sendStatus(400) }
+    if (transaction.operations[0].status !== 'created') { return res.sendStatus(400) }
 
     const { cbNumber, cbName } = req.body
 
@@ -112,11 +117,7 @@ module.exports = {
 
     if (!transaction) { return res.sendStatus(404) }
 
-    const lastOperations = transaction.Operations.sort(function(a,b){
-      return new Date(b.createdAt) - new Date(a.createdAt);
-    })
-
-    if (lastOperations[0].status !== 'created') { return res.sendStatus(400) }
+    if (transaction.operations[0].status !== 'created') { return res.sendStatus(400) }
 
     try {
       await operationService.create({
@@ -133,11 +134,7 @@ module.exports = {
 
     if (!transaction) { return res.sendStatus(404) }
 
-    const lastOperations = transaction.Operations.sort(function(a,b){
-      return new Date(b.createdAt) - new Date(a.createdAt);
-    })
-
-    if (lastOperations[0].status !== 'waiting-psp-validation') { return res.sendStatus(400) }
+    if (transaction.operations[0].status !== 'waiting-psp-validation') { return res.sendStatus(400) }
 
     const commission = transaction.amount * 0.011
 
@@ -153,16 +150,13 @@ module.exports = {
     }
   },
   refund: async (req, res, next) => {
-    //get transaction
     const transaction = await transactionService.findByToken(req.params.token)
 
     if (!transaction) return res.sendStatus(404)
-    //check if last operation is finished
-    const lastOperations = transaction.Operations.sort(function(a,b){
-      return new Date(b.createdAt) - new Date(a.createdAt);
-    })
 
-    if (lastOperations[0].status !== 'finished') return res.sendStatus(400)
+    //check if last operation is finished
+    if (transaction.operations[0].status !== 'finished') return res.sendStatus(400)
+    
     //create operation with status refund
     try {
       await operationService.create({
@@ -178,3 +172,5 @@ module.exports = {
     )
   }
 }
+
+module.exports = TransactionController

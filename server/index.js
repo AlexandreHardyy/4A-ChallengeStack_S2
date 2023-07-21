@@ -1,6 +1,7 @@
 const express = require("express")
 const app = express()
 const userService = require("./services/user")
+const errorHandler = require("./middlewares/errorHandler");
 const cors = require('cors')
 
 app.use(express.json())
@@ -20,5 +21,7 @@ app.get("/", (req, res) => {
 app.use(function(req, res, next) {
   return res.status(404).json({ error: 'this route doesn\'t exist.' })
 });
+
+app.use(errorHandler);
 
 app.listen(3000, () => console.log("Server started on port 3000"))
