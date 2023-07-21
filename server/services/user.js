@@ -6,6 +6,12 @@ module.exports = {
       where: criteria,
       ...options,
       order: Object.entries(options.order || {}),
+      include: [{
+        model: Company,
+        attributes: { exclude: ['clientSecret', 'clientToken', 'urlDirectionCancel', 'urlDirectionConfirm'] },
+        required: true
+      }],
+      attributes: { exclude: ['password'] },
     })
   },
   findById: async function (id) {
