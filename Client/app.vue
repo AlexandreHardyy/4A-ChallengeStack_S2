@@ -1,4 +1,8 @@
-<script setup></script>
+<script setup>
+import ConfirmPopup from 'primevue/confirmpopup';
+import Toast from 'primevue/toast';
+import DynamicDialog from 'primevue/dynamicdialog';
+</script>
 
 <template>
   <div>

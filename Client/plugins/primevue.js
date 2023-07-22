@@ -20,6 +20,7 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.use(PrimeVue, {ripple: true})
     nuxtApp.vueApp.use(ToastService)
     nuxtApp.vueApp.use(DialogService)
+    nuxtApp.vueApp.use(ConfirmationService)
     nuxtApp.vueApp.directive('tooltip', Tooltip);
     nuxtApp.vueApp.component('Button', Button)
     nuxtApp.vueApp.component('InputText', InputText)
@@ -32,5 +33,6 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.component('Calendar', Calendar)
     nuxtApp.vueApp.component('Chart', Chart)
     nuxtApp.vueApp.component('DynamicDialog', DynamicDialog)
+    nuxtApp.vueApp.component('ConfirmPopup', ConfirmPopup)
     //other components that you need
 })
