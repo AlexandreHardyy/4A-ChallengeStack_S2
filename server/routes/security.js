@@ -5,7 +5,7 @@ module.exports = function (userService) {
 
   router.post("/login", async function (req, res) {
     const { email, password } = req.body
-    const [user] = await userService.findAll({ email })
+    const [user] = await userService.findAll({ email })    
     if (!user) {
       return res.sendStatus(401)
     }

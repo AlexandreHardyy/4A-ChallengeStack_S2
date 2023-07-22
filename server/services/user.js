@@ -1,4 +1,4 @@
-const { User, Company } = require("../db")
+const { User, Company, Role } = require("../db")
 
 module.exports = {
   findAll: async function (criteria, options = {}) {
@@ -10,6 +10,8 @@ module.exports = {
         model: Company,
         attributes: { exclude: ['clientSecret', 'clientToken', 'urlDirectionCancel', 'urlDirectionConfirm'] },
         required: true
+      },{
+        model: Role
       }],
       /*attributes: { exclude: ['password'] },*/
     })

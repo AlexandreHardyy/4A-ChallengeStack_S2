@@ -15,7 +15,7 @@ router.get("/company/:id", userAuth, transactionController.getByCompanyId)
 router.get("/", adminAuth,  transactionController.cget)
 
 // SDK AUTH TOKEN
-router.post("/", checkCompanyToken, transactionController.post)
+router.post("/", transactionController.post)
 router.post("/confirm/:token", checkCompanyToken, transactionController.confirm)
 router.post("/cancel/:token", checkCompanyToken, transactionController.cancel)
 router.post("/refund/:token", checkCompanyToken, transactionController.refund)

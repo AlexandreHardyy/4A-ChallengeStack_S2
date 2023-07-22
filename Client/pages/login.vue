@@ -19,7 +19,7 @@ const {handleSubmit, handleReset} = useForm({
 const email = useField("email");
 const password = useField("password");
 const loginError = ref(null);
-const { setToken } = useUserStore()
+const { setUser, getUser } = useUserStore()
 
 const submit = handleSubmit(async (values) => {
   const { error, data } = await userService.login(values)
@@ -27,10 +27,10 @@ const submit = handleSubmit(async (values) => {
     loginError.value = "email or password is not correct"
     return
   }
-  setToken(data.value.token)
-  let decoded = jwt_decode(data.value.token);
-  if (decoded.role === 'admin')
-    navigateTo("/admin/merchants");
+  await setUser(data.value.token)
+
+  if (getUser().isAdmin)
+    navigateTo("/admin");
   else
     navigateTo("/back/dashboard");
 });

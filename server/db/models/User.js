@@ -1,17 +1,16 @@
 const { Model, DataTypes } = require("sequelize")
 const bcrypt = require("bcryptjs");
 
-
 module.exports = function (connection) {
   class User extends Model {
     async checkPassword(password) {
       const bcrypt = require("bcryptjs")
-      return await bcrypt.compare(password, this.password)
+      return bcrypt.compare(password, this.password)
     }
 
     generateToken() {
       const jwt = require("jsonwebtoken")
-      return jwt.sign({ id: this.id, isAdmin: this.RoleId === 'admin', companyId: this.companyId }, process.env.JWT_SECRET, {
+      return jwt.sign({ id: this.id, isAdmin: this?.Role?.name === 'admin', companyId: this.companyId }, process.env.JWT_SECRET, {
         expiresIn: "1y",
       })
     }

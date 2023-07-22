@@ -12,7 +12,6 @@ const user = ref();
 onMounted(async () => {
   const res = await useCustomFetch(`user/${route.params.id}`);
   user.value = res.data.value;
-  console.log(user.value)
 });
 </script>
 
@@ -26,6 +25,7 @@ onMounted(async () => {
       <h1> Validated account: {{ user.isValid ? 'yes' : 'false' }} </h1>
       <h1> client name :  {{ user.lastname }} {{ user.firstname }} </h1>
       <h1> client email :  {{ user.lastname }} {{ user.firstname }} </h1>
+      <NuxtLink :to="{ path: `/admin/company/transaction/${user.Company.id}`, params: { id: user.Company.id }}" class="btn"> Transactions </NuxtLink>
     </div>
   </div>
 </template>

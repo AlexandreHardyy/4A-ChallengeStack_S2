@@ -62,7 +62,7 @@ const TransactionController = {
     if (!req.params.id) {
       return res.sendStatus(422)
     }
-    if (!req.params.id !== req.user.companyId) {
+    if (Number(req.params.id) !== req.user.companyId) {
       return res.sendStatus(403)
     }
     req.query.companyId = req.params.id 

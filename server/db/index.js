@@ -3,8 +3,6 @@ const path = require("path")
 const Sequelize = require("sequelize")
 const mongoose = require('mongoose');
 
-
-
 mongoose.connect(process.env.DATABASE_MONGO_URL).catch(err => {
   console.log(err)
   return
@@ -22,7 +20,9 @@ fs.readdirSync(path.join(__dirname, "models")).forEach((file) => {
 db.User.belongsTo(db.Company, {
   foreignKey: 'companyId'
 })
-db.User.belongsTo(db.Role)
+db.User.belongsTo(db.Role, {
+  foreignKey: 'roleId'
+})
 db.Role.hasMany(db.User)
 db.Company.hasMany(db.User)
 

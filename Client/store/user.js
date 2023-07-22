@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import Cookies from 'js-cookie'
+import jwt_decode from 'jwt-decode';
 
 
 export const useUserStore = defineStore("user", {
@@ -8,20 +9,22 @@ export const useUserStore = defineStore("user", {
   }),
 
   actions: {
-    setToken(token) {
-      this.user = { token };
-      Cookies.set('user', JSON.stringify({ token }), { expires: 1000 })
+    async setUser(token) {
+      const decodedToken = jwt_decode(token);
+      this.user = { 
+        token,
+        ...decodedToken
+       };
+      Cookies.set('user', JSON.stringify(this.user), { expires: 1000 })
     },
     logout() {
         this.user = null
         Cookies.remove('user')
     },
-    getToken() {
-        if (this.user) {
-            return this.user.token
-        }
-        this.user = Cookies.get('user') ? JSON.parse(Cookies.get('user')) : null
-        return this.user?.token
+    getUser() {
+      if (this.user) { return this.user }
+      this.user = Cookies.get('user') ? JSON.parse(Cookies.get('user')) : null
+      return this.user 
     }
   },
 });
