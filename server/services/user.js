@@ -11,7 +11,7 @@ module.exports = {
         attributes: { exclude: ['clientSecret', 'clientToken', 'urlDirectionCancel', 'urlDirectionConfirm'] },
         required: true
       }],
-      attributes: { exclude: ['password'] },
+      /*attributes: { exclude: ['password'] },*/
     })
   },
   findById: async function (id) {
@@ -21,7 +21,7 @@ module.exports = {
         attributes: { exclude: ['clientSecret', 'clientToken', 'urlDirectionCancel', 'urlDirectionConfirm'] },
         required: true
       }],
-      attributes: { exclude: ['password'] },
+      /*attributes: { exclude: ['password'] },*/
     })
   },
   create: async function (data) {
