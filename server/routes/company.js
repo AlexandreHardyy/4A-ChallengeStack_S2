@@ -10,6 +10,7 @@ router.get("/:id", userAuth, companyController.get)
 router.put("/:id", userAuth, companyController.put)
 router.patch("/:id", userAuth, companyController.patch)
 router.delete("/:id", userAuth, companyController.delete)
+router.get("/regenerateToken/:id", userAuth, companyController.regenerateToken)
 
 router.get("/", companyController.cget, adminAuth)
 
