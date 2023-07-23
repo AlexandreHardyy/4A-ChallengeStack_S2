@@ -20,7 +20,9 @@ fs.readdirSync(path.join(__dirname, "models")).forEach((file) => {
 db.User.belongsTo(db.Company, {
   foreignKey: 'companyId'
 })
-db.User.belongsTo(db.Role)
+db.User.belongsTo(db.Role, {
+  foreignKey: 'roleId'
+})
 db.Role.hasMany(db.User)
 db.Company.hasMany(db.User)
 

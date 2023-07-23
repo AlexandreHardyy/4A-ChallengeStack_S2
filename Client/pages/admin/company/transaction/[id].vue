@@ -1,21 +1,17 @@
 <script setup>
-import { ref } from 'vue';
-import {FilterMatchMode} from "primevue/api";
 import transactionService from '~/services/transaction';
-import { useUserStore } from '~/store/user';
 import Transaction from '@/components/table/transaction.vue'
 
-const { getUser } = useUserStore()
-const user = getUser()
+const route = useRoute()
 
 definePageMeta({
-  layout: "back",
+  layout: "admin",
 });
 
 const transactions = reactive([])
 
 onMounted( async () => {
-  const { data } = await transactionService.getByComanyId(user.companyId)
+  const { data } = await transactionService.getByComanyId(route.params.id)
   transactions.value = data.value
 })
 

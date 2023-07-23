@@ -1,5 +1,6 @@
 const companyService = require("../services/company")
 const userService = require("../services/user")
+const { Company } = require("../db")
 
 module.exports = {
   cget: async (req, res, next) => {
@@ -62,6 +63,19 @@ module.exports = {
       const [company] = await companyService.update(
         { id: parseInt(id) },
         req.body
+      )
+      if (!company) return res.sendStatus(404)
+      res.json(company)
+    } catch (err) {
+      next(err)
+    }
+  },
+  regenerateToken: async (req, res, next) => {
+    const id = req.params.id
+    try {
+      const company = await companyService.update(
+          { id: parseInt(id) },
+          { apiToken: Company.generateToken() }
       )
       if (!company) return res.sendStatus(404)
       res.json(company)

@@ -1,7 +1,6 @@
 <script setup>
 import {useCustomFetch} from "~/services/use-fetch";
 import {useDialog} from "primevue/usedialog";
-import MerchantDetails from "~/components/merchants/MerchantDetails.vue";
 import useFormatDate from "../../../services/format/useFormatDate";
 
 definePageMeta({
@@ -10,30 +9,21 @@ definePageMeta({
 
 const dialog = useDialog();
 const companies = ref();
+const isChecked = ref(false);
+
+const getData = async () => {
+  const res = await useCustomFetch("user" + (isChecked.value ? "?isValid=false" : ""));
+  companies.value = res.data.value;
+};
 
 onMounted(async () => {
-  const res = await useCustomFetch("user");
-  companies.value = res.data.value;
+  await getData();
 });
 
-const showMerchantDetails = (id) => {
-  const dialogRef = dialog.open(MerchantDetails, {
-    props: {
-      header: 'Merchant Details',
-      style: {
-        width: '50vw',
-      },
-      breakpoints: {
-        '960px': '75vw',
-        '640px': '90vw'
-      },
-      modal: true
-    },
-    data: {
-      id
-    },
-  });
-}
+watch(isChecked, async () => {
+  await getData();
+});
+
 </script>
 
 <template>
@@ -49,6 +39,12 @@ const showMerchantDetails = (id) => {
       scrollHeight="flex"
       :globalFilterFields="['name', 'currency', 'status']"
     >
+      <template #header>
+        <div class="tw-flex tw-align-middle tw-gap-3">
+          <label>Only show the disable companies</label>
+          <InputSwitch v-model="isChecked" />
+        </div>
+      </template>
       <Column field="id" header="ID" sortable/>
       <Column field="email" header="Email" sortable/>
       <Column header="Company name" sortable>
@@ -66,6 +62,12 @@ const showMerchantDetails = (id) => {
           <span>{{ useFormatDate(slotProps.data.updatedAt) }}</span>
         </template>
       </Column>
+      <Column field="isValid" header="Validated" sortable>
+        <template #body="slotProps">
+          <Tag v-if="slotProps.data.isValid">Yes</Tag>
+          <Tag v-else severity="warning">No</Tag>
+        </template>
+      </Column>
       <Column header="Action" >
         <template #body="slotProps">
           <div class="tw-flex tw-gap-3">
@@ -76,9 +78,6 @@ const showMerchantDetails = (id) => {
             </nuxt-link>
             <Button v-tooltip.bottom="'Delete user'" type="button" class="tw-mr-2" severity="danger">
               <i class="pi pi-trash"/>
-            </Button>
-            <Button v-if="!slotProps.data.isVerified" @click="showMerchantDetails(slotProps.data.id)" type="button" class="tw-mr-2" severity="Validate">
-              <i class="pi pi-verified"/>
             </Button>
           </div>
         </template>
