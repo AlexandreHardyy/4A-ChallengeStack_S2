@@ -21,7 +21,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
       return navigateTo('/login')
     }
 
-    if (user && !user.isAdmin && to.fullPath.includes('/admin')) {
+   /* if (user && !user.isAdmin && to.fullPath.includes('/admin')) {
       return navigateTo('/back/dashboard')
-    }
+    }*/
 })  

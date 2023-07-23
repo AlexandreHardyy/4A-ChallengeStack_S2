@@ -34,8 +34,8 @@ const toogleCompany = async (accept) => {
 </script>
 
 <template>
-  <div v-if="user" class="card">
-    <div>
+  <div class="card">
+    <div v-if="user">
       <h1> {{ user.Company.name }} </h1>
       <h1> address : {{ user.Company.address }} </h1>
       <h1> kbis :  {{ user.Company.name }} </h1>
@@ -45,7 +45,7 @@ const toogleCompany = async (accept) => {
       <h1> client email :  {{ user.lastname }} {{ user.firstname }} </h1>
       <NuxtLink :to="{ path: `/admin/company/transaction/${user.Company.id}`, params: { id: user.Company.id }}" class="btn"> Transactions </NuxtLink>
     </div>
-    <div class="tw-flex tw-gap-3 tw-mt-5">
+    <div v-if="user" class="tw-flex tw-gap-3 tw-mt-5">
       <Button v-if="!user.isValid" @click="toogleCompany(true)" severity="info">Accept company</Button>
       <Button v-else @click="toogleCompany(false)" severity="danger">Disable company</Button>
       <Button @click="router.back()">Back</Button>
