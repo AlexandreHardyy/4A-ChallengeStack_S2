@@ -2,7 +2,7 @@ import { createFetch } from '@vueuse/core'
 import { useUserStore } from "~/store/user"
 
 export const useCustomFetch = createFetch({
-    baseUrl: 'http://localhost:3000',
+    baseUrl: process.env.DATABASE_URL_API,
     options: {
       async beforeFetch({ options }) {
         const { getToken } = useUserStore()
