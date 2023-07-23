@@ -18,6 +18,13 @@ module.exports = {
       }
     })
   },
+  findByClientToken: async function (clientToken) {
+    return Company.findOne({
+      where: {
+        clientToken
+      }
+    })
+  },
   create: async function (data) {
     return Company.create({ 
         ...data, 

@@ -2,6 +2,7 @@ import { useUserStore } from "@/store/user";
 
 export default defineNuxtRouteMiddleware((to, from) => {
     if(!process.client) return
+    if (to.fullPath.includes('/sdk')) return 
     
     const { getUser } = useUserStore()
     const user = getUser()

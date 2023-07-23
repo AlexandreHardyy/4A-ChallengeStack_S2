@@ -1,7 +1,5 @@
 const httpMocks = require('node-mocks-http')
 
-const axios = require('axios')
-
 const transactionController = require("../controllers/transaction")
 const transactionService = require("../services/transaction")
 const operationService = require('../services/operation')
@@ -204,7 +202,7 @@ describe("Transaction Controller", () => {
       const findTransactionByTokenSpy = jest.spyOn(transactionService, 'findByToken').mockResolvedValue({ id: 1, token: 'abcd-1234', amount: 100, currency: 'EUR', Operations: [{ status: 'created' }] })
       const findTransactionByIdSpy = jest.spyOn(transactionService, 'findById').mockResolvedValue({ id: 1 })
       const createOperationSpy = jest.spyOn(operationService, 'create').mockResolvedValue()
-      const axiosPostSpy = jest.spyOn(axios, 'post').mockResolvedValue({ status: 202 })
+      const fetchPostSpy = jest.spyOn(global, 'fetch').mockResolvedValue({ status: 202 })
 
       await transactionController.confirm(req, res, next)
 
@@ -214,12 +212,20 @@ describe("Transaction Controller", () => {
         transactionId: 1,
         status: 'waiting-psp-validation',
       })
-      expect(axiosPostSpy).toHaveBeenCalledWith('http://psp:3001/transaction-approuval', {
-        transactionToken: 'abcd-1234',
-        cbNumber: '1111 2222 3333 4444',
-        cbName: 'José',
-        price: 100,
-        currency: 'EUR',
+      expect(fetchPostSpy).toHaveBeenCalledWith('http://psp:3001/transaction-approuval', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(
+          {
+            transactionToken: 'abcd-1234',
+            cbNumber: '1111 2222 3333 4444',
+            cbName: 'José',
+            price: 100,
+            currency: 'EUR',
+          }
+        )
       })
 
       expect(res.statusCode).toBe(201)
@@ -227,7 +233,7 @@ describe("Transaction Controller", () => {
       expect(transactionService.findByToken).toHaveBeenCalledTimes(1)
       expect(transactionService.findById).toHaveBeenCalledTimes(1)
       expect(operationService.create).toHaveBeenCalledTimes(1)
-      expect(axios.post).toHaveBeenCalledTimes(1)
+      expect(global.fetch).toHaveBeenCalledTimes(1)
     })
     it('Should throw with status 422 id required fields are missing', async () => {
       const req = httpMocks.createRequest({
