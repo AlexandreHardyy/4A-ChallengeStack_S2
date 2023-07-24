@@ -3,9 +3,9 @@ module.exports = {
 
         if (!req.body) { return res.sendStatus(404) }
 
-        const { transactionToken, cbNumber, cbName, expirationDate, cvc, price, currency } = req.body
+        const { operationId, cbNumber, cbName, expirationDate, cvc, price, currency } = req.body
 
-        if ( !transactionToken || !cbNumber || !cbName || !expirationDate || !cvc || !price || !currency) {
+        if ( !operationId || !cbNumber || !cbName || !expirationDate || !cvc || !price || !currency) {
             return res.sendStatus(404)
         }
 
@@ -25,7 +25,7 @@ module.exports = {
         res.sendStatus(202)
 
         setTimeout(async () => {
-            fetch(`http://server:3000/transaction/psp-confirm/${transactionToken}`, {
+            fetch(`http://server:3000/transaction/psp-confirm/${operationId}`, {
                 method: 'POST'
             })
         }, 100000)

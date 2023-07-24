@@ -29,6 +29,14 @@ module.exports = {
       token: Transaction.generateToken()
     })
   },
+  update: async function (criteria, data) {
+    const [nb, transactions = []] = await Transaction.update(data, {
+      where: criteria,
+      returning: true,
+      individualHooks: true,
+    })
+    return transactions
+  },
   remove: async function (criteria) {
     return Transaction.destroy({
       where: criteria,

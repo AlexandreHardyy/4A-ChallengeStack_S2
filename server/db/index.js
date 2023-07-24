@@ -33,11 +33,13 @@ db.Company.hasMany(db.Transaction, {
 db.Transaction.hasMany(db.Operation, {
   foreignKey: 'transactionId'
 })
+db.Transaction.hasMany(db.TransactionHistory, {
+  foreignKey: 'transactionId'
+})
 
-// db.Status.hasMany(db.Operation, {
-//   foreignKey: 'statusId'
-// })
-
+db.Operation.hasMany(db.OperationHistory, {
+  foreignKey: 'operationId'
+})
 
 
 module.exports = db

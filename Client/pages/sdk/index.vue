@@ -1,5 +1,9 @@
 <script setup>
 
+definePageMeta({
+    layout: "sdk",
+  });
+
   const cbName = ref(null)
   const cbNumber = ref(null)
   const expirationDate = ref(null)
@@ -11,7 +15,7 @@
   const transactionToken = route.query.transactionToken
 
   const formRequest = async (type, body) => {
-    return await $fetch( `http://localhost:3000/transaction/${type}/${transactionToken}`, 
+    return await $fetch( `http://localhost:3000/transaction/${transactionToken}/${type}`, 
     { 
     headers: {
       'Accept': 'application/json',
