@@ -6,7 +6,7 @@ const transactionService = {
             method: 'GET'
         })
     },
-    async getByComanyId(companyId) {
+    async getByCompanyId(companyId) {
         return useCustomFetch(`transaction/company/${companyId}`, {
             method: 'GET'
         })

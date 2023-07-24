@@ -42,6 +42,7 @@ const TransactionController = {
         limit: _itemsPerPage,
         order: _sort,
       })
+      console.log(transactions)
       res.json(transactions)
     } catch (err) {
       next(err)
@@ -63,7 +64,7 @@ const TransactionController = {
     if (Number(req.params.id) !== req.user.companyId) {
       return res.sendStatus(403)
     }
-    req.query.companyId = req.params.id 
+    req.query.companyId = req.params.id
 
     return TransactionController.cget(req, res, next)
   },
