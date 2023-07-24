@@ -4,6 +4,8 @@ import userService from "@/services/user";
 import UserForm from "@/components/forms/UserForm.vue"
 import CompanyForm from "@/components/forms/CompanyForm.vue"
 import companyService from "~/services/company";
+import {useUserStore} from "~/store/user"
+import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
 
 definePageMeta({
   layout: "back",
@@ -63,6 +65,24 @@ const copyText = async (value) => {
   }
 }
 
+const testEvent = async () => {
+  /*const { error, data } = await useCustomFetch(`event/subscribe`, {
+    method: 'GET',
+  })
+  console.log(data)*/
+  const { getUser } = useUserStore()
+  const user = getUser()
+  const sse = new EventSourcePolyfill("http://localhost:3000/event/subscribe", {
+    headers: {
+      Authorization: `Bearer ${user.token}`,
+    },
+  });
+
+  sse.onmessage = (e) => {
+    console.log(e);
+  }
+}
+
 </script>
 
 <template>
@@ -113,6 +133,7 @@ const copyText = async (value) => {
           </span>
           <div class="tw-mt-8">
             <Button @click="changeUrl" icon="pi pi-save" label="Save" />
+            <Button @click="testEvent" icon="pi pi-save" label="Save" />
           </div>
         </div>
       </TabPanel>

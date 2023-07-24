@@ -13,6 +13,7 @@ app.use("/role", require("./routes/role"))
 app.use("/user", require("./routes/user"))
 app.use("/company", require("./routes/company"))
 app.use("/transaction", require("./routes/transaction"))
+app.use("/event", require("./routes/event"))
 
 app.get("/", (req, res) => {
   return res.send("API payment working !")

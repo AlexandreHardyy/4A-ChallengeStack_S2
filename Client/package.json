@@ -18,6 +18,7 @@
     "@pinia/nuxt": "^0.4.11",
     "@vueuse/core": "^10.2.0",
     "chart.js": "^4.3.0",
+    "event-source-polyfill": "^1.0.31",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^3.1.2",
     "pinia": "^2.1.4",
