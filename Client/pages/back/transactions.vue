@@ -15,7 +15,7 @@ definePageMeta({
 const transactions = reactive([])
 
 onMounted( async () => {
-  const { data } = await transactionService.getByComanyId(user.companyId)
+  const { data } = await transactionService.getByCompanyId(user.companyId)
   transactions.value = data.value
 })
 

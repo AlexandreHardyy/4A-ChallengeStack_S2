@@ -1,11 +1,78 @@
 <script setup>
 import { ref } from "vue";
+import { useUserStore } from "~/store/user";
+import transactionService from "~/services/transaction";
 
 definePageMeta({
   layout: "back",
 });
 
-let transactionData = ref();
+let transactionData = ref([])
+const { getUser } = useUserStore()
+const user = getUser()
+
+//retrieve all today's transactions
+const todayTransactions = (transactions) => {
+  if (!transactions) return 0
+  const today = new Date()
+  return transactions.filter(transaction => {
+    return transaction.operations.find(operation => operation.createdAt.includes(today))
+  }).length
+}
+
+//retrieve transaction's amount per status in parameter for every day between today and the last 31 days
+const lastThirtyOneDaysTransactionsFromToday = (transactions, status) => {
+  if (!transactions) return 0
+  const today = new Date()
+  const lastThirtyOneDays = new Date(today.setDate(today.getDate() - 31)).toISOString().slice(0, 10)
+  return transactions.filter(transaction => {
+    return transaction.operations.find(operation => operation.status === status && (operation.updatedAt.slice(0, 10) >= lastThirtyOneDays))
+  }).reduce((acc, transaction) => {
+    return acc + transaction.amount
+  }, 0)
+}
+
+//retrieve all transactions per month. function that returns an array of the amount of transactions for the 8 last month (from the current month) without filtering by operations status
+const totalTransactionsPerMonth = (transactions) => {
+  if (!transactions) return 0
+  const months = getPastMonths(8)
+  return months.map(month => {
+    month = month.split('/').reverse().join('-') //format the month to be YYYY-MM
+    return transactions.filter(transaction => {
+      return transaction.operations.find(operation => operation.createdAt.includes(month))
+    }).length
+  })
+}
+
+//retrieve amount of transactions per status
+const retrieveTransactions = (transactions, status) => {
+  if (!transactions) return 0
+  return transactions.filter(transaction => {
+    return transaction.operations.find(operation => operation.status === status)
+  }).length
+}
+
+//retrieve amount of transactions per status confirmed
+const retrieveAmountTransactions = (transactions, status) => {
+  if (!transactions) return 0
+  return transactions.filter(transaction => {
+    return transaction.operations.find(operation => operation.status === status)
+  }).reduce((acc, transaction) => {
+    return acc + transaction.amount
+  }, 0)
+}
+
+//retrieve amount of transactions per month. function that returns an array of the amount of transactions for the 12 last month (from the current month) for a specific status
+const retrieveTransactionsPerMonth = (transactions, status) => {
+  if (!transactions) return 0
+  const months = getPastMonths(12)
+  return months.map(month => {
+    month = month.split('/').reverse().join('-') //format the month to be YYYY-MM
+    return transactions.filter(transaction => {
+      return transaction.operations.find(operation => operation.status === status && operation.createdAt.includes(month))
+    }).length
+  })
+}
 
 //StatusChart
 const statusChartData = ref();
@@ -24,6 +91,7 @@ const statusChartOptions = ref({
       },
       color: 'white'
     },
+    legend: { position: 'left' }
   }
 });
 
@@ -32,14 +100,7 @@ const statusTimeChartData = ref();
 const statusTimeChartOptions = ref();
 
 //salesTimeChart
-const salesTimeChartData = ref({
-  labels: getPast8Months(),
-  datasets: [{
-    data: [0, 59, 80, 81, 56, 55, 40, 92],
-    borderColor: 'rgb(75, 192, 192)',
-    tension: 0.1
-  }],
-});
+const salesTimeChartData = ref();
 const salesTimeChartOptions = ref({
   responsive: true,
   aspectRatio: 1.5,
@@ -61,132 +122,101 @@ const salesTimeChartOptions = ref({
   }
 });
 
-function getPast8Months() {
+function getPastMonths(numOfMonths) {
   const months = [];
   const currentDate = new Date();
 
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < numOfMonths; i++) {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth() + 1; // Adding 1 as getMonth() returns 0-based index
     const formattedMonth = month < 10 ? '0' + month : month.toString();
     months.unshift(`${formattedMonth}/${year}`); // Use unshift() to add at the beginning of the array
-
-    // Move to the previous month
-    currentDate.setMonth(currentDate.getMonth() - 1);
+    currentDate.setMonth(currentDate.getMonth() - 1);// Move to the previous month
   }
 
   return months;
 }
 
-const totalTransactions = (transactions) => {
-  if (!transactions) return 0
-  return transactions.length
-}
-
-const retrieveTransactions = (transactions, status) => {
-  if (!transactions) return 0
-  return transactions.filter(transaction => {
-    return transaction.Operations.find(operation => operation.status === status)
-  }).length
-}
-
-//retrieve amount of transactions per status confirmed
-const retrieveAmountTransactions = (transactions, status) => {
-  if (!transactions) return 0
-  return transactions.filter(transaction => {
-    return transaction.Operations.find(operation => operation.status === status)
-  }).reduce((acc, transaction) => {
-    return acc + transaction.amount
-  }, 0)
-}
-
 if (process.client) {
-
   onMounted(async () => {
-    //TODO: mettre à jour la route pour récupérer les transactions d'un marchand
-    const {data, error} = await useFetch("http://localhost:3000/transaction");
-    if (error.value) console.log(error.value)
+    const { data } = await transactionService.getByCompanyId(user.companyId)
     transactionData.value = data.value
 
-
+    salesTimeChartData.value = setSalesTimeChartData();
     statusChartData.value = setStatusChartData();
-
     statusTimeChartData.value = setStatusTimeChartData();
     statusTimeChartOptions.value = setStatusTimeChartOptions();
   })
+
+  const setSalesTimeChartData = () => {
+    return {
+      labels: getPastMonths(8),
+      datasets: [{
+        data: totalTransactionsPerMonth(transactionData.value),
+        borderColor: 'rgb(75, 192, 192)',
+        tension: 0.1
+      }]
+    };
+  };
 
   const setStatusChartData = () => {
     const documentStyle = getComputedStyle(document.body);
 
     return {
-      labels: ['Confirmed', 'Canceled', 'Refunded'],
+      labels: ['Created', 'Confirmed', 'Canceled', 'Refunded'],
       datasets: [
         {
           data: [
-            // retrieveTransactions(transactionData.value, 'finish'),
-            // retrieveTransactions(transactionData.value, 'cancel'),
-            // retrieveTransactions(transactionData.value, 'refund')
-            540, 325, 702
+            retrieveTransactions(transactionData.value, 'created'),
+            retrieveTransactions(transactionData.value, 'finished'),
+            retrieveTransactions(transactionData.value, 'canceled'),
+            retrieveTransactions(transactionData.value, 'refunded')
           ],
-          backgroundColor: [documentStyle.getPropertyValue('--green-500'), "#f36d6d", documentStyle.getPropertyValue('--blue-500')],
-          hoverBackgroundColor: [documentStyle.getPropertyValue('--green-400'), "#f36d6d", documentStyle.getPropertyValue('--blue-400')]
+          backgroundColor: [documentStyle.getPropertyValue('--yellow-500'), documentStyle.getPropertyValue('--green-500'), "#f36d6d", documentStyle.getPropertyValue('--blue-500')],
+          hoverBackgroundColor: [documentStyle.getPropertyValue('--yellow-400'), documentStyle.getPropertyValue('--green-400'), "#f36d6d", documentStyle.getPropertyValue('--blue-400')]
         }
       ]
     };
   };
 
-  function getPast12Months() {
-    const months = [];
-    const currentDate = new Date();
-
-    for (let i = 0; i < 12; i++) {
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth() + 1; // Adding 1 as getMonth() returns 0-based index
-      const formattedMonth = month < 10 ? '0' + month : month.toString();
-      months.unshift(`${formattedMonth}/${year}`); // Use unshift() to add at the beginning of the array
-
-      // Move to the previous month
-      currentDate.setMonth(currentDate.getMonth() - 1);
-    }
-
-    return months;
-  }
-
   const setStatusTimeChartData = () =>  {
     const documentStyle = getComputedStyle(document.documentElement);
 
-    //TODO: mettre à jour les données pour récupérer les transactions d'un marchand selon le mois
     return {
-      labels: getPast12Months(),
+      labels: getPastMonths(12),
       datasets: [
+        {
+          type: 'bar',
+          label: 'Created',
+          backgroundColor: documentStyle.getPropertyValue('--yellow-500'),
+          data: retrieveTransactionsPerMonth(transactionData.value, 'created')
+        },
         {
           type: 'bar',
           label: 'Confirmed',
           backgroundColor: documentStyle.getPropertyValue('--green-500'),
-
-          //map sur les 12 mois et pour chaque mois, on récupère le nombre de transactions confirmées
-          //data: retrieveTransactions(transactionData.value, 'finish')
-          data: [80, 62, 39, 11, 25, 37, 33, 14, 95, 89, 84, 77]
+          data: retrieveTransactionsPerMonth(transactionData.value, 'finished')
         },
         {
           type: 'bar',
           label: 'Canceled',
           backgroundColor: "#f36d6d",
-          data: [18, 26, 7, 38, 32, 11, 33, 5, 4, 20, 27, 32]
+          data: retrieveTransactionsPerMonth(transactionData.value, 'canceled')
         },
         {
           type: 'bar',
           label: 'Refunded',
           backgroundColor: documentStyle.getPropertyValue('--blue-500'),
-          data: [10, 5, 2, 8, 3, 3, 4, 9, 2, 6, 2, 1]
+          data: retrieveTransactionsPerMonth(transactionData.value, 'refunded')
         }
       ]
     };
   };
+
   const setStatusTimeChartOptions = () =>  {
     return {
-      maintainAspectRatio: false,
-      aspectRatio: 1.5,
+      maintainAspectRatio: true,
+      aspectRatio: 4,
       plugins: {
         tooltips: {
           mode: 'index',
@@ -224,7 +254,7 @@ if (process.client) {
   <div>
     <div class="grid tw-w-full">
       <div class="card cardStats stat1">
-        <p class="tw-text-4xl tw-font-bold tw-p-3">{{ totalTransactions(transactionData) }}</p>
+        <p class="tw-text-4xl tw-font-bold tw-p-3">{{ todayTransactions(transactionData) }}</p>
         <p class="tw-text-sm tw-pl-3 tw-pb-3">Today's transactions</p>
         <div>
           <div class="tw-p-3 tw-flex tw-justify-between">
@@ -234,7 +264,7 @@ if (process.client) {
         </div>
       </div>
       <div class="card cardStats stat2">
-        <p class="tw-text-4xl tw-font-bold tw-p-3">{{ retrieveAmountTransactions(transactionData, "finish") }}</p>
+        <p class="tw-text-4xl tw-font-bold tw-p-3">{{ retrieveAmountTransactions(transactionData, "finished") }}</p>
         <p class="tw-text-sm tw-pl-3 tw-pb-3">Total amount of sales</p>
         <div class="tw-bg-primary-light">
           <div class="tw-p-3 tw-flex tw-justify-between">
@@ -244,7 +274,7 @@ if (process.client) {
         </div>
       </div>
       <div class="card cardStats stat3">
-        <p class="tw-text-4xl tw-font-bold tw-p-3">{{ retrieveAmountTransactions(transactionData, "refund") }}</p>
+        <p class="tw-text-4xl tw-font-bold tw-p-3">{{ retrieveAmountTransactions(transactionData, "refunded") }}</p>
         <p class="tw-text-sm tw-pl-3 tw-pb-3">Total amount of refunded transactions</p>
         <div class="tw-bg-primary-light">
           <div class="tw-p-3 tw-flex tw-justify-between">
@@ -255,7 +285,7 @@ if (process.client) {
       </div>
       <div class="card cardStats stat4">
         <!--TODO: change the value so I only takes the last month-->
-        <p class="tw-text-4xl tw-font-bold tw-p-3">{{ retrieveAmountTransactions(transactionData, "finish") }}</p>
+        <p class="tw-text-4xl tw-font-bold tw-p-3">{{ lastThirtyOneDaysTransactionsFromToday(transactionData, "finished") }}</p>
         <p class="tw-text-sm tw-pl-3 tw-pb-3">profits over last month</p>
         <div class="tw-bg-primary-light">
           <div class="tw-p-3 tw-flex tw-justify-between">
@@ -263,6 +293,11 @@ if (process.client) {
             <i class="mdi mdi-arrow-top-right tw-text-xl"></i>
           </div>
         </div>
+      </div>
+
+      <!--Line chart sales status per time-->
+      <div class="card salesTimeChart">
+        <Chart type="line" :data="salesTimeChartData" :options="salesTimeChartOptions" class="h-30rem" />
       </div>
 
       <!--Donut chart transactions status-->
@@ -274,12 +309,6 @@ if (process.client) {
       <div class="card statusTimeChart tw-flex tw-justify-center">
         <Chart type="bar" :data="statusTimeChartData" :options="statusTimeChartOptions" class="md:h-30rem" />
       </div>
-
-      <!--Line chart sales status per time-->
-      <div class="card salesTimeChart">
-        <Chart type="line" :data="salesTimeChartData" :options="salesTimeChartOptions" class="h-30rem" />
-      </div>
-
     </div>
   </div>
 </template>
