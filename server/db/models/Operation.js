@@ -6,7 +6,9 @@ module.exports = function (connection) {
 
   Operation.init(
     {
+      type: DataTypes.STRING,
       status: DataTypes.STRING,
+      amount: DataTypes.FLOAT,
       createdAt: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,

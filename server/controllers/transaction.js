@@ -1,28 +1,29 @@
 const transactionService = require("../services/transaction")
 const operationService = require("../services/operation")
+const transactionHistoryService = require("../services/transactionHistory")
+const operationHistoryService = require("../services/operationHistory")
 
 const TransactionController = {
   post: async (req, res, next) => {
     if (!req.body) { return res.sendStatus(422) }
 
-    const { company } = ( req.body )
+    const { company, amount } = ( req.body )
+
+    if (!company || !amount) { return res.sendStatus(422) }
+    
+    const commission = amount * 0.011
 
     try {
       const newTransaction = {
         ...req.body,
+        commission,
+        status: 'created',
         companyId: company.id,
-        urlDirectionConfirm: company.urlDirectionConfirm,
-        urlDirectionCancel: company.urlDirectionCancel
       }
 
       delete newTransaction.company
       const transaction = await transactionService.create(newTransaction)
-      await operationService.create({
-        transactionId: transaction.id,
-        status: 'created'
-      })
-
-      // TODO: Need to return the both confirm and cancel urls and Operation ??
+      await transactionHistoryService.create({ transactionId: transaction.id, status: 'created'})
       res.status(201).json({transaction})
     } catch (err) {
       next(err)
@@ -73,13 +74,23 @@ const TransactionController = {
 
     if (!transaction) { return res.sendStatus(404) }
 
-    if (transaction.operations[0].status !== 'created') { return res.sendStatus(400) }
-
     const { cbNumber, cbName, expirationDate, cvc } = req.body
 
     if (!cbNumber || !cbName || !expirationDate || !cvc) { return res.sendStatus(422) }
 
     try {
+      const operation = await operationService.create({
+        transactionId: transaction.id,
+        amount: transaction.amount,
+        status: 'created',
+        type: 'capture'
+      })
+
+      await operationHistoryService.create({
+        operationId: operation.id,
+        status: 'created'
+      })
+
       await fetch('http://psp:3001/transaction-approuval', {
         method: 'POST',
         headers: {
@@ -87,28 +98,25 @@ const TransactionController = {
         },
         body: JSON.stringify(
           {
-            transactionToken: transaction.token,
+            operationId: operation.id,
             cbNumber,
             cbName,
             expirationDate,
             cvc,
-            price: parseInt(transaction.amount),
+            price: parseInt(operation.amount),
             currency: transaction.currency
           }
         )
       }).then(async (response) => {
         if (response.status === 202) {
-          await operationService.create({
-            transactionId: transaction.id,
-            status: 'waiting-psp-validation'
-          })
+          await operationService.update({ id: operation.id }, { status: 'processing' })
+          await operationHistoryService.create({ operationId: operation.id, status: 'processing'})
           return res.status(201).json(await transactionService.findById(parseInt(transaction.id)))
         } else {
-          await operationService.create({
-            transactionId: transaction.id,
-            status: 'psp-validation-failure'
-          })
-          
+          await operationService.update({ id: operation.id }, { status: 'psp-error' })
+          await operationHistoryService.create({ operationId: operation.id, status: 'psp-error'})
+          await transactionService.update({ id: transaction.id }, { status: 'failed' })
+          await transactionHistoryService.create({transactionId: transaction.id, status: 'failed'})
           // Another HTTP code ?
           return res.status(400).json(await transactionService.findById(parseInt(transaction.id)))
         }
@@ -124,33 +132,23 @@ const TransactionController = {
 
     if (!transaction) { return res.sendStatus(404) }
 
-    if (transaction.operations[0].status !== 'created') { return res.sendStatus(400) }
-
     try {
-      await operationService.create({
-        transactionId: transaction.id,
-        status: 'canceled'
-      })          
-      return res.status(201).json(await transactionService.findById(parseInt(transaction.id)))
+      const updatedTransaction = await transactionService.update({ id: transaction.id }, { status: 'canceled' })         
+      return res.status(201).json(updatedTransaction)
     } catch (err) {
       next(err)
     }
   },
   pspConfirm: async (req, res, next) => {
-    const transaction = await transactionService.findByToken(req.params.token)
+    const operation = await operationService.findById(req.params.operationId)
 
-    if (!transaction) { return res.sendStatus(404) }
-
-    if (transaction.operations[0].status !== 'waiting-psp-validation') { return res.sendStatus(400) }
-
-    const commission = transaction.amount * 0.011
+    if (!operation) { return res.sendStatus(404) }
 
     try {
-      await operationService.create({
-        transactionId: transaction.id,
-        status: 'finished'
-      })
-      await transactionService.update({ id: transaction.id }, { commission })         
+      await operationService.update({ id: operation.id}, { status: 'done' })
+      await operationHistoryService.create({ operationId: operation.id, status: 'done'})
+      await transactionService.update({ id: operation.transactionId }, { status: 'captured' })
+      await transactionHistoryService.create({transactionId: operation.transactionId, status: 'captured'})
       return res.status(201)
     } catch (err) {
       next(err)
