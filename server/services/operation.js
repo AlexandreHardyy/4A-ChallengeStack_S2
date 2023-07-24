@@ -20,7 +20,6 @@ module.exports = {
       returning: true,
       individualHooks: true,
     })
-    console.log(nb, operations)
     return operations
   },
   remove: async function (criteria) {

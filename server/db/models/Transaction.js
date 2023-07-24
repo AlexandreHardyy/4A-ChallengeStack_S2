@@ -1,7 +1,7 @@
 const { Model, DataTypes, literal } = require("sequelize")
 const { v4: uuidv4 } = require('uuid')
 const TransactionMongo = require('../aggregates/Transaction')
-
+const CompanyModel = require('./Company')
 module.exports = function (connection) {
   class Transaction extends Model {
     static generateToken() {
@@ -36,13 +36,35 @@ module.exports = function (connection) {
     }
   )
 
-  Transaction.addHook('afterCreate', (process, options) => {
+  Transaction.addHook('afterCreate', async (process, options) => {
     const transaction = process.dataValues
+    const company = await CompanyModel(connection).findByPk(transaction.companyId)
     const aggregate = new TransactionMongo({
       ...transaction,
+      company: company.dataValues,
       operations: [],
-      id: transaction.id
+      transactionHistory: [
+        {
+          status: transaction.status,
+          date: transaction.createdAt
+        } 
+      ]
     })
+    aggregate.save()
+  });
+
+  Transaction.addHook('afterUpdate', async (process, options) => {
+    const transaction = process.dataValues
+    const aggregate = await TransactionMongo.findOne({ id: transaction.id })
+
+    if (aggregate.id) {
+      aggregate.status = transaction.status
+      aggregate.transactionHistory.unshift({
+        status: transaction.status,
+        date: transaction.updatedAt
+      })
+
+    }
     aggregate.save()
   });
 

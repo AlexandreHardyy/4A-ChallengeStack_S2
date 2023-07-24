@@ -31,7 +31,30 @@ module.exports = function (connection) {
     const operation = process.dataValues
     const aggregate = await TransactionMongo.findOne({ id: operation.transactionId })
     if (aggregate.id) {
-      aggregate.operations.unshift(operation)
+      aggregate.operations.unshift({
+        ...operation,
+        operationHistory: [{
+          status: operation.status,
+          date: operation.createdAt
+        }]
+      })
+    }
+    aggregate.save()
+  });
+
+  Operation.addHook('afterUpdate', async (process, options) => {
+    const operation = process.dataValues
+    const aggregate = await TransactionMongo.findOne({ id: operation.transactionId })
+    
+    if (aggregate.id) {
+      const indexOperator = aggregate.operations.findIndex(op => op.id === operation.id)
+
+      Object.assign(aggregate.operations[indexOperator], operation)
+      aggregate.operations[indexOperator].operationHistory.unshift({
+        status: operation.status,
+        date: operation.updatedAt
+      })
+
     }
     aggregate.save()
   });
