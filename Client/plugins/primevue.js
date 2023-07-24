@@ -19,6 +19,7 @@ import ConfirmPopup from 'primevue/confirmpopup';
 import InputMask from 'primevue/inputmask';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
+import ProgressSpinner from 'primevue/progressspinner';
 
 export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.use(PrimeVue, {ripple: true})
@@ -38,5 +39,6 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.component('InputMask', InputMask)
     nuxtApp.vueApp.component('TabView', TabView)
     nuxtApp.vueApp.component('TabPanel', TabPanel)
+    nuxtApp.vueApp.component('ProgressSpinner', ProgressSpinner)
     //other components that you need
 })
