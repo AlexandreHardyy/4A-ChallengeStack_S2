@@ -12,7 +12,7 @@ const TransactionController = {
 
     if (!company || !amount) return res.sendStatus(422)
     
-    const commission = amount * 0.011
+    const commission = Math.round(amount * 0.011 * 100) / 100
 
     try {
       const newTransaction = {
@@ -56,9 +56,10 @@ const TransactionController = {
   },
   get: async (req, res, next) => {
     try {
+      if (req.user.companyId !== req.params.id && !req.user.isAdmin) { return res.sendStatus(403) }
+
       const transaction = await transactionService.findById(req.params.id)
       if (!transaction) return res.sendStatus(404)
-      if (req.user.companyId !== transaction.company.id && !req.user.isAdmin) { return res.sendStatus(403) }
       res.json(transaction)
     } catch (err) {
       next(err)
@@ -83,11 +84,13 @@ const TransactionController = {
     const price = parseInt(amount)
     const { cbNumber, cbName, expirationDate, cvc } = req.body
 
-    if (!cbNumber || !cbName || !expirationDate || !cvc) return res.sendStatus(422)
+    if (!cbNumber 
+      || !cbName 
+      || !expirationDate 
+      || !cvc
+      || typeof cbNumber !== 'string' || typeof cbName !== 'string' || typeof currency !== 'string') return res.sendStatus(422)
 
-    if (typeof cbNumber !== 'string' || typeof cbName !== 'string' || typeof currency !== 'string') return res.sendStatus(400)
-
-    const sanitizedCbNumber = cbNumber.trim().split('-').join('')
+    const sanitizedCbNumber = cbNumber.trim().split('-').join('').split(' ').join('')
     const sanitizedCurrency = currency.trim().toUpperCase()
 
     if (sanitizedCbNumber.length !== 16 || sanitizedCurrency.length !== 3) return res.sendStatus(400)
