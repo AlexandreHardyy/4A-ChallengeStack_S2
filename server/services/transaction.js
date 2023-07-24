@@ -8,7 +8,7 @@ module.exports = {
     { createdAt: { $gte: new Date(criteria.from), $lte: new Date(criteria.to) } } : {}
 
     if (criteria.companyId) {
-      where.companyId = criteria.companyId
+      where["company.id"] = criteria.companyId
     }
 
     return TransactionMongo.find(where)

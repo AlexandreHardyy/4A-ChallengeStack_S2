@@ -35,6 +35,7 @@ const Transaction = new Schema({
         }
     ],
     company: {
+        id: Number,
         name: String,
         kbis: String,
         address: String,

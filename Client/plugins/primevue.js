@@ -24,6 +24,9 @@ import ProgressSpinner from 'primevue/progressspinner';
 export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.use(PrimeVue, {ripple: true})
     nuxtApp.vueApp.use(ToastService)
+    nuxtApp.vueApp.use(DialogService)
+    nuxtApp.vueApp.use(ConfirmationService)
+
     nuxtApp.vueApp.component('Button', Button)
     nuxtApp.vueApp.component('InputText', InputText)
     nuxtApp.vueApp.component('InputSwitch', InputSwitch)
@@ -40,5 +43,7 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.component('TabView', TabView)
     nuxtApp.vueApp.component('TabPanel', TabPanel)
     nuxtApp.vueApp.component('ProgressSpinner', ProgressSpinner)
+    nuxtApp.vueApp.component('DynamicDialog', DynamicDialog)
+
     //other components that you need
 })

@@ -26,7 +26,7 @@ defineProps(['transactions'])
 
 
 const getSeverity = (transaction) => {
-  switch (transaction.operations[0].status) {
+  switch (transaction.status) {
     case 'confirm':
       return 'success';
 
@@ -74,7 +74,7 @@ const filters = ref({
       <Column field="currency" header="Currency" sortable/>
       <Column header="Status" sortable>
         <template #body="slotProps">
-          <Tag :value="slotProps.data.operations[0].status" :severity="getSeverity(slotProps.data)"/>
+          <Tag :value="slotProps.data.status" :severity="getSeverity(slotProps.data)"/>
         </template>
       </Column>
       <Column field="createdAt" header="Created At" sortable/>
