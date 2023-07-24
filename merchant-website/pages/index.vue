@@ -52,7 +52,7 @@
         return acc + curr.price
       }, 0)
     }).then( (result) => {
-        $paygate('9b73353d-c617-4d32-bd51-a159dc073c7a', result.transaction.token)
+        $paygate('c62fdefd-75c1-4906-b821-5b8561737bbb', result.transaction.token)
     }).catch( (error) => {
         console.error('Error sending purchase', error)
     });

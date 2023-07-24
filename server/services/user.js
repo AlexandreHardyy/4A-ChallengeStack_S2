@@ -20,7 +20,7 @@ module.exports = {
     return User.findByPk(id, {
       include: [{
         model: Company,
-        attributes: { exclude: ['clientSecret', 'clientToken', 'urlDirectionCancel', 'urlDirectionConfirm'] },
+        attributes: {  },
         required: true
       }],
       /*attributes: { exclude: ['password'] },*/
