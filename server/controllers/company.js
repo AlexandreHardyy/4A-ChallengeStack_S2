@@ -72,10 +72,12 @@ module.exports = {
   },
   regenerateToken: async (req, res, next) => {
     const id = req.params.id
+    const name = req.params.name
+    const obj = (name === 'apiToken') ? { apiToken: Company.generateToken() } :  { clientToken: Company.generateToken() }
     try {
       const company = await companyService.update(
           { id: parseInt(id) },
-          { apiToken: Company.generateToken() }
+          obj
       )
       if (!company) return res.sendStatus(404)
       res.json(company)

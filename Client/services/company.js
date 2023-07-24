@@ -13,11 +13,11 @@ const companyService = {
             body: JSON.stringify(body)
         })
     },
-    async regenerateToken(id) {
-        return useCustomFetch(`company/regenerateToken/${id}`, {
+    async regenerateToken(id, name) {
+        return useCustomFetch(`company/regenerateToken/${id}/${name}`, {
             method: 'GET'
         })
-    }
+    },
 }
 
 export default companyService

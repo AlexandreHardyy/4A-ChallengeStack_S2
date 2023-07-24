@@ -32,12 +32,26 @@ const companySubmit = async (values) => {
     }
 }
 
-const regenerateToken = async () => {
-  const { error, data } = await companyService.regenerateToken(currentUser.value.companyId)
+const regenerateToken = async (name) => {
+  const { error, data } = await companyService.regenerateToken(currentUser.value.companyId, name)
   if (error.value !== null) {
     return
   }
   currentUser.value.Company.apiToken = data.value[0].apiToken
+  currentUser.value.Company.clientToken = data.value[0].clientToken
+}
+
+const changeUrl = async ($event) => {
+  const { error, data } = await companyService.update({
+    id: currentUser.value.companyId,
+    urlDirectionConfirm: currentUser.value.Company.urlDirectionConfirm,
+    urlDirectionCancel: currentUser.value.Company.urlDirectionCancel
+  })
+  if (error.value !== null) {
+    return
+  }
+  currentUser.value.Company.urlDirectionConfirm = data.value[0].urlDirectionConfirm
+  currentUser.value.Company.urlDirectionCancel = data.value[0].urlDirectionCancel
 }
 
 const copyText = async (value) => {
@@ -61,13 +75,45 @@ const copyText = async (value) => {
         </div>
       </TabPanel>
       <TabPanel header="API keys">
-        <p class="tw-mb-3 danger-info">This is your private key. Keep it secret and don't share it with anyone</p>
-        <span class="p-input-icon-right tw-w-full">
-          <i class="pi pi-clone tw-cursor-pointer" @click="copyText(currentUser.Company.apiToken)" />
-          <InputText class="tw-w-full" type="text" :value="currentUser.Company.apiToken" disabled />
-        </span>
-        <div class="tw-mt-3">
-          <Button @click="regenerateToken" icon="pi pi-replay" label="Regenerate Token" />
+        <div>
+          <h2>Private Token</h2>
+          <p class="tw-mb-3 danger-info">This is your private key. Keep it secret and don't share it with anyone</p>
+          <span class="p-input-icon-right tw-w-full">
+            <i class="pi pi-clone tw-cursor-pointer" @click="copyText(currentUser.Company.apiToken)" />
+            <InputText class="tw-w-full" type="text" :value="currentUser.Company.apiToken" disabled />
+          </span>
+          <div class="tw-mt-3">
+            <Button @click="regenerateToken('apiToken')" icon="pi pi-replay" label="Regenerate Token" />
+          </div>
+        </div>
+        <div>
+          <h2 class="tw-mt-10">Public Token</h2>
+          <span class="p-input-icon-right tw-w-full">
+            <i class="pi pi-clone tw-cursor-pointer" @click="copyText(currentUser.Company.clientToken)" />
+            <InputText class="tw-w-full" type="text" :value="currentUser.Company.clientToken" disabled />
+          </span>
+          <div class="tw-mt-3">
+            <Button @click="regenerateToken('clientToken')" icon="pi pi-replay" label="Regenerate Token" />
+          </div>
+        </div>
+      </TabPanel>
+      <TabPanel header="URL">
+        <div>
+          <h2>URL confirm</h2>
+          <span class="p-input-icon-right tw-w-full">
+            <i class="pi pi-clone tw-cursor-pointer" @click="copyText(currentUser.Company.urlDirectionConfirm)" />
+            <InputText class="tw-w-full" type="text" v-model="currentUser.Company.urlDirectionConfirm" />
+          </span>
+        </div>
+        <div>
+          <h2 class="tw-mt-5">URL cancel</h2>
+          <span class="p-input-icon-right tw-w-full">
+            <i class="pi pi-clone tw-cursor-pointer" @click="copyText(currentUser.Company.urlDirectionCancel)" />
+            <InputText class="tw-w-full" type="text" v-model="currentUser.Company.urlDirectionCancel" />
+          </span>
+          <div class="tw-mt-8">
+            <Button @click="changeUrl" icon="pi pi-save" label="Save" />
+          </div>
         </div>
       </TabPanel>
     </TabView>
