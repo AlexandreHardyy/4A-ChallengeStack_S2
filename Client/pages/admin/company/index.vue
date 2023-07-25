@@ -72,8 +72,8 @@ watch(isChecked, async () => {
         <template #body="slotProps">
           <div class="tw-flex tw-gap-3">
             <nuxt-link :to="{ path: `/admin/company/${slotProps.data.id}`}">
-              <Button  v-tooltip.bottom="'Show is view'" type="button" class="tw-mr-2" severity="info">
-                <i class="pi pi-eye"/>
+              <Button  v-tooltip.bottom="'Details'" type="button" class="tw-mr-2">
+                <i class="pi pi-cog"/>
               </Button>
             </nuxt-link>
             <Button v-tooltip.bottom="'Delete user'" type="button" class="tw-mr-2" severity="danger">

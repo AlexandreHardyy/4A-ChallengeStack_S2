@@ -2,6 +2,7 @@ const transactionService = require("../services/transaction")
 const operationService = require("../services/operation")
 const transactionHistoryService = require("../services/transactionHistory")
 const operationHistoryService = require("../services/operationHistory")
+const event = require("../controllers/event")
 
 const TransactionController = {
   post: async (req, res, next) => {
@@ -24,6 +25,12 @@ const TransactionController = {
       delete newTransaction.company
       const transaction = await transactionService.create(newTransaction)
       await transactionHistoryService.create({ transactionId: transaction.id, status: 'created'})
+      await event.send(company.id, {
+        name: "transaction-created",
+        data: {
+          transaction
+        }
+      })
       res.status(201).json({transaction})
     } catch (err) {
       next(err)
