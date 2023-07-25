@@ -7,12 +7,10 @@ app.use(cors());
 
 app.get("/", (req, res) => { return res.send("Merchant Server working !") })
 
-app.post("/", async (req, res, next) => {
+app.post("/transaction", async (req, res, next) => {
 	const { name, email, amount } = req.body
 
-	if ( !name || !email || !amount ) {
-		return res.sendStatus(422) 
-	}
+	if ( !name || !email || !amount ) return res.sendStatus(422)
 
 	try {
 		await fetch('http://server:3000/transaction/', {
@@ -38,7 +36,6 @@ app.post("/", async (req, res, next) => {
 		next(err)
 	}
 })
-
 
 app.use(function(req, res, next) {
   return res.status(404).json({ error: 'this route doesn\'t exist.' })
