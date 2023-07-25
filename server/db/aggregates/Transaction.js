@@ -19,6 +19,7 @@ const Transaction = new Schema({
             status: String,
             createdAt: Date,
             updatedAt: Date,
+            amount: Number,
 
             operationHistory: [
                 {
