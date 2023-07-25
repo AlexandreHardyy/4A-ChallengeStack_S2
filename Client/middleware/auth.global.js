@@ -1,7 +1,7 @@
 import { useUserStore } from "@/store/user";
 
 export default defineNuxtRouteMiddleware((to, from) => {
-    if(!process.client) return
+    if (!process.client) return
     if (to.fullPath.includes('/sdk')) return 
     
     const { getUser } = useUserStore()
@@ -21,7 +21,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
       return navigateTo('/login')
     }
 
-   /* if (user && !user.isAdmin && to.fullPath.includes('/admin')) {
+    if (user && !user.isAdmin && to.fullPath.includes('/admin')) {
       return navigateTo('/back/dashboard')
-    }*/
+    }
 })  
