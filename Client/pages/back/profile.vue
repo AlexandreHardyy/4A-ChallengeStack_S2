@@ -65,11 +65,7 @@ const copyText = async (value) => {
   }
 }
 
-const testEvent = async () => {
-  /*const { error, data } = await useCustomFetch(`event/subscribe`, {
-    method: 'GET',
-  })
-  console.log(data)*/
+/*const testEvent = async () => {
   const { getUser } = useUserStore()
   const user = getUser()
   const sse = new EventSourcePolyfill("http://localhost:3000/event/subscribe", {
@@ -81,7 +77,7 @@ const testEvent = async () => {
   sse.onmessage = (e) => {
     console.log(e);
   }
-}
+}*/
 
 </script>
 
@@ -133,7 +129,6 @@ const testEvent = async () => {
           </span>
           <div class="tw-mt-8">
             <Button @click="changeUrl" icon="pi pi-save" label="Save" />
-            <Button @click="testEvent" icon="pi pi-save" label="Save" />
           </div>
         </div>
       </TabPanel>

@@ -1,14 +1,20 @@
-const subscribers = {};
+const clients = [];
 
 module.exports = {
-    send: async (event, res) => {
-        Object.entries(subscribers).forEach(([id, res]) => {
-            console.log("send to", subscribers);
-            res.write(`event: ${event}\n`);
+    send: async (data) => {
+        clients.forEach((client) => {
+            if (client.id === data.id) {
+                client.res.write(`data: ${JSON.stringify(data)}` + "\n\n");
+            }
         });
     },
     subscribe: async (req, res, next) => {
-        subscribers[req.user.id] = res;
+        const newClient = {
+            id: req.user.id,
+            res
+        };
+
+        clients.push(newClient);
         const headers = {
             'Content-Type': 'text/event-stream',
             'Connection': 'keep-alive',
@@ -16,8 +22,11 @@ module.exports = {
         };
         res.writeHead(200, headers);
 
-        setInterval(async () => {
-            await module.exports.send("test");
-        }, 5000);
+        /*setInterval(async () => {
+            await module.exports.send({
+              id: 1,
+              test: true
+            });
+        }, 5000);*/
     },
 }
