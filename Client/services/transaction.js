@@ -1,8 +1,10 @@
 import { useCustomFetch } from "./use-fetch"
 
 const transactionService = {
-    async get() {
-        return useCustomFetch(`transaction`, {
+    async get(params) {
+        const { from, to } = params
+        const url = from && to ? `transaction?from=${from}&to=${to}` : 'transaction'
+        return useCustomFetch(url, {
             method: 'GET'
         })
     },
