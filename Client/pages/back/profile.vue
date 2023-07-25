@@ -4,6 +4,8 @@ import userService from "@/services/user";
 import UserForm from "@/components/forms/UserForm.vue"
 import CompanyForm from "@/components/forms/CompanyForm.vue"
 import companyService from "~/services/company";
+import {useUserStore} from "~/store/user"
+import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
 
 definePageMeta({
   layout: "back",
@@ -62,6 +64,20 @@ const copyText = async (value) => {
     alert('Cannot copy');
   }
 }
+
+/*const testEvent = async () => {
+  const { getUser } = useUserStore()
+  const user = getUser()
+  const sse = new EventSourcePolyfill("http://localhost:3000/event/subscribe", {
+    headers: {
+      Authorization: `Bearer ${user.token}`,
+    },
+  });
+
+  sse.onmessage = (e) => {
+    console.log(e);
+  }
+}*/
 
 </script>
 
