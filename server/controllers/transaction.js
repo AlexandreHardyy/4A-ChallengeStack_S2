@@ -50,8 +50,9 @@ const TransactionController = {
   },
   get: async (req, res, next) => {
     try {
-      const transaction = await transactionService.findByToken(req.params.token)
+      const transaction = await transactionService.findById(req.params.id)
       if (!transaction) return res.sendStatus(404)
+      if (req.user.companyId !== transaction.company.id && !req.user.isAdmin) { return res.sendStatus(403) }
       res.json(transaction)
     } catch (err) {
       next(err)

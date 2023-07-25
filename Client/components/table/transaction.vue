@@ -6,6 +6,7 @@ import { useToast } from "primevue/usetoast";
 
 const toast = useToast();
 const confirm = useConfirm();
+const route = useRoute()
 
 const confirmRefund = (event) => {
   confirm.require({
@@ -81,8 +82,11 @@ const filters = ref({
       <Column field="updatedAt" header="Updated At" sortable/>
       <Column header="Actions">
         <template #body="slotProps">
-          <Button v-if="slotProps.data.status === 'confirm'" @click="confirmRefund($event)" icon="pi pi-" :label="slotProps.data.action"></Button>
-          <div>no action availables </div>
+          <nuxt-link :to="{ path: `/${route.path.includes('admin') ? 'admin' : 'back'}/transaction/${slotProps.data.id}`}">
+            <Button  v-tooltip.bottom="'Show is view'" type="button" class="tw-mr-2" severity="info">
+              <i class="pi pi-eye"/>
+            </Button>
+          </nuxt-link>
         </template>
       </Column>
     </DataTable>
