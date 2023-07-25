@@ -33,7 +33,7 @@
   ]
 
   const formRequest = async (body) => {
-    return await $fetch( 'http://localhost:3009/', 
+    return await $fetch( 'http://localhost:3009/transaction',
     { 
       headers: {
         'Accept': 'application/json',
