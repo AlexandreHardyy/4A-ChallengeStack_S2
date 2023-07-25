@@ -4,6 +4,8 @@
   const emailValue = ref(null)
   const selectedItems = ref();
 
+  const config = useRuntimeConfig();
+
   const items = [
     {
       id: 1,
@@ -33,7 +35,7 @@
   ]
 
   const formRequest = async (body) => {
-    return await $fetch( 'http://localhost:3009/', 
+    return await $fetch( config.public.apiBaseServerMerchant,
     { 
       headers: {
         'Accept': 'application/json',
@@ -52,7 +54,7 @@
         return acc + curr.price
       }, 0)
     }).then( (result) => {
-        $paygate('d499d2cb-2ceb-4fa0-b884-31e7217446df', result.transaction.token)
+        $paygate(process.env.CLIENT_TOKEN, result.transaction.token)
     }).catch( (error) => {
         console.error('Error sending purchase', error)
     });

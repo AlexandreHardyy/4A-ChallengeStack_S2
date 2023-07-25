@@ -1,8 +1,10 @@
 import { createFetch } from '@vueuse/core'
 import { useUserStore } from "~/store/user"
 
+const config = useRuntimeConfig();
+
 export const useCustomFetch = createFetch({
-    baseUrl: 'http://localhost:3000',
+    baseUrl: config.public.apiBase,
     options: {
       async beforeFetch({ options }) {
         const { getUser } = useUserStore()

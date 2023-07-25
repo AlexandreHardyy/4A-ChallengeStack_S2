@@ -1,0 +1,91 @@
+version: '3.6'
+
+services:
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - ./PaymentProjet:/usr/local/PaymentProjet
+      - db-data:/data/db
+    working_dir: /usr/local/PaymentProjet
+
+  db:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: app
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    depends_on:
+      - mongo
+      - db
+    ports:
+      - 3000:3000
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/app
+      DATABASE_MONGO_URL: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017
+      JWT_SECRET: ImAstrongSecretBoi
+
+  client:
+    build:
+      context: ./Client
+      dockerfile: Dockerfile
+    depends_on:
+      - mongo
+      - db
+    ports:
+      - 3003:3000
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/app
+      DATABASE_MONGO_URL: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017
+      JWT_SECRET: ${JWT_SECRET}
+      BASEURL_SERVER: ${BASEURL_SERVER}
+
+  psp:
+    build:
+      context: ./psp
+      dockerfile: Dockerfile
+    ports:
+      - 3001:3000
+
+  merchant-server:
+    build:
+      context: ./merchant-server
+      dockerfile: Dockerfile
+    ports:
+      - 3009:3000
+    environment:
+      API_TOKEN: ${API_TOKEN}
+
+  merchant-website:
+    build:
+      context: ./merchant-website
+      dockerfile: Dockerfile
+    ports:
+      - 3002:3000
+    environment:
+      CLIENT_TOKEN: ${CLIENT_TOKEN}
+      BASEURL_CLIENT: ${BASEURL_CLIENT}
+      BASEURL_MERCHANT_SERVER: ${BASEURL_MERCHANT_SERVER}
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+volumes:
+  db-data: {}
+  pg-data: {}

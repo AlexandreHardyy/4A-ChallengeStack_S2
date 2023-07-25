@@ -19,6 +19,12 @@ export default defineNuxtConfig({
   ],
   build: {
     transpile: ["primevue"]
+  },
+  runtimeConfig: {
+      public: {
+          apiBaseClient: process.env.BASEURL_CLIENT || 'http://localhost:3000',
+          apiBaseServerMerchant: process.env.BASEURL_MERCHANT_SERVER || 'http://localhost:3000',
+      }
   }
 
 });
