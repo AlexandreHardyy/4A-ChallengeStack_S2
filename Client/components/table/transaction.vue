@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import {FilterMatchMode} from "primevue/api";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
+import useFormatDate from "../../services/format/useFormatDate";
 
 const toast = useToast();
 const confirm = useConfirm();
@@ -77,8 +78,16 @@ const filters = ref({
           <Tag :value="slotProps.data.status" :severity="getSeverity(slotProps.data)"/>
         </template>
       </Column>
-      <Column field="createdAt" header="Created At" sortable/>
-      <Column field="updatedAt" header="Updated At" sortable/>
+      <Column field="createdAt" header="Created At" sortable>
+        <template #body="slotProps">
+          <span>{{ useFormatDate(slotProps.data.createdAt) }}</span>
+        </template>
+      </Column>
+      <Column field="updatedAt" header="Updated At" sortable>
+        <template #body="slotProps">
+          <span>{{ useFormatDate(slotProps.data.updatedAt) }}</span>
+        </template>
+      </Column>
       <Column header="Actions">
         <template #body="slotProps">
           <Button v-if="slotProps.data.status === 'confirm'" @click="confirmRefund($event)" icon="pi pi-" :label="slotProps.data.action"></Button>

@@ -26,6 +26,7 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.use(ToastService)
     nuxtApp.vueApp.use(DialogService)
     nuxtApp.vueApp.use(ConfirmationService)
+    nuxtApp.vueApp.directive('tooltip', Tooltip);
 
     nuxtApp.vueApp.component('Button', Button)
     nuxtApp.vueApp.component('InputText', InputText)
