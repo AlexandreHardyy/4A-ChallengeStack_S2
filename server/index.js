@@ -4,6 +4,8 @@ const userService = require("./services/user")
 const errorHandler = require("./middlewares/errorHandler");
 const cors = require('cors')
 
+require('dotenv').config();
+
 app.use(express.json())
 app.use(cors());
 
