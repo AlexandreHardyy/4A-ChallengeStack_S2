@@ -11,6 +11,9 @@ export const useUserStore = defineStore("user", {
   actions: {
     async setUser(token) {
       const decodedToken = jwt_decode(token);
+      if (!decodedToken.isValid) {
+        return false
+      }
       this.user = { 
         token,
         ...decodedToken

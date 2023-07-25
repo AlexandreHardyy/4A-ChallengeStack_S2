@@ -1,4 +1,5 @@
 const userService = require("../services/user")
+const roleService = require("../services/role")
 
 module.exports = {
   cget: async (req, res, next) => {
@@ -20,8 +21,14 @@ module.exports = {
     }
   },
   post: async (req, res, next) => {
+    console.log(req.body)
     try {
-      const user = await userService.create(req.body)
+      const [role] = await roleService.findAll({ name: 'admin' })
+      const user = await userService.create({
+        ...req.body,
+        isValid: true,
+        roleId: role.id
+      })
       res.status(201).json(user)
     } catch (err) {
       next(err)
@@ -41,20 +48,6 @@ module.exports = {
       const user = await userService.findById(parseInt(req.user.id))
       if (!user) return res.sendStatus(404)
       res.json(user)
-    } catch (err) {
-      next(err)
-    }
-  },
-  put: async (req, res, next) => {
-    try {
-      const nbRemoved = await userService.remove({
-        id: parseInt(req.params.id),
-      })
-      const user = await userService.create({
-        id: parseInt(req.params.id),
-        ...req.body,
-      })
-      res.status(nbRemoved ? 200 : 201).json(user)
     } catch (err) {
       next(err)
     }

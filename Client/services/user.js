@@ -17,6 +17,12 @@ const userService = {
             body: JSON.stringify(body)
         })
     },
+    async create(body) {
+        return useCustomFetch('user', {
+            method: 'POST',
+            body: JSON.stringify(body)
+        })
+    },
     async getCurrentUser() {
         return useCustomFetch('user/current', {
             method: 'GET'
