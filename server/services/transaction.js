@@ -1,4 +1,4 @@
-const { Transaction, ...db } = require("../db")
+const { Transaction, ...db } = require("../db/models")
 const { Op } = require('sequelize');
 const TransactionMongo = require('../db/aggregates/Transaction')
 

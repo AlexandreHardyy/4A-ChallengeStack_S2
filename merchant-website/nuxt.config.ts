@@ -22,8 +22,8 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
       public: {
-          apiBaseClient: process.env.BASEURL_CLIENT || 'http://localhost:3000',
-          apiBaseServerMerchant: process.env.BASEURL_MERCHANT_SERVER || 'http://localhost:3000',
+          apiBaseClient: process.env.BASEURL_CLIENT || 'http://paygate.live:3003',
+          apiBaseServerMerchant: process.env.BASEURL_MERCHANT_SERVER || 'http://paygate.live:3009',
       }
   }
 

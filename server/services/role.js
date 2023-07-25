@@ -1,4 +1,4 @@
-const { Role } = require("../db")
+const { Role } = require("../db/models")
 
 module.exports = {
   findAll: async function () {

@@ -9,7 +9,7 @@ export const useCustomFetch = createFetch({
       async beforeFetch({ options }) {
         const { getUser } = useUserStore()
         const user = getUser()
-    
+
         options.headers = {
             'Accept': 'application/json',
             'Content-Type': 'application/json'

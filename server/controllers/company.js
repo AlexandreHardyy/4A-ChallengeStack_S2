@@ -1,6 +1,6 @@
 const companyService = require("../services/company")
 const userService = require("../services/user")
-const { Company } = require("../db")
+const { Company } = require("../db/models")
 
 module.exports = {
   cget: async (req, res, next) => {

@@ -1,4 +1,4 @@
-const { Company } = require("../db")
+const { Company } = require("../db/models")
 
 module.exports = {
   findAll: async function (criteria, options = {}) {
