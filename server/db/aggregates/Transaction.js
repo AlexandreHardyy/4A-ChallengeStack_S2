@@ -7,6 +7,7 @@ const Transaction = new Schema({
     name: String,
     email: String,
     amount: Number,
+    finalAmount: Number,
     commission: Number,
     currency: String,
     status: String,

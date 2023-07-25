@@ -43,6 +43,7 @@ module.exports = function (connection) {
       ...transaction,
       company: company.dataValues,
       operations: [],
+      finalAmount: 0,
       transactionHistory: [
         {
           status: transaction.status,

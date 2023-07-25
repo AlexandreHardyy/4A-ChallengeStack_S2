@@ -39,6 +39,11 @@ module.exports = function (connection) {
           date: operation.createdAt
         }]
       })
+      if (operation.amount && operation.type === 'refund') {
+        aggregate.finalAmount -= operation.amount
+      }else if (operation.amount) {
+        aggregate.finalAmount += operation.amount
+      }
     }
     aggregate.save()
   });
