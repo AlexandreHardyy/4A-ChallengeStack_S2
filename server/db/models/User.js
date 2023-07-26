@@ -36,6 +36,10 @@ module.exports = function (connection) {
       password: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+          min: 8,
+          is: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*\.])/,
+        },
       },
       isValid: {
         type: DataTypes.BOOLEAN,
