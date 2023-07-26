@@ -15,22 +15,39 @@ const user = getUser()
 const todayTransactions = (transactions) => {
   if (!transactions) return 0
   const today = new Date()
-  return transactions.filter(transaction => {
-    return transaction.operations.find(operation => operation.createdAt.includes(today))
-  }).length
+  return transactions.filter(transaction => transaction.createdAt.includes(today.toISOString().slice(0, 10))).length
 }
 
-//retrieve transaction's amount per status in parameter for every day between today and the last 31 days
-const lastThirtyOneDaysTransactionsFromToday = (transactions, status) => {
+//retrieve transaction.finalAmount per status in parameter for every day between today and the last 31 days.
+const lastThirtyOneDaysTransactionsFromToday = (transactions) => {
   if (!transactions) return 0
   const today = new Date()
-  const lastThirtyOneDays = new Date(today.setDate(today.getDate() - 31)).toISOString().slice(0, 10)
-  return transactions.filter(transaction => {
-    return transaction.operations.find(operation => operation.status === status && (operation.updatedAt.slice(0, 10) >= lastThirtyOneDays))
-  }).reduce((acc, transaction) => {
-    return acc + transaction.amount
+  const lastThirtyOneDays = new Date(today.setDate(today.getDate() - 31))
+  return transactions.filter(transaction => transaction.updatedAt >= lastThirtyOneDays.toISOString().slice(0, 10)).reduce((acc, transaction) => {
+    return acc + (transaction.finalAmount)? transaction.finalAmount : 0
   }, 0)
 }
+
+// if (!transactions) return 0
+// const today = new Date()
+// const lastThirtyOneDays = new Date(today.setDate(today.getDate() - 31))
+// return transactions.filter(transaction => {
+//   return transaction.operations.find(operation => {
+//     const operationDate = new Date(operation.createdAt)
+//     return operationDate >= lastThirtyOneDays
+//   })
+// }).reduce((acc, transaction) => {
+//   return acc + transaction.operations.reduce((acc, operation) => {
+//     console.log(operation)
+//     if (operation.type === 'capture' && operation.status === 'done') {
+//       return acc + operation.amount
+//     } else if (operation.type === 'refund' && operation.status === 'done') {
+//       return acc - operation.amount
+//     } else {
+//       return acc
+//     }
+//   }, 0)
+// }, 0)
 
 //retrieve all transactions per month. function that returns an array of the amount of transactions for the 8 last month (from the current month) without filtering by operations status
 const totalTransactionsPerMonth = (transactions) => {
@@ -38,26 +55,26 @@ const totalTransactionsPerMonth = (transactions) => {
   const months = getPastMonths(8)
   return months.map(month => {
     month = month.split('/').reverse().join('-') //format the month to be YYYY-MM
-    return transactions.filter(transaction => {
-      return transaction.operations.find(operation => operation.createdAt.includes(month))
-    }).length
+    return transactions.filter(transaction => transaction.createdAt.includes(month)).length
   })
 }
 
 //retrieve amount of transactions per status
 const retrieveTransactions = (transactions, status) => {
   if (!transactions) return 0
-  return transactions.filter(transaction => {
-    return transaction.operations.find(operation => operation.status === status)
-  }).length
+  return transactions.filter(transaction => transaction.status === status).length
 }
 
-//retrieve amount of transactions per status confirmed
-const retrieveAmountTransactions = (transactions, status) => {
+const retrieveAmountTransactions = (transactions) => {
   if (!transactions) return 0
-  return transactions.filter(transaction => {
-    return transaction.operations.find(operation => operation.status === status)
-  }).reduce((acc, transaction) => {
+  return transactions.filter(transaction => transaction.status === 'captured' || transaction.status === 'partially-refunded' || transaction.status === 'refunded').reduce((acc, transaction) => {
+    return acc + transaction.amount
+  }, 0)
+}
+
+const retrieveAmountRefundedTransactions = (transactions) => {
+  if (!transactions) return 0
+  return transactions.filter(transaction => transaction.status === "partially-refunded" || transaction.status === 'refunded').reduce((acc, transaction) => {
     return acc + transaction.amount
   }, 0)
 }
@@ -68,9 +85,7 @@ const retrieveTransactionsPerMonth = (transactions, status) => {
   const months = getPastMonths(12)
   return months.map(month => {
     month = month.split('/').reverse().join('-') //format the month to be YYYY-MM
-    return transactions.filter(transaction => {
-      return transaction.operations.find(operation => operation.status === status && operation.createdAt.includes(month))
-    }).length
+    return transactions.filter(transaction => transaction.status === status && transaction.updatedAt.includes(month)).length
   })
 }
 
@@ -162,17 +177,18 @@ const setStatusChartData = () => {
   const documentStyle = getComputedStyle(document.body);
 
   return {
-    labels: ['Created', 'Confirmed', 'Canceled', 'Refunded'],
+    labels: ['Created', 'Captured', 'Canceled', 'Partially refunded', 'Refunded'],
     datasets: [
       {
         data: [
           retrieveTransactions(transactionData.value, 'created'),
-          retrieveTransactions(transactionData.value, 'finished'),
+          retrieveTransactions(transactionData.value, 'captured'),
           retrieveTransactions(transactionData.value, 'canceled'),
+          retrieveTransactions(transactionData.value, 'partially-refunded'),
           retrieveTransactions(transactionData.value, 'refunded')
         ],
-        backgroundColor: [documentStyle.getPropertyValue('--yellow-500'), documentStyle.getPropertyValue('--green-500'), "#f36d6d", documentStyle.getPropertyValue('--blue-500')],
-        hoverBackgroundColor: [documentStyle.getPropertyValue('--yellow-400'), documentStyle.getPropertyValue('--green-400'), "#f36d6d", documentStyle.getPropertyValue('--blue-400')]
+        backgroundColor: [documentStyle.getPropertyValue('--yellow-500'), documentStyle.getPropertyValue('--green-500'), "#f36d6d", documentStyle.getPropertyValue('--orange-500'), documentStyle.getPropertyValue('--blue-500')],
+        hoverBackgroundColor: [documentStyle.getPropertyValue('--yellow-400'), documentStyle.getPropertyValue('--green-400'), "#f36d6d", documentStyle.getPropertyValue('--orange-400'), documentStyle.getPropertyValue('--blue-400')]
       }
     ]
   };
@@ -192,15 +208,21 @@ const setStatusTimeChartData = () =>  {
       },
       {
         type: 'bar',
-        label: 'Confirmed',
+        label: 'Captured',
         backgroundColor: documentStyle.getPropertyValue('--green-500'),
-        data: retrieveTransactionsPerMonth(transactionData.value, 'finished')
+        data: retrieveTransactionsPerMonth(transactionData.value, 'captured')
       },
       {
         type: 'bar',
         label: 'Canceled',
         backgroundColor: "#f36d6d",
         data: retrieveTransactionsPerMonth(transactionData.value, 'canceled')
+      },
+      {
+        type: 'bar',
+        label: 'Partially refunded',
+        backgroundColor: documentStyle.getPropertyValue('--orange-500'),
+        data: retrieveTransactionsPerMonth(transactionData.value, 'partially-refunded')
       },
       {
         type: 'bar',
@@ -262,7 +284,7 @@ const setStatusTimeChartOptions = () =>  {
         </div>
       </div>
       <div class="card cardStats stat2">
-        <p class="tw-text-4xl tw-font-bold tw-p-3">{{ retrieveAmountTransactions(transactionData, "finished") }}</p>
+        <p class="tw-text-4xl tw-font-bold tw-p-3">{{ retrieveAmountTransactions(transactionData) }} €</p>
         <p class="tw-text-sm tw-pl-3 tw-pb-3">Total amount of sales</p>
         <div class="tw-bg-primary-light">
           <div class="tw-p-3 tw-flex tw-justify-between">
@@ -272,7 +294,7 @@ const setStatusTimeChartOptions = () =>  {
         </div>
       </div>
       <div class="card cardStats stat3">
-        <p class="tw-text-4xl tw-font-bold tw-p-3">{{ retrieveAmountTransactions(transactionData, "refunded") }}</p>
+        <p class="tw-text-4xl tw-font-bold tw-p-3">{{ retrieveAmountRefundedTransactions(transactionData) }} €</p>
         <p class="tw-text-sm tw-pl-3 tw-pb-3">Total amount of refunded transactions</p>
         <div class="tw-bg-primary-light">
           <div class="tw-p-3 tw-flex tw-justify-between">
@@ -283,7 +305,7 @@ const setStatusTimeChartOptions = () =>  {
       </div>
       <div class="card cardStats stat4">
         <!--TODO: change the value so I only takes the last month-->
-        <p class="tw-text-4xl tw-font-bold tw-p-3">{{ lastThirtyOneDaysTransactionsFromToday(transactionData, "finished") }}</p>
+        <p class="tw-text-4xl tw-font-bold tw-p-3">{{ lastThirtyOneDaysTransactionsFromToday(transactionData) }} €</p>
         <p class="tw-text-sm tw-pl-3 tw-pb-3">profits over last month</p>
         <div class="tw-bg-primary-light">
           <div class="tw-p-3 tw-flex tw-justify-between">
