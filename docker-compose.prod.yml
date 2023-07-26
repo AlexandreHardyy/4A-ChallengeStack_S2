@@ -82,11 +82,18 @@ services:
     ports:
       - 3002:3000
 
-  adminer:
-    image: adminer
-    restart: always
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
     ports:
-      - 8080:8080
+      - '80:80'
+    depends_on:
+      - server
+      - client
+      - psp
+      - merchant-server
+      - merchant-website
 
 volumes:
   db-data: {}

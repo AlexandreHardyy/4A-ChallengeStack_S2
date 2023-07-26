@@ -1,5 +1,4 @@
 <script setup>
-import transactionService from '~/services/transaction';
 import Transaction from '@/components/table/transaction.vue'
 
 definePageMeta({

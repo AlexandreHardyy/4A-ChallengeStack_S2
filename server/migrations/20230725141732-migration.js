@@ -38,6 +38,7 @@ module.exports = {
                       allowNull: false
                   },
                   address: Sequelize.STRING,
+                  url: Sequelize.STRING,
                   urlDirectionConfirm: Sequelize.STRING,
                   urlDirectionCancel: Sequelize.STRING,
                   clientToken: Sequelize.STRING,

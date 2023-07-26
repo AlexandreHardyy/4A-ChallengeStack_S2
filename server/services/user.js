@@ -35,9 +35,7 @@ module.exports = {
       return []
     }
     const dataToUpdate = {
-      ...data,
-      isValid: user.isValid,
-      roleId: user.roleId
+      ...data
     }
     const [nb, users = []] = await User.update(dataToUpdate, {
       where: criteria,
