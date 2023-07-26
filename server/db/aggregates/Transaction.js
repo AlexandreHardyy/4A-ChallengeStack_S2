@@ -41,6 +41,7 @@ const Transaction = new Schema({
         name: String,
         kbis: String,
         address: String,
+        url: String,
         urlDirectionConfirm: String,
         urlDirectionCancel: String,
         clientToken: String,

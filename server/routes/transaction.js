@@ -1,11 +1,13 @@
 const { Router } = require("express")
 const transactionController = require("../controllers/transaction")
-const { checkCompanyApiToken, checkCompanyClientToken } = require("../middlewares/company-token-check")
+const { checkCompanyApiToken } = require("../middlewares/company-token-check")
 const { adminAuth, userAuth } = require("../middlewares/auth")
 
 const router = Router()
 
-router.post("/psp-confirm/:operationId",transactionController.pspConfirm)
+router.get("/:token/sdk", transactionController.sdk)
+
+router.post("/web-hook", transactionController.pspConfirm)
 
 // USER
 router.get("/:id", userAuth, transactionController.get)
@@ -18,8 +20,7 @@ router.get("/", adminAuth,  transactionController.cget)
 router.post("/", checkCompanyApiToken, transactionController.post)
 router.post("/:token/refund", checkCompanyApiToken, transactionController.refund)
 
-// SDK AUTH CLIENT TOKEN
-router.post("/:token/confirm", checkCompanyClientToken, transactionController.confirm)
-router.post("/:token/cancel", checkCompanyClientToken, transactionController.cancel)
+router.post("/:token/confirm", transactionController.confirm)
+router.post("/:token/cancel", transactionController.cancel)
 
 module.exports = router

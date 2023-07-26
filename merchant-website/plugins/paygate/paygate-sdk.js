@@ -3,7 +3,7 @@ export const loadIframe = (clientToken, transactionToken) => {
     const config = useRuntimeConfig();
 
     const iframe = document.createElement('iframe');
-    iframe.src = `${config.public.apiBaseClient}/sdk?clientToken=${clientToken}&transactionToken=${transactionToken}`
+    iframe.src = `${config.public.apiBaseClient}/transaction/${transactionToken}/sdk?clientToken=${clientToken}`
     iframe.style.position = 'absolute'
     iframe.style.top = '50px'
     iframe.style.left = '50%'

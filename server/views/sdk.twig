@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Paygate SDK</title>
+</head>
+<body>
+    <h1>Welcome on Paygate</h1>
+    <form action="http://localhost:3000/transaction/{{ transactionToken }}/confirm" method="post">
+        <label for="cbName">Card name:</label>
+        <input type="text" id="cbName" name="cbName" required><br>
+
+        <label for="cbNumber">Card number:</label>
+        <input type="text" id="cbNumber" name="cbNumber" required><br>
+
+        <label for="cvc">CVC:</label>
+        <input type="text" id="cvc" name="cvc" required><br>
+
+        <label for="expirationDate">Expiration date:</label>
+        <input type="text" id="expirationDate" name="expirationDate" required><br>
+
+        <button type="submit">Submit</button>
+    </form>
+    <form action="http://localhost:3000/transaction/{{ transactionToken }}/cancel" method="post">
+        <button type="submit">Cancel</button>
+
+    </form>
+</body>
+</html>

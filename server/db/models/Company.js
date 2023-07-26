@@ -17,6 +17,7 @@ module.exports = function (connection) {
           allowNull: false
         },
         address: DataTypes.STRING,
+        url: DataTypes.STRING,
         urlDirectionConfirm: DataTypes.STRING,
         urlDirectionCancel: DataTypes.STRING,
         clientToken: DataTypes.STRING,
