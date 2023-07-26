@@ -1,4 +1,4 @@
-const { OperationHistory } = require("../db")
+const { OperationHistory } = require("../db/models")
 
 module.exports = {
   findAll: async function () {

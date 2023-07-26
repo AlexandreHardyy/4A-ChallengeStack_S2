@@ -13,7 +13,7 @@ app.post("/transaction", async (req, res, next) => {
 	if ( !name || !email || !amount ) return res.sendStatus(422)
 
 	try {
-		await fetch('http://server:3000/transaction/', {
+		await fetch(`http://server:3000/transaction/`, {
 			method: 'POST',
 			headers: {
 				"Content-Type": "application/json"

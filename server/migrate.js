@@ -1,6 +1,6 @@
-const { connection } = require("./db")
+const { sequelize } = require("./db/models")
 
-connection.sync({ force: true }).then(() => {
+sequelize.sync({ force: true }).then(() => {
   console.log("Database synchronized")
-  connection.close()
+  sequelize.close()
 })

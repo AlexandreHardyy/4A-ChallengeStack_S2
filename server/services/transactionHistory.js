@@ -1,4 +1,4 @@
-const { TransactionHistory } = require("../db")
+const { TransactionHistory } = require("../db/models")
 
 module.exports = {
   findAll: async function () {

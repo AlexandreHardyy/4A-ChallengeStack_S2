@@ -1,7 +1,9 @@
 export const loadIframe = (clientToken, transactionToken) => {
 
+    const config = useRuntimeConfig();
+
     const iframe = document.createElement('iframe');
-    iframe.src = `http://localhost:3003/sdk?clientToken=${clientToken}&transactionToken=${transactionToken}`
+    iframe.src = `${config.public.apiBaseClient}/sdk?clientToken=${clientToken}&transactionToken=${transactionToken}`
     iframe.style.position = 'absolute'
     iframe.style.top = '50px'
     iframe.style.left = '50%'
@@ -11,7 +13,7 @@ export const loadIframe = (clientToken, transactionToken) => {
     document.body.appendChild(iframe)
 
     window.addEventListener('message', (event) => {
-        if (event.origin === 'http://localhost:3003') {
+        if (event.origin === config.public.apiBaseClient) {
             window.location.replace(event.data)
         }
     })

@@ -11,12 +11,13 @@ definePageMeta({
   const isLoading = ref(false)
 
   const route = useRoute()
+  const config = useRuntimeConfig();
 
   const clientToken = route.query.clientToken
   const transactionToken = route.query.transactionToken
 
   const formRequest = async (type, body) => {
-    return await $fetch( `http://localhost:3000/transaction/${transactionToken}/${type}`, 
+    return await $fetch( `${config.public.apiBase}/transaction/${transactionToken}/${type}`,
     { 
     headers: {
       'Accept': 'application/json',
