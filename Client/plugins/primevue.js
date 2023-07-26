@@ -13,6 +13,8 @@ import Calendar from 'primevue/calendar';
 import Chart from 'primevue/chart';
 import DialogService from "primevue/dialogservice";
 import DynamicDialog from "primevue/dynamicdialog";
+import Dialog from "primevue/dialog";
+
 import Tooltip from "primevue/tooltip";
 import ConfirmationService from 'primevue/confirmationservice';
 import ConfirmPopup from 'primevue/confirmpopup';
@@ -47,6 +49,8 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.component('ProgressSpinner', ProgressSpinner)
     nuxtApp.vueApp.component('DynamicDialog', DynamicDialog)
     nuxtApp.vueApp.component('Timeline', Timeline)
+    nuxtApp.vueApp.component('Dialog', Dialog)
+
 
     //other components that you need
 })

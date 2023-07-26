@@ -2,14 +2,18 @@ const { User, Company, Role } = require("../db/models")
 
 module.exports = {
   findAll: async function (criteria, options = {}) {
+
+    if (criteria.admin) {
+      delete criteria.admin
+      Object.assign(criteria, { "$Role.name$" : "admin" })
+    }
     return User.findAll({
       where: criteria,
       ...options,
       order: Object.entries(options.order || {}),
       include: [{
         model: Company,
-        attributes: { exclude: ['clientSecret', 'clientToken', 'urlDirectionCancel', 'urlDirectionConfirm'] },
-        required: true
+        attributes: { exclude: ['clientSecret', 'clientToken', 'urlDirectionCancel', 'urlDirectionConfirm'] }
       },{
         model: Role
       }],

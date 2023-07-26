@@ -78,7 +78,7 @@ const submit = handleSubmit((values) => {
             <small class="p-error" id="text-error">{{ confirmPassword.errorMessage.value || '&nbsp;' }}</small>
         </div>
         <Button type="submit" outlined class="mt-2">
-            Update Profile
+            {{ initUser ? "Update Profile" : "Add User" }}
         </Button>
         <small :class="formMessage?.type ? 'p-error' : 'p-success'" id="text-error">{{ formMessage?.val || '&nbsp;' }}</small>
     </form>

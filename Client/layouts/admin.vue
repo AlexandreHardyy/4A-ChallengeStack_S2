@@ -21,6 +21,9 @@ import userService from '~/services/user';
         <nuxt-link class="btn" :to="{ path: '/admin/transaction' }">
           Transactions
         </nuxt-link>
+        <nuxt-link class="btn" :to="{ path: '/admin/user-admin' }">
+          Admin Users 
+        </nuxt-link>
       </div>
       <nuxt-link :to="{ path: '/login' }">
         <Button severity="secondary" @click="userService.logout()">Disconnect</Button>
