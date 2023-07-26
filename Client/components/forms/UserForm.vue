@@ -3,7 +3,7 @@
 import {useField, useForm} from "vee-validate";
 import * as yup from "yup";
 
-const { initUser } = defineProps(['initUser'])
+const { initUser, title, formMessage } = defineProps(['initUser', 'title', 'formMessage'])
 
 const emit = defineEmits(['submit'])
 
@@ -25,12 +25,13 @@ const lastname = useField("lastname");
 const email = useField("email");
 const password = useField("password");
 const confirmPassword = useField("confirmPassword");
-const registerError = ref(null);
 
 onMounted(() => {
-    firstname.setValue(initUser.firstname ?? "")
-    lastname.setValue(initUser.lastname ?? "")
-    email.setValue(initUser.email ?? "")
+    if (initUser) {
+        firstname.setValue(initUser.firstname)
+        lastname.setValue(initUser.lastname)
+        email.setValue(initUser.email)
+    }
 })
 
 const submit = handleSubmit((values) => {
@@ -43,7 +44,7 @@ const submit = handleSubmit((values) => {
     <form
         @submit.prevent="submit"
         class="tw-flex tw-flex-col tw-gap-3 tw-grow">
-        <h1 class="tw-text-4xl tw-font-bold tw-mb-12" >Profile</h1>
+        <h1 class="tw-text-4xl tw-font-bold tw-mb-12" > {{ title ?? "Profile" }} </h1>
         <div class="tw-flex tw-flex-col tw-gap-1">
             <label for="username">Firstname</label>
             <InputText v-model="firstname.value.value"/>
@@ -79,7 +80,7 @@ const submit = handleSubmit((values) => {
         <Button type="submit" outlined class="mt-2">
             Update Profile
         </Button>
-        <small class="p-error" id="text-error">{{ registerError || '&nbsp;' }}</small>
+        <small :class="formMessage?.type ? 'p-error' : 'p-success'" id="text-error">{{ formMessage?.val || '&nbsp;' }}</small>
     </form>
 </template>
 

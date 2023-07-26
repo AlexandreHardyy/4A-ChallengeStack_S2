@@ -31,6 +31,7 @@ module.exports = function (connection) {
     const operation = process.dataValues
     const aggregate = await TransactionMongo.findOne({ id: operation.transactionId })
     if (aggregate.id) {
+      aggregate.updatedAt = operation.updatedAt
       aggregate.operations.unshift({
         ...operation,
         operationHistory: [{
@@ -38,6 +39,11 @@ module.exports = function (connection) {
           date: operation.createdAt
         }]
       })
+      if (operation.amount && operation.type === 'refund') {
+        aggregate.finalAmount -= operation.amount
+      }else if (operation.amount) {
+        aggregate.finalAmount += operation.amount
+      }
     }
     aggregate.save()
   });
@@ -47,6 +53,7 @@ module.exports = function (connection) {
     const aggregate = await TransactionMongo.findOne({ id: operation.transactionId })
     
     if (aggregate.id) {
+      aggregate.updatedAt = operation.updatedAt
       const indexOperator = aggregate.operations.findIndex(op => op.id === operation.id)
 
       Object.assign(aggregate.operations[indexOperator], operation)

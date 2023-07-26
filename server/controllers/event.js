@@ -1,16 +1,24 @@
+const user = require("../services/user");
+
 const clients = [];
 
 module.exports = {
-    send: async (data) => {
+    send: async (id, event) => {
         clients.forEach((client) => {
-            if (client.id === data.id) {
-                client.res.write(`data: ${JSON.stringify(data)}` + "\n\n");
+            if (client.id === id) {
+                const dataToSend = [
+                    `event: ${event.name}`,
+                    `data: ${JSON.stringify(event.data)}`,
+                    "",
+                ].join("\n");
+                client.res.write(dataToSend + "\n");
             }
         });
     },
     subscribe: async (req, res, next) => {
+        const userResponse = await user.findById(req.user.id)
         const newClient = {
-            id: req.user.id,
+            id: userResponse.Company.id,
             res
         };
 
@@ -21,12 +29,5 @@ module.exports = {
             'Cache-Control': 'no-cache'
         };
         res.writeHead(200, headers);
-
-        /*setInterval(async () => {
-            await module.exports.send({
-              id: 1,
-              test: true
-            });
-        }, 5000);*/
     },
 }

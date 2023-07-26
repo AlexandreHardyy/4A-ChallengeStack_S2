@@ -6,7 +6,8 @@
 
     const transactionData = ref()
 
-    const dates = ref([new Date(), new Date()]);
+    const today = new Date()
+    const dates = ref([ new Date(today.setDate(today.getDate() - 7)), new Date()]);
 
     const chart = ref(null);
     const chartRef = ref(null)
@@ -14,6 +15,8 @@
 
     const revenues = ref();
     const createdTransactions = ref();
+    const finishedTransactions = ref();
+    const canceledTransactions = ref();
     const processingTransactions = ref();
     const refundTransactions = ref();
 
@@ -25,11 +28,16 @@
         }, 0)
     }
 
+    const retrieveTransactionsByStatus = (transactions, status) => {
+      if (!transactions) { return 0 }
+      return transactions.filter(transaction => transaction.status === status )
+    }
+
     const retrieveProcessingTransactions = (transactions) => {
         if (!transactions) { return 0 }
         return transactions.filter(transaction => {
-            return transaction.operations.find(operation => operation.status === 'processing')
-        }).length
+            return transaction.operations.find(operation => operation.status === 'processing' && operation.type === 'capture')
+        })
     }
 
     // const retrieveRefundTransactions = (transactions) => {
@@ -74,14 +82,10 @@
       return dateArray
     }
 
-    const buildChart = (data) => {
+    const buildChart = (type, data) => {
       const config = {
-        type: 'bar',
-        data: {
-          datasets: [{
-            data
-          }]
-        },
+        type,
+        data,
         options: {
           plugins: {
             legend: {
@@ -106,68 +110,135 @@
       
       const finishedTransactions = transactions.filter(transaction => transaction.status === 'captured')
 
-      const data = buildDateArray(dates.value)
+      const finishedTransactionsData = buildDateArray(dates.value)
 
       for (const transaction of finishedTransactions) {
         const finishedOperationHistory = transaction.operations.find(operation => operation.status === 'done').operationHistory.find(history => history.status === 'done')
         const date = formatDate(finishedOperationHistory.date)
 
-        const index = data.map(elem => elem.x).indexOf(date)
+        const index = finishedTransactionsData.map(elem => elem.x).indexOf(date)
 
         if (index !== -1) {
-          data[index] = {
-            ...data[index],
-            y: data[index].y + transaction.commission
+          finishedTransactionsData[index] = {
+            ...finishedTransactionsData[index],
+            y: finishedTransactionsData[index].y + transaction.commission
           }
         }        
       }
 
-      buildChart(data)
+      const data = {
+        datasets: [
+          {
+            data: finishedTransactionsData
+          }
+        ]
+      }
+
+      buildChart('bar', data)
     }
     
     const buildChartCreatedTransaction = (transactions) => {
       if (!transactions) return undefined
 
-      const data = buildDateArray(dates.value)
+      const createdTransactionsData = buildDateArray(dates.value)
 
       for (const transaction of transactions) {
         const date = formatDate(transaction.createdAt)
 
-        const index = data.map(elem => elem.x).indexOf(date)
+        const index = createdTransactionsData.map(elem => elem.x).indexOf(date)
 
         if (index !== -1) {
-          data[index] = {
-            ...data[index],
-            y: data[index].y + 1
+          createdTransactionsData[index] = {
+            ...createdTransactionsData[index],
+            y: createdTransactionsData[index].y + 1
           }
         }        
       }
 
-      buildChart(data)
+      const data = {
+        datasets: [
+          {
+            data: createdTransactionsData
+          }
+        ]
+      }
+
+      buildChart('bar', data)
     }
 
     const buildChartProcessingTransaction = (transactions) => {
       if (!transactions) return undefined
 
-      const processingTransactions = transactions.filter(transaction => transaction.operations.find(operation => operation.status === 'processing'))
+      const finishedTransactions = retrieveTransactionsByStatus(transactions, 'captured')
+      const canceledTransactions = retrieveTransactionsByStatus(transactions, 'canceled')
+      const processingTransactions = retrieveProcessingTransactions(transactions)
     
-      const data = buildDateArray(dates.value)
+      const finishedTransactionsData = buildDateArray(dates.value)
+      const canceledTransactionsData = buildDateArray(dates.value)
+      const processingTransactionsData = buildDateArray(dates.value)
+
+      for (const transaction of finishedTransactions) {
+        const finishedOperationHistory = transaction.operations.find(operation => operation.status === 'done').operationHistory.find(history => history.status === 'done')
+        const date = formatDate(finishedOperationHistory.date)
+
+        const index = finishedTransactionsData.map(elem => elem.x).indexOf(date)
+
+        if (index !== -1) {
+          finishedTransactionsData[index] = {
+            ...finishedTransactionsData[index],
+            y: finishedTransactionsData[index].y + 1
+          }
+        }        
+      }
+
+      for (const transaction of canceledTransactions) {
+        console.log('Armand', canceledTransactions);
+        const canceledOperationHistory = transaction.transactionHistory.find(history => history.status === 'canceled')
+        const date = formatDate(canceledOperationHistory.date)
+
+        const index = canceledTransactionsData.map(elem => elem.x).indexOf(date)
+
+        if (index !== -1) {
+          canceledTransactionsData[index] = {
+            ...canceledTransactionsData[index],
+            y: canceledTransactionsData[index].y + 1
+          }
+        }        
+      }
 
       for (const transaction of processingTransactions) {
         const processingOperationHistory = transaction.operations.find(operation => operation.status === 'processing').operationHistory.find(history => history.status === 'processing')
         const date = formatDate(processingOperationHistory.date)
 
-        const index = data.map(elem => elem.x).indexOf(date)
+        const index = processingTransactionsData.map(elem => elem.x).indexOf(date)
 
         if (index !== -1) {
-          data[index] = {
-            ...data[index],
-            y: data[index].y + 1
+          processingTransactionsData[index] = {
+            ...processingTransactionsData[index],
+            y: processingTransactionsData[index].y + 1
           }
         }        
       }
 
-      buildChart(data)
+      const data = {
+        labels: finishedTransactionsData.map(data => data.x),
+        datasets: [
+          {
+            label: 'Finished Transactions',
+            data: finishedTransactionsData
+          },
+          {
+            label: 'Canceled Transactions',
+            data: canceledTransactionsData
+          },
+          {
+            label: 'Finished Transactions',
+            data: processingTransactionsData
+          }
+        ]
+      } 
+
+      buildChart('line', data)
     }
 
     // const buildChartRefundTransaction = (transactions) => {
@@ -205,7 +276,9 @@
         buildDateArray(event)
 
         createdTransactions.value = data.value.length
-        processingTransactions.value = retrieveProcessingTransactions(data.value)
+        finishedTransactions.value = retrieveTransactionsByStatus(data.value, 'captured').length
+        canceledTransactions.value = retrieveTransactionsByStatus(data.value, 'canceled').length
+        processingTransactions.value = retrieveProcessingTransactions(data.value).length
         // refundTransactions.value = retrieveRefundTransactions(data.value)
     }
 
@@ -230,7 +303,9 @@
       buildChartRevenues(data.value)
 
       createdTransactions.value = data.value.length
-      processingTransactions.value = retrieveProcessingTransactions(data.value)
+      finishedTransactions.value = retrieveTransactionsByStatus(data.value, 'captured').length
+      canceledTransactions.value = retrieveTransactionsByStatus(data.value, 'canceled').length
+      processingTransactions.value = retrieveProcessingTransactions(data.value).length
       // refundTransactions.value = retrieveRefundTransactions(data.value)
     })
 </script>
@@ -259,11 +334,11 @@
               </template>
           </Card>
           <Card @click="onSelectedMetricChange('Processing transaction')">
-              <template #title>Processing Transaction</template>
+              <template #title>Transaction Status</template>
               <template #content>
-                  <p>
-                      {{processingTransactions}}
-                  </p>
+                  <p>Finished: {{finishedTransactions}}</p>
+                  <p>Canceled: {{canceledTransactions}}</p>
+                  <p>Processing: {{processingTransactions}}</p>
               </template>
           </Card>
           <Card @click="onSelectedMetricChange('Refund transaction')">

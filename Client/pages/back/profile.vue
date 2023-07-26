@@ -77,6 +77,10 @@ const copyText = async (value) => {
   sse.onmessage = (e) => {
     console.log(e);
   }
+
+  sse.addEventListener("transaction-created", (e) => {
+    console.log(e);
+  });
 }*/
 
 </script>

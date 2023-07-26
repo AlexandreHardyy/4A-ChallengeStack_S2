@@ -11,7 +11,6 @@ app.use(cors());
 
 app.use(require("./routes/security")(userService))
 
-app.use("/role", require("./routes/role"))
 app.use("/user", require("./routes/user"))
 app.use("/company", require("./routes/company"))
 app.use("/transaction", require("./routes/transaction"))

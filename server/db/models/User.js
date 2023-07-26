@@ -10,9 +10,16 @@ module.exports = function (connection) {
 
     generateToken() {
       const jwt = require("jsonwebtoken")
-      return jwt.sign({ id: this.id, isAdmin: this?.Role?.name === 'admin', companyId: this.companyId }, process.env.JWT_SECRET, {
-        expiresIn: "1y",
-      })
+      return jwt.sign(
+        { 
+          id: this.id, 
+          isAdmin: this?.Role?.name === 'admin', 
+          companyId: this.companyId,
+          isValid: this.isValid
+        }, 
+        process.env.JWT_SECRET,
+        { expiresIn: "1y" }
+      )
     }
   }
 

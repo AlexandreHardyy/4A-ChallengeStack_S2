@@ -27,7 +27,12 @@ const submit = handleSubmit(async (values) => {
     loginError.value = "email or password is not correct"
     return
   }
-  await setUser(data.value.token)
+  const isUserValid = await setUser(data.value.token)
+
+  if (isUserValid === false) {
+    loginError.value = "this account is not verified"
+    return
+  }
 
   if (getUser().isAdmin)
     navigateTo("/admin");
