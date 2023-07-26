@@ -35,7 +35,7 @@
   ]
 
   const formRequest = async (body) => {
-    return await $fetch( config.public.apiBaseServerMerchant,
+    return await $fetch( `${config.public.apiBaseServerMerchant}/transaction`,
     { 
       headers: {
         'Accept': 'application/json',
