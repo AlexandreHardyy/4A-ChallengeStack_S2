@@ -12,8 +12,19 @@ module.exports = {
                       primaryKey: true,
                       autoIncrement: true,
                   },
-                  name: Sequelize.STRING
-              }),
+                  name: Sequelize.STRING,
+                  createdAt: {
+                      type: Sequelize.DATE,
+                      defaultValue: Sequelize.NOW,
+                      field: 'created_at',
+                  },
+                  updatedAt: {
+                      type: Sequelize.DATE,
+                      defaultValue: Sequelize.NOW,
+                      onUpdate : Sequelize.NOW,
+                      field: 'updated_at',
+                  },
+              }, { transaction: t }),
               queryInterface.createTable('Company', {
                   id: {
                       type: Sequelize.INTEGER,
@@ -74,6 +85,16 @@ module.exports = {
                       },
                       allowNull: false
                   },
+                  roleId: {
+                      type: Sequelize.DataTypes.INTEGER,
+                      references: {
+                          model: {
+                              tableName: 'Role'
+                          },
+                          key: 'id'
+                      },
+                      allowNull: false
+                  },
                   createdAt: {
                       type: Sequelize.DATE,
                       defaultValue: Sequelize.NOW,
@@ -110,7 +131,17 @@ module.exports = {
                     onUpdate : Sequelize.NOW,
                     field: 'updated_at',
                 },
-              }),
+                companyId: {
+                    type: Sequelize.DataTypes.INTEGER,
+                    references: {
+                        model: {
+                            tableName: 'Company'
+                        },
+                        key: 'id'
+                    },
+                    allowNull: false
+                },
+              }, { transaction: t }),
               queryInterface.createTable('Operation', {
                 id: {
                     type: Sequelize.INTEGER,
@@ -131,20 +162,17 @@ module.exports = {
                     onUpdate : Sequelize.NOW,
                     field: 'updated_at',
                 },
-              }),
-              queryInterface.createTable('OperationHistory', {
-                id: {
-                    type: Sequelize.INTEGER,
-                    primaryKey: true,
-                    autoIncrement: true,
+                transactionId: {
+                    type: Sequelize.DataTypes.INTEGER,
+                    references: {
+                        model: {
+                            tableName: 'Transaction'
+                        },
+                        key: 'id'
+                    },
+                    allowNull: false
                 },
-                status: Sequelize.STRING,
-                date: {
-                    type: Sequelize.DATE,
-                    defaultValue: Sequelize.NOW,
-                    field: 'created_at',
-                }
-              }),
+              }, { transaction: t }),
               queryInterface.createTable('TransactionHistory', {
                 id: {
                     type: Sequelize.INTEGER,
@@ -156,8 +184,41 @@ module.exports = {
                     type: Sequelize.DATE,
                     defaultValue: Sequelize.NOW,
                     field: 'created_at',
-                }
-              })
+                },
+                transactionId: {
+                    type: Sequelize.DataTypes.INTEGER,
+                    references: {
+                        model: {
+                            tableName: 'Transaction'
+                        },
+                        key: 'id'
+                    },
+                    allowNull: false
+                },
+              }, { transaction: t }),
+              queryInterface.createTable('OperationHistory', {
+                  id: {
+                      type: Sequelize.INTEGER,
+                      primaryKey: true,
+                      autoIncrement: true,
+                  },
+                  status: Sequelize.STRING,
+                  date: {
+                      type: Sequelize.DATE,
+                      defaultValue: Sequelize.NOW,
+                      field: 'created_at',
+                  },
+                  operationId: {
+                      type: Sequelize.DataTypes.INTEGER,
+                      references: {
+                          model: {
+                              tableName: 'Operation'
+                          },
+                          key: 'id'
+                      },
+                      allowNull: false
+                  },
+              }, { transaction: t })
           ])
       })
   },
