@@ -132,7 +132,10 @@ const TransactionController = {
         if (response.status === 202) {
           await operationService.update({ id: operation.id }, { status: 'processing' })
           await operationHistoryService.create({ operationId: operation.id, status: 'processing'})
-          return res.status(201).json(await transactionService.findById(parseInt(transaction.id)))
+          const updatedTransaction = await transactionService.findById(parseInt(transaction.id))
+          return res.status(201).render('confirm.twig', {
+            urlDirectionConfirm: updatedTransaction.company.urlDirectionConfirm
+          })
         } else {
           await operationService.update({ id: operation.id }, { status: 'psp-error' })
           await operationHistoryService.create({ operationId: operation.id, status: 'psp-error'})
@@ -153,14 +156,19 @@ const TransactionController = {
     if (!transaction) return res.sendStatus(404)
 
     try {
-      const updatedTransaction = await transactionService.update({ id: transaction.id }, { status: 'canceled' })         
-      return res.status(201).json(updatedTransaction)
+      await transactionService.update({ id: transaction.id }, { status: 'canceled' })         
+      res.status(201).render('cancel.twig', {
+        urlDirectionCancel: transaction.company.urlDirectionCancel
+      })
     } catch (err) {
       next(err)
     }
   },
   pspConfirm: async (req, res, next) => {
-    const operation = await operationService.findById(req.params.operationId)
+    if (!req.body) return res.sendStatus(422)
+
+    const { operationId } = req.body
+    const operation = await operationService.findById(operationId)
 
     if (!operation) return res.sendStatus(404)
 
@@ -268,6 +276,21 @@ const TransactionController = {
     } catch (err) {
       next(err)
     }
+  },
+  sdk: async (req, res, next) => {
+    const transactionToken = req.params.token
+    const clientToken = req.query.clientToken
+    const origin = req.headers.referer
+
+    const transaction = await transactionService.findByToken(transactionToken)
+
+    const isTransactionValid = transaction.status === 'created' && transaction.operations.length === 0
+
+    if (transaction.company.clientToken !== clientToken || !isTransactionValid || origin !== transaction.company.url) { return res.sendStatus(403) }
+
+    res.render('sdk.twig', {
+      transactionToken
+    })
   }
 }
 

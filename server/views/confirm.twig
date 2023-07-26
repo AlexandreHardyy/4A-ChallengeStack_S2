@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Paygate SDK</title>
+</head>
+<body>
+    <h1>Your purchase has been accepted. You will be redirected in 5 sec</h1>
+</body>
+<script>
+    const urlDirectionConfirm = '{{ urlDirectionConfirm }}'
+    setTimeout(() => {
+        window.parent.postMessage(urlDirectionConfirm, '*')
+        window.close()
+    }, 5000)
+</script>
+</html>

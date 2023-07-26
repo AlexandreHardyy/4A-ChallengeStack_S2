@@ -21,6 +21,7 @@
     "node-mocks-http": "^1.12.2",
     "pg": "^8.11.0",
     "sequelize": "^6.31.1",
+    "twig": "^1.16.0",
     "uuidv4": "^6.2.13"
   },
   "devDependencies": {
