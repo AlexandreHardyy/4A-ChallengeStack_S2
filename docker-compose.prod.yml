@@ -46,43 +46,41 @@ services:
     build:
       context: ./Client
       dockerfile: Dockerfile
+      args:
+        BASEURL_SERVER: ${BASEURL_SERVER}
     depends_on:
       - mongo
       - db
     ports:
       - 3003:3000
-    environment:
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/app
-      DATABASE_MONGO_URL: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017
-      JWT_SECRET: ${JWT_SECRET}
-      BASEURL_SERVER: ${BASEURL_SERVER}
 
   psp:
     build:
       context: ./psp
       dockerfile: Dockerfile
     ports:
-      - 3001:3000
+      - 3001:3001
 
   merchant-server:
     build:
       context: ./merchant-server
       dockerfile: Dockerfile
     ports:
-      - 3009:3000
+      - 3009:3009
     environment:
       API_TOKEN: ${API_TOKEN}
+      BASEURL_SERVER: ${BASEURL_SERVER}
 
   merchant-website:
     build:
       context: ./merchant-website
       dockerfile: Dockerfile
+      args:
+        CLIENT_TOKEN: ${CLIENT_TOKEN}
+        BASEURL_CLIENT: ${BASEURL_CLIENT}
+        BASEURL_MERCHANT_SERVER: ${BASEURL_MERCHANT_SERVER}
     ports:
       - 3002:3000
-    environment:
-      CLIENT_TOKEN: ${CLIENT_TOKEN}
-      BASEURL_CLIENT: ${BASEURL_CLIENT}
-      BASEURL_MERCHANT_SERVER: ${BASEURL_MERCHANT_SERVER}
 
   adminer:
     image: adminer

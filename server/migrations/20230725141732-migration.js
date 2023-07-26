@@ -6,7 +6,7 @@ module.exports = {
   async up (queryInterface, Sequelize) {
       return queryInterface.sequelize.transaction(t => {
           return Promise.all([
-              queryInterface.createTable('Role', {
+              queryInterface.createTable('role', {
                   id: {
                       type: Sequelize.INTEGER,
                       primaryKey: true,
@@ -16,16 +16,16 @@ module.exports = {
                   createdAt: {
                       type: Sequelize.DATE,
                       defaultValue: Sequelize.NOW,
-                      field: 'created_at',
+                      field: 'createdAt',
                   },
                   updatedAt: {
                       type: Sequelize.DATE,
                       defaultValue: Sequelize.NOW,
                       onUpdate : Sequelize.NOW,
-                      field: 'updated_at',
+                      field: 'updatedAt',
                   },
               }, { transaction: t }),
-              queryInterface.createTable('Company', {
+              queryInterface.createTable('company', {
                   id: {
                       type: Sequelize.INTEGER,
                       primaryKey: true,
@@ -54,7 +54,7 @@ module.exports = {
                       field: 'updated_at',
                   },
               }, { transaction: t }),
-              queryInterface.createTable('User', {
+              queryInterface.createTable('user', {
                   id: {
                       type: Sequelize.INTEGER,
                       primaryKey: true,
@@ -79,21 +79,37 @@ module.exports = {
                       type: Sequelize.DataTypes.INTEGER,
                       references: {
                           model: {
-                              tableName: 'Company'
+                              tableName: 'company'
                           },
                           key: 'id'
                       },
-                      allowNull: false
+                  },
+                  CompanyId: {
+                      type: Sequelize.DataTypes.INTEGER,
+                      references: {
+                          model: {
+                              tableName: 'company'
+                          },
+                          key: 'id'
+                      },
                   },
                   roleId: {
                       type: Sequelize.DataTypes.INTEGER,
                       references: {
                           model: {
-                              tableName: 'Role'
+                              tableName: 'role'
                           },
                           key: 'id'
                       },
-                      allowNull: false
+                  },
+                  RoleId: {
+                      type: Sequelize.DataTypes.INTEGER,
+                      references: {
+                          model: {
+                              tableName: 'role'
+                          },
+                          key: 'id'
+                      },
                   },
                   createdAt: {
                       type: Sequelize.DATE,
@@ -107,7 +123,7 @@ module.exports = {
                       field: 'updated_at',
                   }
               }, { transaction: t }),
-              queryInterface.createTable('Transaction', {
+              queryInterface.createTable('transaction', {
                   id: {
                       type: Sequelize.INTEGER,
                       primaryKey: true,
@@ -135,14 +151,14 @@ module.exports = {
                     type: Sequelize.DataTypes.INTEGER,
                     references: {
                         model: {
-                            tableName: 'Company'
+                            tableName: 'company'
                         },
                         key: 'id'
                     },
                     allowNull: false
                 },
               }, { transaction: t }),
-              queryInterface.createTable('Operation', {
+              queryInterface.createTable('operation', {
                 id: {
                     type: Sequelize.INTEGER,
                     primaryKey: true,
@@ -166,14 +182,14 @@ module.exports = {
                     type: Sequelize.DataTypes.INTEGER,
                     references: {
                         model: {
-                            tableName: 'Transaction'
+                            tableName: 'transaction'
                         },
                         key: 'id'
                     },
                     allowNull: false
                 },
               }, { transaction: t }),
-              queryInterface.createTable('TransactionHistory', {
+              queryInterface.createTable('transactionHistory', {
                 id: {
                     type: Sequelize.INTEGER,
                     primaryKey: true,
@@ -185,18 +201,27 @@ module.exports = {
                     defaultValue: Sequelize.NOW,
                     field: 'created_at',
                 },
+                Date: {
+                    type: Sequelize.DATE,
+                    defaultValue: Sequelize.NOW,
+                     field: 'createdAt',
+                },
+                updateAt: {
+                    type: Sequelize.DATE,
+                    defaultValue: Sequelize.NOW,
+                    field: 'updatedAt',
+                },
                 transactionId: {
                     type: Sequelize.DataTypes.INTEGER,
                     references: {
                         model: {
-                            tableName: 'Transaction'
+                            tableName: 'transaction'
                         },
                         key: 'id'
                     },
-                    allowNull: false
                 },
               }, { transaction: t }),
-              queryInterface.createTable('OperationHistory', {
+              queryInterface.createTable('operationHistory', {
                   id: {
                       type: Sequelize.INTEGER,
                       primaryKey: true,
@@ -208,15 +233,24 @@ module.exports = {
                       defaultValue: Sequelize.NOW,
                       field: 'created_at',
                   },
+                  Date: {
+                      type: Sequelize.DATE,
+                      defaultValue: Sequelize.NOW,
+                      field: 'createdAt',
+                  },
+                  updateAt: {
+                      type: Sequelize.DATE,
+                      defaultValue: Sequelize.NOW,
+                      field: 'updatedAt',
+                  },
                   operationId: {
                       type: Sequelize.DataTypes.INTEGER,
                       references: {
                           model: {
-                              tableName: 'Operation'
+                              tableName: 'operation'
                           },
                           key: 'id'
                       },
-                      allowNull: false
                   },
               }, { transaction: t })
           ])

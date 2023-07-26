@@ -32,7 +32,7 @@ export default defineNuxtConfig({
     },
     runtimeConfig: {
         public: {
-          apiBase: process.env.BASEURL_SERVER || 'http://paygate.live:3000',
+          apiBase: process.env.BASEURL_SERVER || 'http://localhost:3000',
         }
     }
 });

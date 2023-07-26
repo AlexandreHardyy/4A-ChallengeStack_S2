@@ -15,7 +15,7 @@ app.post("/", async (req, res, next) => {
 	}
 
 	try {
-		await fetch(`${process.env.BASEURL_SERVER}/transaction/`, {
+		await fetch(`http://server:3000/transaction/`, {
 			method: 'POST',
 			headers: {
 				"Content-Type": "application/json"

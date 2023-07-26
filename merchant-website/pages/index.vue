@@ -54,7 +54,7 @@
         return acc + curr.price
       }, 0)
     }).then( (result) => {
-        $paygate(process.env.CLIENT_TOKEN, result.transaction.token)
+        $paygate(config.public.clientToken, result.transaction.token)
     }).catch( (error) => {
         console.error('Error sending purchase', error)
     });
