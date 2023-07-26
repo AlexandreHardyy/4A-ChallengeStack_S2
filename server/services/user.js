@@ -30,7 +30,16 @@ module.exports = {
     return User.create(data)
   },
   update: async function (criteria, data) {
-    const [nb, users = []] = await User.update(data, {
+    const user = await User.findByPk(criteria.id)
+    if (!user) {
+      return []
+    }
+    const dataToUpdate = {
+      ...data,
+      isValid: user.isValid,
+      roleId: user.roleId
+    }
+    const [nb, users = []] = await User.update(dataToUpdate, {
       where: criteria,
       returning: true,
       individualHooks: true,

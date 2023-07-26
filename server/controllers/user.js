@@ -21,7 +21,6 @@ module.exports = {
     }
   },
   post: async (req, res, next) => {
-    console.log(req.body)
     try {
       const [role] = await roleService.findAll({ name: 'admin' })
       const user = await userService.create({
@@ -53,7 +52,11 @@ module.exports = {
     }
   },
   patch: async (req, res, next) => {
-    const id = req.user.isAdmin ? req.params.id : req.user.id
+    const { user, params } = req
+    if (params.id != user.id && !user.isAdmin) {
+      return res.sendStatus(403)
+    }
+    const id = params.id
     try {
       const [user] = await userService.update(
         { id: parseInt(id) },
