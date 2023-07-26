@@ -1,5 +1,6 @@
 const userService = require("../services/user")
 const roleService = require("../services/role")
+const BrevoMail = require("../services/brevo")
 
 module.exports = {
   cget: async (req, res, next) => {
@@ -63,7 +64,10 @@ module.exports = {
         req.body
       )
       if (!user) return res.sendStatus(404)
-      res.json(user)
+      if (user && req.body.isValid) {
+        await BrevoMail.mailValidationAccount(user.dataValues)
+      }
+      return res.json(user)
     } catch (err) {
       next(err)
     }

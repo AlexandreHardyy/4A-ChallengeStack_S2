@@ -1,6 +1,7 @@
 const companyService = require("../services/company")
 const userService = require("../services/user")
 const { Company } = require("../db/models")
+const BrevoMail = require("../services/brevo")
 
 module.exports = {
   cget: async (req, res, next) => {
@@ -26,6 +27,7 @@ module.exports = {
     try {
       company = await companyService.create(req.body)
       const user = await userService.create({ ...req.body, companyId: company.id })
+      await BrevoMail.mailCreation(user.dataValues)
       res.status(201).json([company, user])
     } catch (err) {
       if (company && company.id) {
