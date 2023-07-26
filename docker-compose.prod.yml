@@ -88,12 +88,16 @@ services:
       dockerfile: Dockerfile
     ports:
       - '80:80'
+      - '443:443'
     depends_on:
       - server
       - client
       - psp
       - merchant-server
       - merchant-website
+    volumes:
+      - /etc/letsencrypt/live/paygate.live/:/etc/nginx/cert
+    restart: always
 
 volumes:
   db-data: {}
