@@ -70,6 +70,11 @@ const filters = ref({
           </span>
         </div>
       </template>
+      <Column v-if="route.path.includes('admin')" header="Company name" sortable>
+        <template #body="slotProps">
+            <span>{{ slotProps.data.company.name }}</span>
+        </template>
+      </Column>
       <Column field="name" header="Name" sortable/>
       <Column field="email" header="Email" sortable/>
       <Column field="amount" header="Amount" sortable/>
@@ -91,11 +96,18 @@ const filters = ref({
       </Column>
       <Column header="Actions">
         <template #body="slotProps">
-          <nuxt-link :to="{ path: `/${route.path.includes('admin') ? 'admin' : 'back'}/transaction/${slotProps.data.id}`}">
-            <Button  v-tooltip.bottom="'Show is view'" type="button" class="tw-mr-2" severity="info">
-              <i class="pi pi-eye"/>
-            </Button>
-          </nuxt-link>
+          <div class="tw-flex tw-gap-2">
+            <nuxt-link :to="{ path: `/${route.path.includes('admin') ? 'admin' : 'back'}/transaction/${slotProps.data.id}`}">
+              <Button  v-tooltip.bottom="'Show is view'" type="button" class="tw-mr-2" severity="info">
+                <i class="pi pi-eye"/>
+              </Button>
+            </nuxt-link>
+            <nuxt-link v-if="route.path.includes('admin')" :to="{ path: `/admin/company/${slotProps.data.company.id}`}">
+              <Button  v-tooltip.bottom="'Show company'" type="button" class="tw-mr-2" severity="info">
+                <i class="pi pi-briefcase"/>
+              </Button>
+            </nuxt-link>
+          </div>
         </template>
       </Column>
     </DataTable>

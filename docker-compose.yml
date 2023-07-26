@@ -60,7 +60,7 @@ services:
     ports:
       - 3009:3009
     environment:
-      API_TOKEN: 614a3c0f-ae78-4685-b1f6-986c646b906d
+      API_TOKEN: 81e71ee1-42d5-4181-a7c5-5664994dd116
     working_dir: /usr/src/app
     volumes:
       - ./merchant-server:/usr/src/app

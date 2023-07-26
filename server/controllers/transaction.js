@@ -11,6 +11,8 @@ const TransactionController = {
     const { company, amount } = ( req.body )
 
     if (!company || !amount) return res.sendStatus(422)
+
+    if (amount <= 0) return res.sendStatus(422)
     
     const commission = Math.round(amount * 0.011 * 100) / 100
 
@@ -67,7 +69,7 @@ const TransactionController = {
   },
   getByCompanyId: async (req, res, next) => {
     if (!req.params.id) return res.sendStatus(422)
-    if (Number(req.params.id) !== req.user.companyId) return res.sendStatus(403)
+    if (Number(req.params.id) !== req.user.companyId && !req.user.isAdmin) return res.sendStatus(403)
 
     req.query.companyId = req.params.id
 
@@ -93,7 +95,7 @@ const TransactionController = {
     const sanitizedCbNumber = cbNumber.trim().split('-').join('').split(' ').join('')
     const sanitizedCurrency = currency.trim().toUpperCase()
 
-    if (sanitizedCbNumber.length !== 16 || sanitizedCurrency.length !== 3) return res.sendStatus(400)
+    if (sanitizedCbNumber.length !== 16 || sanitizedCurrency.length !== 3 || cvc.length > 3) return res.sendStatus(400)
 
     if (price < 0) return res.sendStatus(400)
 
