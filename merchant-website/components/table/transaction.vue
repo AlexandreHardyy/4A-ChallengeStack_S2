@@ -1,13 +1,11 @@
 <script setup>
 import { ref } from 'vue';
-import {FilterMatchMode} from "primevue/api";
+import { FilterMatchMode } from "primevue/api";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
-import useFormatDate from "../../services/format/useFormatDate";
 
 const toast = useToast();
 const confirm = useConfirm();
-const route = useRoute()
 
 const confirmRefund = (event) => {
   confirm.require({
@@ -70,11 +68,6 @@ const filters = ref({
           </span>
         </div>
       </template>
-      <Column v-if="route.path.includes('admin')" header="Company name" sortable>
-        <template #body="slotProps">
-            <span>{{ slotProps.data.company.name }}</span>
-        </template>
-      </Column>
       <Column field="name" header="Name" sortable/>
       <Column field="email" header="Email" sortable/>
       <Column field="amount" header="Amount" sortable/>
@@ -84,30 +77,12 @@ const filters = ref({
           <Tag :value="slotProps.data.status" :severity="getSeverity(slotProps.data)"/>
         </template>
       </Column>
-      <Column field="createdAt" header="Created At" sortable>
-        <template #body="slotProps">
-          <span>{{ useFormatDate(slotProps.data.createdAt) }}</span>
-        </template>
-      </Column>
-      <Column field="updatedAt" header="Updated At" sortable>
-        <template #body="slotProps">
-          <span>{{ useFormatDate(slotProps.data.updatedAt) }}</span>
-        </template>
-      </Column>
+      <Column field="createdAt" header="Created At" sortable/>
+      <Column field="updatedAt" header="Updated At" sortable/>
       <Column header="Actions">
         <template #body="slotProps">
-          <div class="tw-flex tw-gap-2">
-            <nuxt-link :to="{ path: `/${route.path.includes('admin') ? 'admin' : 'back'}/transaction/${slotProps.data.id}`}">
-              <Button  v-tooltip.bottom="'Show is view'" type="button" class="tw-mr-2" severity="info">
-                <i class="pi pi-eye"/>
-              </Button>
-            </nuxt-link>
-            <nuxt-link v-if="route.path.includes('admin')" :to="{ path: `/admin/company/${slotProps.data.company.id}`}">
-              <Button  v-tooltip.bottom="'Show company'" type="button" class="tw-mr-2" severity="info">
-                <i class="pi pi-briefcase"/>
-              </Button>
-            </nuxt-link>
-          </div>
+          <Button v-if="slotProps.data.status === 'confirm'" @click="confirmRefund($event)" icon="pi pi-" :label="slotProps.data.action"></Button>
+          <div>no action availables </div>
         </template>
       </Column>
     </DataTable>

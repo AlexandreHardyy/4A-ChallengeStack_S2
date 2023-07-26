@@ -5,10 +5,10 @@ const { adminAuth, userAuth } = require("../middlewares/auth")
 
 const router = Router()
 
-router.get("/:token", transactionController.get)
 router.post("/psp-confirm/:operationId",transactionController.pspConfirm)
 
 // USER
+router.get("/:id", userAuth, transactionController.get)
 router.get("/company/:id", userAuth, transactionController.getByCompanyId)
 
 // ADMIN

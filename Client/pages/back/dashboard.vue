@@ -137,117 +137,115 @@ function getPastMonths(numOfMonths) {
   return months;
 }
 
-if (process.client) {
-  onMounted(async () => {
-    const { data } = await transactionService.getByCompanyId(user.companyId)
-    transactionData.value = data.value
+onMounted(async () => {
+  const { data } = await transactionService.getByCompanyId(user.companyId)
+  transactionData.value = data.value
 
-    salesTimeChartData.value = setSalesTimeChartData();
-    statusChartData.value = setStatusChartData();
-    statusTimeChartData.value = setStatusTimeChartData();
-    statusTimeChartOptions.value = setStatusTimeChartOptions();
-  })
+  salesTimeChartData.value = setSalesTimeChartData();
+  statusChartData.value = setStatusChartData();
+  statusTimeChartData.value = setStatusTimeChartData();
+  statusTimeChartOptions.value = setStatusTimeChartOptions();
+})
 
-  const setSalesTimeChartData = () => {
-    return {
-      labels: getPastMonths(8),
-      datasets: [{
-        data: totalTransactionsPerMonth(transactionData.value),
-        borderColor: 'rgb(75, 192, 192)',
-        tension: 0.1
-      }]
-    };
+const setSalesTimeChartData = () => {
+  return {
+    labels: getPastMonths(8),
+    datasets: [{
+      data: totalTransactionsPerMonth(transactionData.value),
+      borderColor: 'rgb(75, 192, 192)',
+      tension: 0.1
+    }]
   };
+};
 
-  const setStatusChartData = () => {
-    const documentStyle = getComputedStyle(document.body);
+const setStatusChartData = () => {
+  const documentStyle = getComputedStyle(document.body);
 
-    return {
-      labels: ['Created', 'Confirmed', 'Canceled', 'Refunded'],
-      datasets: [
-        {
-          data: [
-            retrieveTransactions(transactionData.value, 'created'),
-            retrieveTransactions(transactionData.value, 'finished'),
-            retrieveTransactions(transactionData.value, 'canceled'),
-            retrieveTransactions(transactionData.value, 'refunded')
-          ],
-          backgroundColor: [documentStyle.getPropertyValue('--yellow-500'), documentStyle.getPropertyValue('--green-500'), "#f36d6d", documentStyle.getPropertyValue('--blue-500')],
-          hoverBackgroundColor: [documentStyle.getPropertyValue('--yellow-400'), documentStyle.getPropertyValue('--green-400'), "#f36d6d", documentStyle.getPropertyValue('--blue-400')]
-        }
-      ]
-    };
-  };
-
-  const setStatusTimeChartData = () =>  {
-    const documentStyle = getComputedStyle(document.documentElement);
-
-    return {
-      labels: getPastMonths(12),
-      datasets: [
-        {
-          type: 'bar',
-          label: 'Created',
-          backgroundColor: documentStyle.getPropertyValue('--yellow-500'),
-          data: retrieveTransactionsPerMonth(transactionData.value, 'created')
-        },
-        {
-          type: 'bar',
-          label: 'Confirmed',
-          backgroundColor: documentStyle.getPropertyValue('--green-500'),
-          data: retrieveTransactionsPerMonth(transactionData.value, 'finished')
-        },
-        {
-          type: 'bar',
-          label: 'Canceled',
-          backgroundColor: "#f36d6d",
-          data: retrieveTransactionsPerMonth(transactionData.value, 'canceled')
-        },
-        {
-          type: 'bar',
-          label: 'Refunded',
-          backgroundColor: documentStyle.getPropertyValue('--blue-500'),
-          data: retrieveTransactionsPerMonth(transactionData.value, 'refunded')
-        }
-      ]
-    };
-  };
-
-  const setStatusTimeChartOptions = () =>  {
-    return {
-      maintainAspectRatio: true,
-      aspectRatio: 4,
-      plugins: {
-        tooltips: {
-          mode: 'index',
-          intersect: false
-        },
-        legend: {
-          labels: { color: 'white' }
-        },
-        title: {
-          display: true,
-          text: 'transactions status per month',
-          font: {
-            size: 24,
-            weight: 'bold'
-          },
-          color: 'white'
-        },
-      },
-      scales: {
-        x: {
-          stacked: true,
-          ticks: { color: 'white' },
-        },
-        y: {
-          stacked: true,
-          ticks: { color: 'white' },
-        }
+  return {
+    labels: ['Created', 'Confirmed', 'Canceled', 'Refunded'],
+    datasets: [
+      {
+        data: [
+          retrieveTransactions(transactionData.value, 'created'),
+          retrieveTransactions(transactionData.value, 'finished'),
+          retrieveTransactions(transactionData.value, 'canceled'),
+          retrieveTransactions(transactionData.value, 'refunded')
+        ],
+        backgroundColor: [documentStyle.getPropertyValue('--yellow-500'), documentStyle.getPropertyValue('--green-500'), "#f36d6d", documentStyle.getPropertyValue('--blue-500')],
+        hoverBackgroundColor: [documentStyle.getPropertyValue('--yellow-400'), documentStyle.getPropertyValue('--green-400'), "#f36d6d", documentStyle.getPropertyValue('--blue-400')]
       }
-    };
+    ]
   };
-}
+};
+
+const setStatusTimeChartData = () =>  {
+  const documentStyle = getComputedStyle(document.documentElement);
+
+  return {
+    labels: getPastMonths(12),
+    datasets: [
+      {
+        type: 'bar',
+        label: 'Created',
+        backgroundColor: documentStyle.getPropertyValue('--yellow-500'),
+        data: retrieveTransactionsPerMonth(transactionData.value, 'created')
+      },
+      {
+        type: 'bar',
+        label: 'Confirmed',
+        backgroundColor: documentStyle.getPropertyValue('--green-500'),
+        data: retrieveTransactionsPerMonth(transactionData.value, 'finished')
+      },
+      {
+        type: 'bar',
+        label: 'Canceled',
+        backgroundColor: "#f36d6d",
+        data: retrieveTransactionsPerMonth(transactionData.value, 'canceled')
+      },
+      {
+        type: 'bar',
+        label: 'Refunded',
+        backgroundColor: documentStyle.getPropertyValue('--blue-500'),
+        data: retrieveTransactionsPerMonth(transactionData.value, 'refunded')
+      }
+    ]
+  };
+};
+
+const setStatusTimeChartOptions = () =>  {
+  return {
+    maintainAspectRatio: true,
+    aspectRatio: 4,
+    plugins: {
+      tooltips: {
+        mode: 'index',
+        intersect: false
+      },
+      legend: {
+        labels: { color: 'white' }
+      },
+      title: {
+        display: true,
+        text: 'transactions status per month',
+        font: {
+          size: 24,
+          weight: 'bold'
+        },
+        color: 'white'
+      },
+    },
+    scales: {
+      x: {
+        stacked: true,
+        ticks: { color: 'white' },
+      },
+      y: {
+        stacked: true,
+        ticks: { color: 'white' },
+      }
+    }
+  };
+};
 </script>
 
 <template>

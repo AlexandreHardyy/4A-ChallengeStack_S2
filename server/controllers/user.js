@@ -1,4 +1,5 @@
 const userService = require("../services/user")
+const roleService = require("../services/role")
 
 module.exports = {
   cget: async (req, res, next) => {
@@ -21,7 +22,12 @@ module.exports = {
   },
   post: async (req, res, next) => {
     try {
-      const user = await userService.create(req.body)
+      const [role] = await roleService.findAll({ name: 'admin' })
+      const user = await userService.create({
+        ...req.body,
+        isValid: true,
+        roleId: role.id
+      })
       res.status(201).json(user)
     } catch (err) {
       next(err)
@@ -45,22 +51,12 @@ module.exports = {
       next(err)
     }
   },
-  put: async (req, res, next) => {
-    try {
-      const nbRemoved = await userService.remove({
-        id: parseInt(req.params.id),
-      })
-      const user = await userService.create({
-        id: parseInt(req.params.id),
-        ...req.body,
-      })
-      res.status(nbRemoved ? 200 : 201).json(user)
-    } catch (err) {
-      next(err)
-    }
-  },
   patch: async (req, res, next) => {
-    const id = req.user.isAdmin ? req.params.id : req.user.id
+    const { user, params } = req
+    if (params.id != user.id && !user.isAdmin) {
+      return res.sendStatus(403)
+    }
+    const id = params.id
     try {
       const [user] = await userService.update(
         { id: parseInt(id) },
