@@ -29,15 +29,16 @@ defineProps(['transactions'])
 
 const getSeverity = (transaction) => {
   switch (transaction.status) {
-    case 'confirm':
-      return 'success';
-
-    case 'refund':
+    case 'created':
       return 'secondary';
-
-    case 'cancel':
+    case 'canceled':
+      return 'warning';
+    case 'captured':
+      return 'success';
+    case 'partially-refunded':
+      return 'info';
+    case 'refunded':
       return 'danger';
-
     default:
       return null;
   }

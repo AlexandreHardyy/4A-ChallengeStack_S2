@@ -276,7 +276,6 @@ const setStatusTimeChartOptions = () =>  {
         <p class="tw-text-sm tw-pl-3 tw-pb-3">Today's transactions</p>
         <div>
           <div class="tw-p-3 tw-flex tw-justify-between">
-            <p>% change</p>
             <i class="mdi mdi-arrow-top-right tw-text-xl"></i>
           </div>
         </div>
@@ -286,7 +285,6 @@ const setStatusTimeChartOptions = () =>  {
         <p class="tw-text-sm tw-pl-3 tw-pb-3">Total amount of sales</p>
         <div class="tw-bg-primary-light">
           <div class="tw-p-3 tw-flex tw-justify-between">
-            <p>% change</p>
             <i class="mdi mdi-arrow-top-right tw-text-xl"></i>
           </div>
         </div>
@@ -296,7 +294,6 @@ const setStatusTimeChartOptions = () =>  {
         <p class="tw-text-sm tw-pl-3 tw-pb-3">Total amount of refunded transactions</p>
         <div class="tw-bg-primary-light">
           <div class="tw-p-3 tw-flex tw-justify-between">
-            <p>% change</p>
             <i class="mdi mdi-arrow-top-right tw-text-xl"></i>
           </div>
         </div>
@@ -307,7 +304,6 @@ const setStatusTimeChartOptions = () =>  {
         <p class="tw-text-sm tw-pl-3 tw-pb-3">profits over last month</p>
         <div class="tw-bg-primary-light">
           <div class="tw-p-3 tw-flex tw-justify-between">
-            <p>% change</p>
             <i class="mdi mdi-arrow-top-right tw-text-xl"></i>
           </div>
         </div>

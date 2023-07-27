@@ -85,6 +85,16 @@
             legend: {
               display: false
             }
+          },
+          scales: {
+            x: {
+              stacked: true,
+              ticks: { color: 'white' },
+            },
+            y: {
+              stacked: true,
+              ticks: { color: 'white' },
+            }
           }
         }
       }
@@ -283,26 +293,22 @@
   <div>
       <div class="tw-flex tw-items-center tw-gap-1.5">
         <h2>Datas from : </h2>
-        <Calendar v-model="dates" selectionMode="range" :manualInput="false" showButtonBar @update:modelValue="onDateChange"/>
+        <Calendar v-model="dates" selectionMode="range" :manualInput="false" showButtonBar @update:modelValue="onDateChange" style="width: 13em"/>
       </div>
       <div class="tw-grid tw-grid-cols-3 tw-gap-3 tw-mt-3">
-          <Card @click="onSelectedMetricChange('Revenues')">
+          <Card @click="onSelectedMetricChange('Revenues')" class="card">
               <template #title>Revenues</template>
               <template #content>
-                  <p>
-                      {{ revenues }}
-                  </p>
+                  <p>{{ revenues }} €</p>
               </template>
           </Card>
-          <Card @click="onSelectedMetricChange('Created transaction')">
+          <Card @click="onSelectedMetricChange('Created transaction')" class="card">
               <template #title>Created Transaction</template>
               <template #content>
-                  <p>
-                      {{ createdTransactions }}
-                  </p>
+                  <p>{{ createdTransactions }}</p>
               </template>
           </Card>
-          <Card @click="onSelectedMetricChange('Status transaction')">
+          <Card @click="onSelectedMetricChange('Status transaction')" class="card">
               <template #title>Transaction Status</template>
               <template #content>
                   <p>Finished: {{ finishedTransactions }}</p>
@@ -313,7 +319,7 @@
               </template>
           </Card>
       </div>
-      <Card class="tw-mt-4">
+      <Card class="tw-mt-4 card">
         <template #title> {{ selectedMetric }} from {{`${ formatDateFr(dates[0]) } to ${ formatDateFr(dates[1]) }`}}</template>
         <template #content>
           <canvas ref="chart"></canvas>
@@ -321,3 +327,12 @@
       </Card>
   </div>
 </template>
+
+<style scoped>
+.card {
+  background-color: rgba(150, 152, 158, 0.62);
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+</style>
