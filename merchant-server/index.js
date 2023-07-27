@@ -37,14 +37,15 @@ app.post("/transaction", async (req, res, next) => {
 	}
 })
 
-//route refund
-app.get("/refund", async (req, res, next) => {
-	const { amount } = req.body
+app.post("/transaction/:token/refund", async (req, res, next) => {
 
-	if ( !amount ) return res.sendStatus(422)
+	const { amount } = req.body
+	const transactionToken = req.params.token
+
+	if ( !amount || !transactionToken ) return res.sendStatus(422)
 
 	try {
-		await fetch(`http://server:3000/refund/`, {
+		await fetch(`http://server:3000/transaction/${transactionToken}/refund/`, {
 			method: 'POST',
 			headers: {
 				"Content-Type": "application/json",
@@ -55,8 +56,9 @@ app.get("/refund", async (req, res, next) => {
 			})
 		}).then(async (response) => {
 			if (response.status === 201) {
-				console.log(await response.json())
 				return res.status(201).json(await response.json())
+			} else {
+				return res.sendStatus(response.status)
 			}
 		}).catch(() => {
 			return res.sendStatus(500)
@@ -66,18 +68,19 @@ app.get("/refund", async (req, res, next) => {
 	}
 })
 
-//route orders
-app.get("/orders", async (req, res, next) => {
+app.get("/transaction/orders", async (req, res, next) => {
 	try {
 		await fetch(`http://server:3000/transaction/`, {
-			method: 'POST',
+			method: 'GET',
 			headers: {
 				"Content-Type": "application/json",
 				"Authorization": `Bearer ${process.env.API_TOKEN}`
-			},
+			}
 		}).then(async (response) => {
-			if (response.status === 201) {
-				return res.status(201).json(await response.json())
+			if (response.status === 200) {
+				return res.status(200).json(await response.json())
+			} else {
+				return res.sendStatus(response.status)
 			}
 		}).catch(() => {
 			return res.sendStatus(500)
@@ -87,7 +90,7 @@ app.get("/orders", async (req, res, next) => {
 	}
 })
 
-app.use(function(req, res, next) {
+app.use(function(req, res) {
   return res.status(404).json({ error: 'this route doesn\'t exist.' })
 });
 

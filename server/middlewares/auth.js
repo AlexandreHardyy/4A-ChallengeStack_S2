@@ -56,6 +56,7 @@ const dualAuth = (req, res, next) => {
     } else {
       req.user = user
     }
+
     next()
   })
 }

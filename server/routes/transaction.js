@@ -15,8 +15,6 @@ router.get("/", dualAuth,  transactionController.cget)
 
 // SDK AUTH API TOKEN
 router.post("/", checkCompanyApiToken, transactionController.post)
-router.get("/refund", checkCompanyApiToken, transactionController.refund)
-router.get("/orders", checkCompanyApiToken, transactionController.refund)
-
+router.post("/:token/refund", checkCompanyApiToken, transactionController.refund)
 
 module.exports = router
