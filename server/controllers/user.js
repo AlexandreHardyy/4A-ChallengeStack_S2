@@ -54,9 +54,13 @@ module.exports = {
   },
   patch: async (req, res, next) => {
     const { user, params } = req
-    if (params.id != user.id && !user.isAdmin) {
+    const body = req.body
+    if (params.id !== user.id && !user.isAdmin) {
       return res.sendStatus(403)
     }
+    if ('roleId' in body && !user.isAdmin) { delete body.roleId}
+    if ('isValid' in body && !user.isAdmin) { delete body.isValid}
+
     const id = params.id
     try {
       const [user] = await userService.update(

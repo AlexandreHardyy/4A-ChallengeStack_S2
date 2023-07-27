@@ -58,9 +58,9 @@ const TransactionController = {
   },
   get: async (req, res, next) => {
     try {
-      if (req.user.companyId !== req.params.id && !req.user.isAdmin) { return res.sendStatus(403) }
-
       const transaction = await transactionService.findById(req.params.id)
+      if (req.user.companyId !== transaction.company.id && !req.user.isAdmin) { return res.sendStatus(403) }
+
       if (!transaction) return res.sendStatus(404)
       res.json(transaction)
     } catch (err) {

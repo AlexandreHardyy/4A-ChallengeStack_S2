@@ -82,11 +82,22 @@ services:
     ports:
       - 3002:3000
 
-  adminer:
-    image: adminer
-    restart: always
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
     ports:
-      - 8080:8080
+      - '80:80'
+      - '443:443'
+    depends_on:
+      - server
+      - client
+      - psp
+      - merchant-server
+      - merchant-website
+    volumes:
+      - /etc/letsencrypt/live/paygate.live/:/etc/nginx/cert
+    restart: always
 
 volumes:
   db-data: {}
