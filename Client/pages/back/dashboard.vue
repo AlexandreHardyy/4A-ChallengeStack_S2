@@ -75,7 +75,7 @@ const retrieveTransactions = (transactions, status) => {
 const retrieveAmountTransactions = (transactions) => {
   if (!transactions) return 0
   return transactions.filter(transaction => transaction.status === 'captured' || transaction.status === 'partially-refunded' || transaction.status === 'refunded').reduce((acc, transaction) => {
-    return acc + transaction.finalAmount
+    return acc + transaction.amount
   }, 0)
 }
 
