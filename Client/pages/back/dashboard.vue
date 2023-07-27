@@ -77,7 +77,7 @@ const retrieveTransactions = (transactions, status) => {
 const retrieveAmountTransactions = (transactions) => {
   if (!transactions) return 0
   return transactions.filter(transaction => transaction.status === 'captured' || transaction.status === 'partially-refunded' || transaction.status === 'refunded').reduce((acc, transaction) => {
-    return acc + transaction.amount
+    return acc + transaction.finalAmount
   }, 0)
 }
 
@@ -323,17 +323,17 @@ const setStatusTimeChartOptions = () =>  {
 
       <!--Line chart sales status per time-->
       <div class="card salesTimeChart">
-        <Chart type="line" :data="salesTimeChartData" :options="salesTimeChartOptions" class="h-30rem" />
+        <ChartPrime type="line" :data="salesTimeChartData" :options="salesTimeChartOptions" class="h-30rem" />
       </div>
 
       <!--Donut chart transactions status-->
       <div class="card statusChart tw-flex tw-justify-center tw-flex-col">
-        <Chart type="doughnut" :data="statusChartData" :options="statusChartOptions" class="md:w-30rem" />
+        <ChartPrime type="doughnut" :data="statusChartData" :options="statusChartOptions" class="md:w-30rem" />
       </div>
 
       <!--Bar chart transactions status per time-->
       <div class="card statusTimeChart tw-flex tw-justify-center">
-        <Chart type="bar" :data="statusTimeChartData" :options="statusTimeChartOptions" class="md:h-30rem" />
+        <ChartPrime type="bar" :data="statusTimeChartData" :options="statusTimeChartOptions" class="md:h-30rem" />
       </div>
     </div>
   </div>
