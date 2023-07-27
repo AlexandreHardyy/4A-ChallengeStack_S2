@@ -77,7 +77,7 @@ const toogleCompany = async (accept) => {
         <label for="username">Email</label>
         <InputText :value="user.email" disabled/>
       </div>
-      <NuxtLink :to="{ path: `/admin/company/transaction/${user.Company.id}`, params: { id: user.Company.id }}" class="btn"><Button label="Transactions"/></NuxtLink>
+      <NuxtLink :to="{ path: `/admin/company/transaction`, query: { companyId: user.Company.id}}" class="btn"><Button label="Transactions"/></NuxtLink>
     </div>
   </div>
 </template>

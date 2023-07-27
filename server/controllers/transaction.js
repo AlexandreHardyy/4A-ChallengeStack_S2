@@ -8,9 +8,10 @@ const TransactionController = {
   post: async (req, res, next) => {
     if (!req.body) return res.sendStatus(422)
 
-    const { company, amount } = ( req.body )
+    const { amount } = ( req.body )
+    const { companyId } = ( req.user )
 
-    if (!company || !amount) return res.sendStatus(422)
+    if (!companyId || !amount) return res.sendStatus(422)
 
     if (amount <= 0) return res.sendStatus(422)
     
@@ -21,13 +22,12 @@ const TransactionController = {
         ...req.body,
         commission,
         status: 'created',
-        companyId: company.id,
+        companyId,
       }
 
-      delete newTransaction.company
       const transaction = await transactionService.create(newTransaction)
       await transactionHistoryService.create({ transactionId: transaction.id, status: 'created'})
-      await event.send(company.id, {
+      await event.send(companyId, {
         name: "transaction-created",
         data: {
           transaction
@@ -45,6 +45,15 @@ const TransactionController = {
       _sort = {},
       ...criteria
     } = req.query
+    
+    if (!req.user?.isAdmin) {
+      criteria['companyId'] = req.user.companyId
+    } else {
+      if (req.query.companyId) {
+        criteria['companyId'] = req.query.companyId
+      }
+    }
+
     try {
       const transactions = await transactionService.findAll(criteria, {
         offset: (_page - 1) * _itemsPerPage,
@@ -59,21 +68,12 @@ const TransactionController = {
   get: async (req, res, next) => {
     try {
       const transaction = await transactionService.findById(req.params.id)
-      if (req.user.companyId !== transaction.company.id && !req.user.isAdmin) { return res.sendStatus(403) }
-
       if (!transaction) return res.sendStatus(404)
+      if (!req.user?.isAdmin && transaction.company.id !== req.user.companyId) return res.sendStatus(403)
       res.json(transaction)
     } catch (err) {
       next(err)
     }
-  },
-  getByCompanyId: async (req, res, next) => {
-    if (!req.params.id) return res.sendStatus(422)
-    if (Number(req.params.id) !== req.user.companyId && !req.user.isAdmin) return res.sendStatus(403)
-
-    req.query.companyId = req.params.id
-
-    return TransactionController.cget(req, res, next)
   },
   confirm: async (req, res, next) => {
     if (!req.body) return res.sendStatus(422)

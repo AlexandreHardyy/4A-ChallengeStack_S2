@@ -15,7 +15,7 @@ definePageMeta({
 const transactions = ref([])
 
 onMounted( async () => {
-  const { data } = await transactionService.getByCompanyId(user.companyId)
+  const { data } = await transactionService.get()
   transactions.value = data.value
 })
 
