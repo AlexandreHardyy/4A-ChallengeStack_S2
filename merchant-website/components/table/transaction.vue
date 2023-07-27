@@ -3,7 +3,6 @@ import { ref } from 'vue';
 import { FilterMatchMode } from "primevue/api";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
-import {getSlotProps} from "#app/components/utils";
 
 const config = useRuntimeConfig();
 const toast = useToast();
