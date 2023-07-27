@@ -3,7 +3,6 @@ const URL_BREVO = 'https://api.brevo.com/v3'
 const API_KEY = process.env.API_KEY_BREVO ?? ''
 
 const sendMail = async ({ firstname, lastname, email, templateId }) => {
-    console.log({ firstname, lastname, email, templateId })
     return fetch(`${URL_BREVO}/smtp/email` , {
         method: 'POST',
         headers: {

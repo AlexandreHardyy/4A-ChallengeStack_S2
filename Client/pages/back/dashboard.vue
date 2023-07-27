@@ -8,8 +8,7 @@ definePageMeta({
 });
 
 let transactionData = ref([])
-const { getUser } = useUserStore()
-const user = getUser()
+const { user } = useUserStore()
 
 //retrieve all today's transactions
 const todayTransactions = (transactions) => {
@@ -38,7 +37,6 @@ const lastThirtyOneDaysTransactionsFromToday = (transactions) => {
 //   })
 // }).reduce((acc, transaction) => {
 //   return acc + transaction.operations.reduce((acc, operation) => {
-//     console.log(operation)
 //     if (operation.type === 'capture' && operation.status === 'done') {
 //       return acc + operation.amount
 //     } else if (operation.type === 'refund' && operation.status === 'done') {
@@ -153,7 +151,7 @@ function getPastMonths(numOfMonths) {
 }
 
 onMounted(async () => {
-  const { data } = await transactionService.get(user.companyId)
+  const { data } = await transactionService.get({ companyId: user.Company.id })
   transactionData.value = data.value
 
   salesTimeChartData.value = setSalesTimeChartData();

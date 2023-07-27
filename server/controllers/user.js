@@ -43,9 +43,9 @@ module.exports = {
       next(err)
     }
   },
-  getCurrent: async (req, res, next) => {
+  getMe: async (req, res, next) => {
     try {
-      const user = await userService.findById(parseInt(req.user.id))
+      const user = await userService.findById(parseInt(req.user.id), { attributes: { exclude: ['password'] } })
       if (!user) return res.sendStatus(404)
       res.json(user)
     } catch (err) {

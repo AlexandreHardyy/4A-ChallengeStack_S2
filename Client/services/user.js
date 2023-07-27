@@ -23,11 +23,6 @@ const userService = {
             body: JSON.stringify(body)
         })
     },
-    async getCurrentUser() {
-        return useCustomFetch('user/current', {
-            method: 'GET'
-        })
-    },
     async get(params) {
         const paramsToString = params ? Object.entries(params).reduce((s, [key, val]) => s += `${key}=${val}&`, '?') : ''
         return useCustomFetch('user' + paramsToString, {
@@ -42,3 +37,4 @@ const userService = {
 }
 
 export default userService
+
