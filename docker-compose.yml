@@ -40,6 +40,9 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_HOST: ${POSTGRES_HOST}
       API_KEY_BREVO: ${API_KEY_BREVO}
+      BASEURL_SERVER: ${BASEURL_SERVER}
+      BASEURL_CLIENT: ${BASEURL_CLIENT}
+      BASEURL_MERCHANT_SERVER: ${BASEURL_MERCHANT_SERVER}
     working_dir: /usr/src/app
     volumes:
       - ./server:/usr/src/app

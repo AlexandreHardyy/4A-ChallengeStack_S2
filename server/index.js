@@ -1,22 +1,45 @@
 const express = require("express")
+const { Router } = require("express")
 const app = express()
 const userService = require("./services/user")
 const errorHandler = require("./middlewares/errorHandler");
-const cors = require('cors')
+
 const twig = require("twig")
+const cors = require('cors')
 
 require('dotenv').config();
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
 
 app.set("twig options", {
   allowAsync: true, // Allow asynchronous compiling
   strict_variables: false
 });
 
+const baseList = [
+  process.env.BASEURL_SERVER,
+  process.env.BASEURL_CLIENT,
+  process.env.BASEURL_MERCHANT_SERVER
+]
+
+const corsOptionsDelegate = function (req, callback) {
+  let corsOptions;
+  console.log(req.headers, baseList)
+  if (baseList.indexOf(req.header('Origin')) !== -1) {
+      corsOptions = { origin: true } // reflect (enable) the requested origin in the CORS response
+  } else {
+      corsOptions = { origin: false } // disable CORS for this request
+  }
+
+  callback(null, {
+      origin: baseList
+  })
+}
+
 app.use(require("./routes/security")(userService))
+
+app.use(cors(corsOptionsDelegate))
 
 app.use("/user", require("./routes/user"))
 app.use("/company", require("./routes/company"))
