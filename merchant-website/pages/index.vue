@@ -14,27 +14,27 @@
   const items = [
     {
       id: 1,
-      title: "Voldemort's nose",
+      title: "Voldemort's nose 45€",
       price: 45
     },
     {
       id: 2,
-      title: "A platypus",
+      title: "A platypus 86€",
       price: 86
     },
     {
       id: 3,
-      title: "José",
+      title: "José 300€",
       price: 300
     },
     {
       id: 4,
-      title: "Bière Essence's first car",
+      title: "Bière Essence's first car 1850€",
       price: 1850
     },
     {
       id: 5,
-      title: "The crampté",
+      title: "The crampté 1256€",
       price: 1256
     },
   ]
