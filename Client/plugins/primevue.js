@@ -41,7 +41,7 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.component('Tag', Tag)
     nuxtApp.vueApp.component('Card', Card)
     nuxtApp.vueApp.component('Calendar', Calendar)
-    nuxtApp.vueApp.component('Chart', Chart)
+    nuxtApp.vueApp.component('ChartPrime', Chart)
     nuxtApp.vueApp.component('ConfirmPopup', ConfirmPopup)
     nuxtApp.vueApp.component('InputMask', InputMask)
     nuxtApp.vueApp.component('TabView', TabView)
