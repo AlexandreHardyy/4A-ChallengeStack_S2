@@ -35,7 +35,7 @@
           <TabPanel v-for="tab in scrollableTabs" :key="tab.title" :header="tab.title">
             <p>Type: {{ tab.content.type}}</p>
             <p>Status: {{ tab.content.status}}</p>
-            <p>Amount: {{ tab.content.amount}}</p>
+            <p>Amount: {{ tab.content.finalAmount}}</p>
             <Timeline :value="tab.content.operationHistory" >
               <template #opposite="slotProps">
                     <small class="p-text-secondary">{{new Date(slotProps.item.date).toLocaleString()}}</small>

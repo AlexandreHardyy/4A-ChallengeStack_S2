@@ -49,30 +49,14 @@ const lastThirtyOneDaysTransactionsFromToday = (transactions) => {
   if (!transactions) return 0
   const today = new Date()
   const lastThirtyOneDays = new Date(today.setDate(today.getDate() - 31))
-  return transactions.filter(transaction => transaction.updatedAt >= lastThirtyOneDays.toISOString().slice(0, 10)).reduce((acc, transaction) => {
-    return acc + (transaction.finalAmount)? transaction.finalAmount : 0
+  return transactions.filter(
+      transaction => transaction.updatedAt >= lastThirtyOneDays.toISOString().slice(0, 10) &&
+      (transaction.status === "captured" || transaction.status === "partially-refunded")
+  ).reduce((acc, transaction) => {
+    console.log(transaction)
+    return acc + ((transaction.finalAmount)? transaction.finalAmount : 0)
   }, 0)
 }
-
-// if (!transactions) return 0
-// const today = new Date()
-// const lastThirtyOneDays = new Date(today.setDate(today.getDate() - 31))
-// return transactions.filter(transaction => {
-//   return transaction.operations.find(operation => {
-//     const operationDate = new Date(operation.createdAt)
-//     return operationDate >= lastThirtyOneDays
-//   })
-// }).reduce((acc, transaction) => {
-//   return acc + transaction.operations.reduce((acc, operation) => {
-//     if (operation.type === 'capture' && operation.status === 'done') {
-//       return acc + operation.amount
-//     } else if (operation.type === 'refund' && operation.status === 'done') {
-//       return acc - operation.amount
-//     } else {
-//       return acc
-//     }
-//   }, 0)
-// }, 0)
 
 //retrieve all transactions per month. function that returns an array of the amount of transactions for the 8 last month (from the current month) without filtering by operations status
 const totalTransactionsPerMonth = (transactions) => {
