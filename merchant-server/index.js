@@ -28,8 +28,10 @@ app.post("/transaction", async (req, res, next) => {
 		}).then(async (response) => {
 			if (response.status === 201) {
 				return res.status(201).json(await response.json())
+			} else {
+				return res.sendStatus(response.status)
 			}
-		}).catch(() => {
+	}).catch(() => {
 			return res.sendStatus(500)
 		})
 	} catch (err) {

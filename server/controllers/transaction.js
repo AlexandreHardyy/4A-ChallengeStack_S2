@@ -37,7 +37,7 @@ const TransactionController = {
     console.log('Armand', req.header('Origin'));
     const {
       _page = 1,
-      _itemsPerPage = 10,
+      _itemsPerPage = 1000,
       _sort = {},
       ...criteria
     } = req.query
@@ -285,7 +285,8 @@ const TransactionController = {
     if (transaction.company.clientToken !== clientToken || !isTransactionValid || origin !== transaction.company.url) { return res.sendStatus(403) }
 
     res.render('sdk.twig', {
-      transactionToken
+      transactionToken,
+      url: process.env.BASEURL_SERVER
     })
   }
 }

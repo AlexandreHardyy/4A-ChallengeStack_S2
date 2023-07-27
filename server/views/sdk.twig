@@ -7,7 +7,7 @@
 <body class="bg-slate-800 text-white">
     <div class="flex flex-col justify-center items-center">
         <h1 class="text-3xl mb-10 mt-8">Welcome on Paygate</h1>
-        <form action="http://localhost:3000/transaction/{{ transactionToken }}/confirm" method="post" id="form" class="flex flex-col mb-2 w-9/12 gap-3">
+        <form action="{{ url }}/transaction/{{ transactionToken }}/confirm" method="post" id="form" class="flex flex-col mb-2 w-9/12 gap-3">
             <div class="w-full flex flex-col relative">
                 <label for="cbName" class="relative px-2 bg-slate-800 top-3 left-2.5 w-fit">Card name</label>
                 <input class="p-2.5 rounded-md bg-transparent border border-inherit" type="text" id="cbName" name="cbName" required>
@@ -26,7 +26,7 @@
             </div>
             <button class="bg-green-700 rounded-md p-2.5" type="submit">Submit</button>
         </form>
-        <form class="w-9/12" action="http://localhost:3000/transaction/{{ transactionToken }}/cancel" method="post">
+        <form class="w-9/12" action="{{ url }}/transaction/{{ transactionToken }}/cancel" method="post">
             <button class="bg-red-700 rounded-md p-2.5 w-full" type="submit">Cancel</button>
         </form>
     </div>

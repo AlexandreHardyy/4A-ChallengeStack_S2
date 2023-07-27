@@ -71,6 +71,7 @@ services:
     environment:
       API_TOKEN: ${API_TOKEN}
       BASEURL_SERVER: ${BASEURL_SERVER}
+      API_KEY_BREVO: ${API_KEY_BREVO}
 
   merchant-website:
     build:
@@ -78,7 +79,7 @@ services:
       dockerfile: Dockerfile
       args:
         CLIENT_TOKEN: ${CLIENT_TOKEN}
-        BASEURL_CLIENT: ${BASEURL_CLIENT}
+        BASEURL_SERVER: ${BASEURL_SERVER}
         BASEURL_MERCHANT_SERVER: ${BASEURL_MERCHANT_SERVER}
     ports:
       - 3002:3000
@@ -99,6 +100,12 @@ services:
     volumes:
       - ./nginx/cert:/etc/nginx/cert
     restart: always
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
 
 volumes:
   db-data: {}
