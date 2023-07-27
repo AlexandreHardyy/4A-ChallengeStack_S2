@@ -27,12 +27,7 @@ const TransactionController = {
 
       const transaction = await transactionService.create(newTransaction)
       await transactionHistoryService.create({ transactionId: transaction.id, status: 'created'})
-      await event.send(companyId, {
-        name: "transaction-created",
-        data: {
-          transaction
-        }
-      })
+      await event.send(companyId, transaction.id)
       res.status(201).json({transaction})
     } catch (err) {
       next(err)

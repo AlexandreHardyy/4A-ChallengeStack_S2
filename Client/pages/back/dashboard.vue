@@ -2,13 +2,40 @@
 import { ref } from "vue";
 import { useUserStore } from "~/store/user";
 import transactionService from "~/services/transaction";
+import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
+import {createInjectionState} from "@vueuse/core";
 
 definePageMeta({
   layout: "back",
 });
 
 let transactionData = ref([])
-const { user } = useUserStore()
+const { user, getToken } = useUserStore()
+const config = useRuntimeConfig();
+
+// SSE connection
+const testEvent = async () => {
+  const sse = new EventSourcePolyfill(`${config.public.apiBase}/event/subscribe`, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  });
+
+  sse.addEventListener("dataUpdated", (e) => {
+    let isDone = false
+    const res = JSON.parse(e.data)
+    console.log(res)
+    transactionData.value.forEach((transaction, index) => {
+      if (transaction.id === res.id) {
+        transactionData.value[index] = res
+        isDone = true
+      }
+    })
+    if (!isDone) {
+      transactionData.value.push(res)
+    }
+  });
+}
 
 //retrieve all today's transactions
 const todayTransactions = (transactions) => {
@@ -158,6 +185,7 @@ onMounted(async () => {
   statusChartData.value = setStatusChartData();
   statusTimeChartData.value = setStatusTimeChartData();
   statusTimeChartOptions.value = setStatusTimeChartOptions();
+  await testEvent()
 })
 
 const setSalesTimeChartData = () => {
