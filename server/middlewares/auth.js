@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken')
-const companyService = require('../services/company')
 
 const userAuth = (...params) => {
   return authProcess(...params)
@@ -30,6 +29,7 @@ const authProcess = (req, res, next, isAdmin = false) => {
 }
 
 const checkCompanyApiToken = async (req, res, next) => {
+  const companyService = require('../services/company')
   const authHeader = req.headers['authorization']
   if (!authHeader) return res.sendStatus(401)
 
@@ -49,6 +49,8 @@ const checkCompanyApiToken = async (req, res, next) => {
 }
 
 const dualAuth = async (req, res, next) => {
+  const companyService = require('../services/company')
+
   const authHeader = req.headers['authorization']
   if (!authHeader) return res.sendStatus(401)
 
