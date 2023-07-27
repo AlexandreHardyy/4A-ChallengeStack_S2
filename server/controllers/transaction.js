@@ -139,7 +139,7 @@ const TransactionController = {
           await transactionHistoryService.create({transactionId: transaction.id, status: 'failed'})
           return res.status(400).json(await transactionService.findById(parseInt(transaction.id)))
         }
-      }).catch(() => {
+      }).catch((err) => {
         return res.sendStatus(500)
       })
     } catch (err) {
@@ -212,7 +212,11 @@ const TransactionController = {
 
     try {
       //get all the operations of the transaction
+
+
       const operations = await operationService.findAll({transactionId: transaction.id})
+
+
 
       //calculate the refundable amount. if the operation.type === 'refund' then add the amount to the operation.amount else if the operation.type === 'capture' then subtract the amount from the operation.amount
       const refundableAmount = operations.reduce((acc, operation) => {
@@ -259,7 +263,6 @@ const TransactionController = {
             await operationHistoryService.create({ operationId: operation.id, status: 'psp-error'})
             await transactionService.update({ id: transaction.id }, { status: 'failed' })
             await transactionHistoryService.create({transactionId: transaction.id, status: 'failed'})
-            console.log('error')
             return res.status(400).json(await transactionService.findById(parseInt(transaction.id)))
           }
         }).catch(() => {
