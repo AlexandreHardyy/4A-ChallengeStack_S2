@@ -18,7 +18,7 @@ onMounted(async () => {
   user.value = res.data.value;
 });
 
-const toogleCompany = async (accept) => {
+const toggleCompany = async (accept) => {
   const { error, data } = await userService.update({ isValid: accept, id:route.params.id })
   if (error.value !== null || !data.value?.id) {
     return
@@ -37,8 +37,8 @@ const toogleCompany = async (accept) => {
   <div class="card">
     <div v-if="user">
       <div v-if="user" class="tw-flex tw-gap-3 tw-mb-5">
-        <Button v-if="!user.isValid" @click="toogleCompany(true)" severity="info" rounded>Accept company</Button>
-        <Button v-else @click="toogleCompany(false)" severity="danger" rounded>Disable company</Button>
+        <Button v-if="!user.isValid" @click="toggleCompany(true)" severity="info" rounded>Accept company</Button>
+        <Button v-else @click="toggleCompany(false)" severity="danger" rounded>Disable company</Button>
         <Button v-tooltip.bottom="'Back'" rounded icon="pi pi-arrow-left" @click="router.back()" />
       </div>
       <div class="tw-flex tw-gap-3 tw-w-full tw-mb-3">

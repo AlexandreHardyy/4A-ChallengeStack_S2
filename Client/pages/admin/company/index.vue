@@ -2,6 +2,8 @@
 import {useCustomFetch} from "~/services/use-fetch";
 import {useDialog} from "primevue/usedialog";
 import useFormatDate from "../../../services/format/useFormatDate";
+import {ref} from "vue";
+import {FilterMatchMode} from "primevue/api";
 
 definePageMeta({
   layout: "admin",
@@ -24,6 +26,10 @@ watch(isChecked, async () => {
   await getData();
 });
 
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+});
+
 </script>
 
 <template>
@@ -37,12 +43,21 @@ watch(isChecked, async () => {
       :rowsPerPageOptions="[15, 25, 50]"
       scrollable
       scrollHeight="flex"
-      :globalFilterFields="['name', 'currency', 'status']"
+      v-model:filters="filters"
+      :globalFilterFields="['name', 'email']"
     >
       <template #header>
-        <div class="tw-flex tw-align-middle tw-gap-3">
-          <label>Only show the disable companies</label>
-          <InputSwitch v-model="isChecked" />
+        <div class="tw-flex tw-justify-around tw-items-center">
+          <div class="flex justify-content-end">
+            <span class="p-input-icon-left">
+              <i class="pi pi-search" />
+              <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
+            </span>
+          </div>
+          <div class="tw-flex tw-align-middle tw-gap-3">
+            <label>Only show the disable companies</label>
+            <InputSwitch v-model="isChecked" />
+          </div>
         </div>
       </template>
       <Column field="id" header="ID" sortable/>
@@ -87,9 +102,7 @@ watch(isChecked, async () => {
 </template>
 
 <style scoped>
-
 .card {
   height: 100%;
 }
-
 </style>
