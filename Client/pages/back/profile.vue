@@ -110,23 +110,6 @@ onMounted(() => {
   toggleKey('clientTokenEye', 'clientToken', currentUser.value.Company.clientToken)
 })
 
-/*const testEvent = async () => {
-  const { user } = useUserStore() // ATTE
-  const sse = new EventSourcePolyfill("http://localhost:3000/event/subscribe", {
-    headers: {
-      Authorization: `Bearer ${user.token}`,
-    },
-  });
-
-  sse.onmessage = (e) => {
-    console.log(e);
-  }
-
-  sse.addEventListener("transaction-created", (e) => {
-    console.log(e);
-  });
-}*/
-
 </script>
 
 <template>

@@ -40,7 +40,7 @@ const checkCompanyApiToken = async (req, res, next) => {
 
   const company =  await companyService.findByApiToken(token)
 
-  if (!company) { return res.sendStatus(403) }
+  if (!company) { return res.sendStatus(401) }
 
   req.user = {
     companyId: company.id

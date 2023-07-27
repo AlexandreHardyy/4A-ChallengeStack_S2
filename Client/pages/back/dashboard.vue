@@ -24,7 +24,6 @@ const testEvent = async () => {
   sse.addEventListener("dataUpdated", (e) => {
     let isDone = false
     const res = JSON.parse(e.data)
-    console.log(res)
     transactionData.value.forEach((transaction, index) => {
       if (transaction.id === res.id) {
         transactionData.value[index] = res
@@ -53,7 +52,6 @@ const lastThirtyOneDaysTransactionsFromToday = (transactions) => {
       transaction => transaction.updatedAt >= lastThirtyOneDays.toISOString().slice(0, 10) &&
       (transaction.status === "captured" || transaction.status === "partially-refunded")
   ).reduce((acc, transaction) => {
-    console.log(transaction)
     return acc + ((transaction.finalAmount)? transaction.finalAmount : 0)
   }, 0)
 }
