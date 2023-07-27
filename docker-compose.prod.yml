@@ -97,7 +97,7 @@ services:
       - merchant-server
       - merchant-website
     volumes:
-      - /etc/letsencrypt/live/paygate.live/:/etc/nginx/cert
+      - ./nginx/cert:/etc/nginx/cert
     restart: always
 
 volumes:
