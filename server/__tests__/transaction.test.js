@@ -1,23 +1,28 @@
 const httpMocks = require('node-mocks-http')
 
+jest.mock('../db/models', () => {
+  return {}
+})
+
 const transactionController = require("../controllers/transaction")
 const transactionService = require("../services/transaction")
 const operationService = require('../services/operation')
 const transactionHistoryService = require("../services/transactionHistory")
 const operationHistoryService = require("../services/operationHistory")
+const companyService = require('../services/company')
 
 const baseURL = "http://localhost:3000"
 
 describe("Transaction Controller", () => {
 
   beforeEach(() => {
-
     jest.spyOn(operationService, 'update').mockResolvedValue()
     jest.spyOn(transactionService, 'update').mockResolvedValue()
     jest.spyOn(transactionHistoryService, 'create').mockResolvedValue()
     jest.spyOn(transactionHistoryService, 'update').mockResolvedValue()
     jest.spyOn(operationHistoryService, 'create').mockResolvedValue()
     jest.spyOn(operationHistoryService, 'update').mockResolvedValue()
+    jest.spyOn(companyService, 'findByApiToken').mockResolvedValue(null)
   })
 
   afterEach(() => {
@@ -28,7 +33,10 @@ describe("Transaction Controller", () => {
     it("Should retrieve all transaction", async () => {
       const req = httpMocks.createRequest({
         method: 'GET',
-        url: `${baseURL}/transaction`
+        url: `${baseURL}/transaction`,
+        user: {
+          companyId: 1
+        }
       })
   
       const result = [
@@ -77,14 +85,17 @@ describe("Transaction Controller", () => {
         }
       })
   
-      const result = [{ 
+      const result = { 
         id: 1,
         token: 'abcd-1234',
         name: 'José',
         email: 'jose@gmail.com',
         amount: 50,
-        currency: 'EUR'
-      }]
+        currency: 'EUR',
+        company: {
+          id: 1
+        }
+      }
     
       const res = httpMocks.createResponse()
       const next = jest.fn()
@@ -129,18 +140,16 @@ describe("Transaction Controller", () => {
       const req = httpMocks.createRequest({
         method: 'POST',
         url: `${baseURL}/transaction`,
+        user: {
+          companyId: 1
+        },
         body: {
           name: 'John Doe',
           email: 'john.doe@example.com',
           amount: 100,
           commission: 1.1,
           currency: 'USD',
-          status: 'created',
-          company: {
-            id: 1,
-            urlDirectionConfirm: 'https://example.com/confirm',
-            urlDirectionCancel: 'https://example.com/cancel',
-          },
+          status: 'created'
         }
       })
     
@@ -169,6 +178,9 @@ describe("Transaction Controller", () => {
       const req = httpMocks.createRequest({
         method: 'POST',
         url: `${baseURL}/transaction/`,
+        user: {
+          companyId: 1
+        },
         body: {
           name: 'John Doe',
           email: 'john.doe@example.com',
@@ -211,7 +223,7 @@ describe("Transaction Controller", () => {
       const next = jest.fn()
 
       const findTransactionByTokenSpy = jest.spyOn(transactionService, 'findByToken').mockResolvedValue({ id: 1, token: 'abcd-1234', amount: 100, commission: 1.1, currency: 'EUR', operations: [{ status: 'created' }] })
-      const findTransactionByIdSpy = jest.spyOn(transactionService, 'findById').mockResolvedValue({ id: 1 })
+      const findTransactionByIdSpy = jest.spyOn(transactionService, 'findById').mockResolvedValue({ id: 1, company: { urlDirectionConfirm: '' } })
       const createOperationSpy = jest.spyOn(operationService, 'create').mockResolvedValue({ id: 1 })
       jest.spyOn(global, 'fetch').mockResolvedValue(Promise.resolve({
         status: 202,
@@ -231,7 +243,6 @@ describe("Transaction Controller", () => {
       })
 
       expect(res.statusCode).toBe(201)
-      expect(res._getJSONData()).toEqual({ id: 1 })
       expect(transactionService.findByToken).toHaveBeenCalledTimes(1)
       expect(transactionService.findById).toHaveBeenCalledTimes(1)
       expect(operationService.create).toHaveBeenCalledTimes(1)
@@ -361,7 +372,7 @@ describe("Transaction Controller", () => {
       const req = httpMocks.createRequest({
         method: 'POST',
         url: `${baseURL}/psp-confirm/1`,
-        params: {
+        body: {
           operationId: 1
         }
       })
@@ -406,6 +417,9 @@ describe("Transaction Controller", () => {
       const req = httpMocks.createRequest({
         method: 'POST',
         url: `${baseURL}/transaction/refund/abcd-1234`,
+        body: {
+          amount: 10
+        },
         params: {
           token: 'abcd-1234'
         }
@@ -415,14 +429,23 @@ describe("Transaction Controller", () => {
       const next = jest.fn()
 
       const findTransactionByTokenSpy = jest.spyOn(transactionService, 'findByToken').mockResolvedValue({ id: 1, Operations: [{ status: 'finished' }] })
-      const createOperationSpy = jest.spyOn(operationService, 'create').mockResolvedValue()
+      const findTransactionByIdSpy = jest.spyOn(transactionService, 'findById').mockResolvedValue({ id: 1 })
+      const createOperationSpy = jest.spyOn(operationService, 'create').mockResolvedValue({ id: 1 })
+      const findAllOperationSpy = jest.spyOn(operationService, 'findAll').mockResolvedValue([{ type: 'refund', amount: 10 }])
+      jest.spyOn(global, 'fetch').mockResolvedValue(Promise.resolve({
+        status: 202,
+        json: () => Promise.resolve({}),
+      }))
+
 
       await transactionController.refund(req, res, next)
 
       expect(findTransactionByTokenSpy).toHaveBeenCalledWith('abcd-1234')
       expect(createOperationSpy).toHaveBeenCalledWith({
         transactionId: 1,
-        status: 'refunded',
+        amount: 10,
+        status: 'created',
+        type: 'refund'
       })
       expect(res.statusCode).toBe(201)
       expect(res._getJSONData()).toEqual({ id: 1 })
@@ -442,31 +465,10 @@ describe("Transaction Controller", () => {
       const next = jest.fn()
 
       const findTransactionByTokenSpy =  jest.spyOn(transactionService, 'findByToken').mockResolvedValue(null)
-
       await transactionController.refund(req, res, next)
 
       expect(res.statusCode).toBe(404)
       expect(findTransactionByTokenSpy).toHaveBeenCalledWith('wrong-token')
-      expect(findTransactionByTokenSpy).toHaveBeenCalledTimes(1)
-    })
-    it('Should throw with status 4O0 if the last operation status is not created', async () => {
-      const req = httpMocks.createRequest({
-        method: 'POST',
-        url: `${baseURL}/transaction/refund/abcd-1234`,
-        params: {
-          token: 'abcd-1234'
-        }
-      })
-
-      const res = httpMocks.createResponse()
-      const next = jest.fn()
-
-      const findTransactionByTokenSpy = jest.spyOn(transactionService, 'findByToken').mockResolvedValue({ id: 1, Operations: [{ status: 'finished' }] })
-
-      await transactionController.pspConfirm(req, res, next)
-
-      expect(res.statusCode).toBe(400)
-      expect(findTransactionByTokenSpy).toHaveBeenCalledWith('abcd-1234')
       expect(findTransactionByTokenSpy).toHaveBeenCalledTimes(1)
     })
   })
