@@ -160,44 +160,35 @@
       buildChart('bar', data)
     }
 
-    const buildChartProcessingTransaction = (transactions) => {
+    const buildData = (transactions, status) => {
+      const data = buildDateArray(dates.value)
+      for (const transaction of transactions) {
+        const operationHistory = transaction.operations.find(operation => operation.status === status).operationHistory.find(history => history.status === status)
+        const date = formatDate(operationHistory.date)
+
+        const index = data.map(elem => elem.x).indexOf(date)
+
+        if (index !== -1) {
+          data[index] = {
+            ...data[index],
+            y: data[index].y + 1
+          }
+        }        
+      } 
+
+      return data
+    }
+
+    const buildChartStatusTransaction = (transactions) => {
       if (!transactions) return undefined
 
       const finishedTransactions = retrieveTransactionsByStatus(transactions, 'captured')
       const canceledTransactions = retrieveTransactionsByStatus(transactions, 'canceled')
+      const refundedTransactions = retrieveTransactionsByStatus(transactions, 'refunded')
+      const partiallyRefundedTransactions = retrieveTransactionsByStatus(transactions, 'partially-refunded')
       const processingTransactions = retrieveProcessingTransactions(transactions)
     
-      const finishedTransactionsData = buildDateArray(dates.value)
-      const canceledTransactionsData = buildDateArray(dates.value)
       const processingTransactionsData = buildDateArray(dates.value)
-
-      for (const transaction of finishedTransactions) {
-        const finishedOperationHistory = transaction.operations.find(operation => operation.status === 'done').operationHistory.find(history => history.status === 'done')
-        const date = formatDate(finishedOperationHistory.date)
-
-        const index = finishedTransactionsData.map(elem => elem.x).indexOf(date)
-
-        if (index !== -1) {
-          finishedTransactionsData[index] = {
-            ...finishedTransactionsData[index],
-            y: finishedTransactionsData[index].y + 1
-          }
-        }        
-      }
-
-      for (const transaction of canceledTransactions) {
-        const canceledOperationHistory = transaction.transactionHistory.find(history => history.status === 'canceled')
-        const date = formatDate(canceledOperationHistory.date)
-
-        const index = canceledTransactionsData.map(elem => elem.x).indexOf(date)
-
-        if (index !== -1) {
-          canceledTransactionsData[index] = {
-            ...canceledTransactionsData[index],
-            y: canceledTransactionsData[index].y + 1
-          }
-        }        
-      }
 
       for (const transaction of processingTransactions) {
         const processingOperationHistory = transaction.operations.find(operation => operation.status === 'processing').operationHistory.find(history => history.status === 'processing')
@@ -214,18 +205,26 @@
       }
 
       const data = {
-        labels: finishedTransactionsData.map(data => data.x),
+        labels: processingTransactionsData.map(data => data.x),
         datasets: [
           {
             label: 'Finished Transactions',
-            data: finishedTransactionsData
+            data: buildData(finishedTransactions, 'done')
           },
           {
             label: 'Canceled Transactions',
-            data: canceledTransactionsData
+            data: buildData(canceledTransactions, 'canceled')
           },
           {
-            label: 'Finished Transactions',
+            label: 'Refunded Transactions',
+            data: buildData(refundedTransactions, 'refunded')
+          },
+          {
+            label: 'Partially Refunded Transactions',
+            data: buildData(partiallyRefundedTransactions, 'partially-refunded')
+          },
+          {
+            label: 'Processing Transactions',
             data: processingTransactionsData
           }
         ]
@@ -257,7 +256,7 @@
 
       if (metric === 'Revenues') buildChartRevenues(transactionData.value)
       if (metric === 'Created transaction') buildChartCreatedTransaction(transactionData.value)
-      if (metric === 'Status transaction') buildChartProcessingTransaction(transactionData.value)
+      if (metric === 'Status transaction') buildChartStatusTransaction(transactionData.value)
     }
 
     definePageMeta({
