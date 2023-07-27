@@ -17,7 +17,7 @@ app.post("/transaction", async (req, res, next) => {
 			method: 'POST',
 			headers: {
 				"Content-Type": "application/json",
-				"Authorization": `Bearer ${process.env.API_TOKEN}`
+				"Authorization": `Token ${process.env.API_TOKEN}`
 			},
 			body: JSON.stringify({
 				name,
@@ -49,7 +49,7 @@ app.post("/transaction/:token/refund", async (req, res, next) => {
 			method: 'POST',
 			headers: {
 				"Content-Type": "application/json",
-				"Authorization": `Bearer ${process.env.API_TOKEN}`
+				"Authorization": `Token ${process.env.API_TOKEN}`
 			},
 			body: JSON.stringify({
 				amount
@@ -74,7 +74,7 @@ app.get("/transaction/orders", async (req, res, next) => {
 			method: 'GET',
 			headers: {
 				"Content-Type": "application/json",
-				"Authorization": `Bearer ${process.env.API_TOKEN}`
+				"Authorization": `Token ${process.env.API_TOKEN}`
 			}
 		}).then(async (response) => {
 			if (response.status === 200) {
