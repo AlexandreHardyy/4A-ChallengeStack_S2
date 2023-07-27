@@ -87,7 +87,7 @@ const filters = ref({
         <template #body="slotProps">
           <div class="tw-flex tw-gap-3">
             <nuxt-link :to="{ path: `/admin/company/${slotProps.data.id}`}">
-              <Button  v-tooltip.bottom="'Details'" type="button" class="tw-mr-2">
+              <Button v-tooltip.bottom="'Details'" type="button" class="tw-mr-2">
                 <i class="pi pi-cog"/>
               </Button>
             </nuxt-link>

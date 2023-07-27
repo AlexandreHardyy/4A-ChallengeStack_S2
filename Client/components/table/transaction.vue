@@ -77,7 +77,7 @@ const filters = ref({
       </Column>
       <Column field="name" header="Name" sortable/>
       <Column field="email" header="Email" sortable/>
-      <Column field="amount" header="Amount" sortable/>
+      <Column field="finalAmount" header="Amount" sortable/>
       <Column field="currency" header="Currency" sortable/>
       <Column header="Status" sortable>
         <template #body="slotProps">

@@ -9,7 +9,7 @@ const toast = useToast();
 const confirm = useConfirm();
 let refundAmount = ref();
 
-const showRefundDialog = (token) => {
+const showRefundDialog = (token, finalAmount) => {
   confirm.require({
     group: 'refundDialog',
     header: 'Refund',
@@ -18,6 +18,13 @@ const showRefundDialog = (token) => {
     acceptIcon: 'pi pi-check',
     rejectIcon: 'pi pi-times',
     accept: () => {
+      if (refundAmount.value > finalAmount) {
+        toast.add({ severity: 'error', summary: 'Rejected', detail: 'Refund amount is greater than the final amount', life: 3000 });
+        return;
+      } else if (refundAmount.value <= 0) {
+        toast.add({ severity: 'error', summary: 'Rejected', detail: 'Refund amount must be greater than 0', life: 3000 });
+        return;
+      }
       fetch(`${config.public.apiBaseServerMerchant}/transaction/${token}/refund`,
           {
             headers: {
@@ -29,6 +36,9 @@ const showRefundDialog = (token) => {
           }
       );
       toast.add({ severity: 'success', summary: 'Confirmed', detail: 'Refund', life: 3000 });
+      setTimeout(() => {
+        location.reload();
+      }, 30000);
     },
     reject: () => {
       toast.add({ severity: 'error', summary: 'Rejected', detail: 'Cancel refund', life: 3000 });
@@ -84,7 +94,7 @@ const filters = ref({
       </template>
       <Column field="name" header="Name" sortable/>
       <Column field="email" header="Email" sortable/>
-      <Column field="amount" header="Amount" sortable/>
+      <Column field="finalAmount" header="Amount" sortable/>
       <Column field="currency" header="Currency" sortable/>
       <Column header="Status" sortable>
         <template #body="slotProps">
@@ -95,7 +105,7 @@ const filters = ref({
       <Column field="updatedAt" header="Updated At" sortable/>
       <Column header="Actions">
         <template #body="slotProps">
-          <Button @click="showRefundDialog(slotProps.data.token)" v-if="slotProps.data.status === 'captured' || slotProps.data.status === 'partially-refunded'" class="mr-2">Refund</Button>
+          <Button @click="showRefundDialog(slotProps.data.token, slotProps.data.finalAmount)" v-if="slotProps.data.status === 'captured' || slotProps.data.status === 'partially-refunded'" class="mr-2">Refund</Button>
           <div v-else>no action available</div>
         </template>
       </Column>
@@ -112,10 +122,6 @@ const filters = ref({
 </template>
 
 <style scoped>
-.card{
-  height: 100%;
-}
-
 .flexPopUp{
   display: flex;
   flex-direction: column;
