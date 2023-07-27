@@ -5,14 +5,28 @@ import UserForm from "@/components/forms/UserForm.vue"
 import CompanyForm from "@/components/forms/CompanyForm.vue"
 import companyService from "~/services/company";
 import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
+import {useConfirm} from "primevue/useconfirm";
 import { useUserStore } from "~/store/user";
-
 
 definePageMeta({
   layout: "back",
 });
-
+const confirm = useConfirm();
 const currentUser = ref({})
+
+const confirmRegenerateToken = (event, type) => {
+  confirm.require({
+    target: event.currentTarget,
+    message: 'Are you sure you want to proceed?',
+    icon: 'pi pi-exclamation-triangle',
+    accept: () => {
+      regenerateToken(type)
+    },
+    reject: () => {
+
+    }
+  });
+};
 
 onBeforeMount(async () => {
   const { user } = useUserStore()
@@ -101,7 +115,7 @@ const copyText = async (value) => {
             <InputText class="tw-w-full" type="text" :value="currentUser.Company.apiToken" disabled />
           </span>
           <div class="tw-mt-3">
-            <Button @click="regenerateToken('apiToken')" icon="pi pi-replay" label="Regenerate Token" />
+            <Button @click="confirmRegenerateToken($event,'apiToken')" icon="pi pi-replay" label="Regenerate Token" />
           </div>
         </div>
         <div>
@@ -111,7 +125,7 @@ const copyText = async (value) => {
             <InputText class="tw-w-full" type="text" :value="currentUser.Company.clientToken" disabled />
           </span>
           <div class="tw-mt-3">
-            <Button @click="regenerateToken('clientToken')" icon="pi pi-replay" label="Regenerate Token" />
+            <Button @click="confirmRegenerateToken($event,'clientToken')" icon="pi pi-replay" label="Regenerate Token" />
           </div>
         </div>
       </TabPanel>

@@ -2,7 +2,7 @@ import { useUserStore } from "@/store/user";
 
 export default defineNuxtRouteMiddleware( async (to, from) => {
     if (!process.client) return
-    if (to.fullPath.includes('/sdk')) return 
+    if (to.fullPath.includes('/sdk') || to.fullPath === "/") return 
     
     const { getUser, getToken } = useUserStore()
     const user = await getUser()
@@ -25,7 +25,7 @@ export default defineNuxtRouteMiddleware( async (to, from) => {
       return navigateTo('/back/dashboard')
     }
 
-    if (user.isAdmin && to.fullPath.includes('/back')) {
+    if (user && user.isAdmin && to.fullPath.includes('/back')) {
       return navigateTo('/admin')
     }
 })  
