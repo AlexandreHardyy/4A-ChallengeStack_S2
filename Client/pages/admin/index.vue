@@ -112,13 +112,12 @@
     const buildChartRevenues = (transactions) => {
       if (!transactions) return undefined
       
-      const finishedTransactions = transactions.filter(transaction => transaction.status === 'captured')
+      const finishedTransactions = transactions.filter(transaction => transaction.status === 'captured' || transaction.status === 'refunded' || transaction.status === 'partially-refunded')
 
       const finishedTransactionsData = buildDateArray(dates.value)
 
       for (const transaction of finishedTransactions) {
-        const finishedOperationHistory = transaction.operations.find(operation => operation.status === 'done').operationHistory.find(history => history.status === 'done')
-        const date = formatDate(finishedOperationHistory.date)
+        const date = formatDate(transaction.updatedAt)
 
         const index = finishedTransactionsData.map(elem => elem.x).indexOf(date)
 
@@ -137,7 +136,6 @@
           }
         ]
       }
-
       buildChart('bar', data)
     }
     
@@ -170,21 +168,20 @@
       buildChart('bar', data)
     }
 
-    const buildData = (transactions, status) => {
+    const buildData = (transactions) => {
       const data = buildDateArray(dates.value)
+      if (transactions.length <= 0) return data
+
       for (const transaction of transactions) {
-        const operationHistory = transaction.operations.find(operation => operation.status === status).operationHistory.find(history => history.status === status)
-        const date = formatDate(operationHistory.date)
-
+        const date = formatDate(transaction.updatedAt)
         const index = data.map(elem => elem.x).indexOf(date)
-
         if (index !== -1) {
           data[index] = {
             ...data[index],
             y: data[index].y + 1
           }
-        }        
-      } 
+        }       
+      }
 
       return data
     }
@@ -203,7 +200,6 @@
       for (const transaction of processingTransactions) {
         const processingOperationHistory = transaction.operations.find(operation => operation.status === 'processing').operationHistory.find(history => history.status === 'processing')
         const date = formatDate(processingOperationHistory.date)
-
         const index = processingTransactionsData.map(elem => elem.x).indexOf(date)
 
         if (index !== -1) {
@@ -219,19 +215,19 @@
         datasets: [
           {
             label: 'Finished Transactions',
-            data: buildData(finishedTransactions, 'done')
+            data: buildData(finishedTransactions)
           },
           {
             label: 'Canceled Transactions',
-            data: buildData(canceledTransactions, 'canceled')
+            data: buildData(canceledTransactions)
           },
           {
             label: 'Refunded Transactions',
-            data: buildData(refundedTransactions, 'refunded')
+            data: buildData(refundedTransactions)
           },
           {
             label: 'Partially Refunded Transactions',
-            data: buildData(partiallyRefundedTransactions, 'partially-refunded')
+            data: buildData(partiallyRefundedTransactions)
           },
           {
             label: 'Processing Transactions',

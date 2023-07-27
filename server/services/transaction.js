@@ -7,11 +7,10 @@ module.exports = {
     const where = criteria.from !== undefined && criteria.to !== undefined ? 
     { createdAt: { $gte: new Date(criteria.from).setHours(0,0,0), $lte: new Date(criteria.to).setHours(23,59,59) } } : {}
 
-
     if (criteria.companyId) {
       where["company.id"] = criteria.companyId
     }
-
+    
     return TransactionMongo.find(where)
       .sort(options.order ? { [options.order]: 'desc' } : {})
       .skip(options.offset)

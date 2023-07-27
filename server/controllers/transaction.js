@@ -259,7 +259,6 @@ const TransactionController = {
             await operationHistoryService.create({ operationId: operation.id, status: 'psp-error'})
             await transactionService.update({ id: transaction.id }, { status: 'failed' })
             await transactionHistoryService.create({transactionId: transaction.id, status: 'failed'})
-            console.log('error')
             return res.status(400).json(await transactionService.findById(parseInt(transaction.id)))
           }
         }).catch(() => {
