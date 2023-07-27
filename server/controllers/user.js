@@ -6,7 +6,7 @@ module.exports = {
   cget: async (req, res, next) => {
     const {
       _page = 1,
-      _itemsPerPage = 10,
+      _itemsPerPage = 1000,
       _sort = {},
       ...criteria
     } = req.query

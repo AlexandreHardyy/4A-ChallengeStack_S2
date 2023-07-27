@@ -2,6 +2,7 @@
 import {useCustomFetch} from "~/services/use-fetch";
 import userService from "~/services/user";
 import {useToast} from "primevue/usetoast";
+import useFormatDate from "~/services/format/useFormatDate";
 
 const route = useRoute()
 const router = useRouter()
@@ -57,7 +58,7 @@ const toggleCompany = async (accept) => {
       </div>
       <div class="tw-flex tw-flex-col tw-gap-1 tw-mb-3">
         <label for="username">Created at</label>
-        <InputText :value="user.Company.createdAt" disabled/>
+        <InputText :value="useFormatDate(user.Company.createdAt)" disabled/>
       </div>
       <div class="tw-flex tw-flex-col tw-gap-1 tw-mb-3">
         <label for="username">is Valid</label>

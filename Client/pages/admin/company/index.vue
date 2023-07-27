@@ -15,7 +15,7 @@ const isChecked = ref(false);
 
 const getData = async () => {
   const res = await useCustomFetch("user" + (isChecked.value ? "?isValid=false" : ""));
-  companies.value = res.data.value;
+  companies.value = res.data.value.filter((item) => item.companyId);
 };
 
 onMounted(async () => {
