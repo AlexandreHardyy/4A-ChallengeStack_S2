@@ -1,8 +1,13 @@
 <script setup>
+
+  import Transaction from "~/components/table/transaction.vue";
+
   const {$paygate} = useNuxtApp()
   const nameValue = ref(null)
   const emailValue = ref(null)
   const selectedItems = ref();
+
+  let transactionData = ref();
 
   const config = useRuntimeConfig();
 
@@ -24,7 +29,7 @@
     },
     {
       id: 4,
-      title: "Vin Diesel first car",
+      title: "Bière Essence's first car",
       price: 1850
     },
     {
@@ -59,12 +64,26 @@
         console.error('Error sending purchase', error)
     });
   }
+
+  onMounted(async () => {
+    transactionData.value = await fetch(`${config.public.apiBaseServerMerchant}/transaction/orders`,
+        {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          method: 'GET',
+        }).then((res) => res.json()
+    ).catch((error) => {
+      console.error('Error fetching orders', error)
+    });
+  });
 </script>
 
 <template>
   <div>
     <Card>
-      <template #title> Select items to buy </template>
+      <template #title>Select items to buy</template>
       <template #content>
           <div>
               <label for="name">Name</label>
@@ -80,5 +99,7 @@
           <Button label="Submit" @click="onSubmit"/>
     </template>
     </Card>
+
+    <Transaction v-if="transactionData" :transactions="transactionData"/>
   </div>
 </template>

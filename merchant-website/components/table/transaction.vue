@@ -4,38 +4,52 @@ import { FilterMatchMode } from "primevue/api";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 
+const config = useRuntimeConfig();
 const toast = useToast();
 const confirm = useConfirm();
+let refundAmount = ref();
 
-const confirmRefund = (event) => {
+const showRefundDialog = (token) => {
   confirm.require({
-    target: event.currentTarget,
-    message: 'Are you sure you want to refund?',
-    icon: 'pi pi-replay',
+    group: 'refundDialog',
+    header: 'Refund',
+    message: 'How much do you want to refund?',
+    icon: 'pi pi-undo',
+    acceptIcon: 'pi pi-check',
+    rejectIcon: 'pi pi-times',
     accept: () => {
-      //TODO: call api to refund transaction
-      toast.add({ severity: 'info', summary: 'Confirm', detail: 'Refund', life: 3000 });
+      fetch(`${config.public.apiBaseServerMerchant}/transaction/${token}/refund`,
+          {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            method: 'POST',
+            body: JSON.stringify({amount: refundAmount.value})
+          }
+      );
+      toast.add({ severity: 'success', summary: 'Confirmed', detail: 'Refund', life: 3000 });
     },
     reject: () => {
-      toast.add({ severity: 'error', summary: 'Cancel', detail: 'Cancel refund', life: 3000 });
+      toast.add({ severity: 'error', summary: 'Rejected', detail: 'Cancel refund', life: 3000 });
     }
   });
 };
 
 defineProps(['transactions'])
 
-
 const getSeverity = (transaction) => {
-  switch (transaction.status) {
-    case 'confirm':
-      return 'success';
-
-    case 'refund':
+  switch (transaction) {
+    case 'created':
       return 'secondary';
-
-    case 'cancel':
+    case 'canceled':
+      return 'warning';
+    case 'captured':
+      return 'success';
+    case 'partially-refunded':
+      return 'info';
+    case 'refunded':
       return 'danger';
-
     default:
       return null;
   }
@@ -74,22 +88,38 @@ const filters = ref({
       <Column field="currency" header="Currency" sortable/>
       <Column header="Status" sortable>
         <template #body="slotProps">
-          <Tag :value="slotProps.data.status" :severity="getSeverity(slotProps.data)"/>
+          <Tag :value="slotProps.data.status" :severity="getSeverity(slotProps.data.status)"/>
         </template>
       </Column>
       <Column field="createdAt" header="Created At" sortable/>
       <Column field="updatedAt" header="Updated At" sortable/>
       <Column header="Actions">
         <template #body="slotProps">
-          <Button v-if="slotProps.data.status === 'confirm'" @click="confirmRefund($event)" icon="pi pi-" :label="slotProps.data.action"></Button>
-          <div>no action availables </div>
+          <Button @click="showRefundDialog(slotProps.data.token)" v-if="slotProps.data.status === 'captured' || slotProps.data.status === 'partially-refunded'" class="mr-2">Refund</Button>
+          <div v-else>no action available</div>
         </template>
       </Column>
+      <ConfirmDialog group="refundDialog">
+        <template #message="slotProps">
+          <div class="flex p-4 flexPopUp">
+            <i :class="slotProps.message.icon" style="font-size: 1.5rem"></i>
+            <p class="pl-2">{{ slotProps.message.message }}</p>
+            <InputNumber v-model="refundAmount" inputId="refundAmount" :min="0"/>
+          </div>
+        </template>
+      </ConfirmDialog>
     </DataTable>
 </template>
 
 <style scoped>
 .card{
   height: 100%;
+}
+
+.flexPopUp{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-start;
 }
 </style>
