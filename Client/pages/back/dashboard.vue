@@ -24,7 +24,6 @@ const testEvent = async () => {
   sse.addEventListener("dataUpdated", (e) => {
     let isDone = false
     const res = JSON.parse(e.data)
-    console.log(res)
     transactionData.value.forEach((transaction, index) => {
       if (transaction.id === res.id) {
         transactionData.value[index] = res
@@ -53,7 +52,6 @@ const lastThirtyOneDaysTransactionsFromToday = (transactions) => {
       transaction => transaction.updatedAt >= lastThirtyOneDays.toISOString().slice(0, 10) &&
       (transaction.status === "captured" || transaction.status === "partially-refunded")
   ).reduce((acc, transaction) => {
-    console.log(transaction)
     return acc + ((transaction.finalAmount)? transaction.finalAmount : 0)
   }, 0)
 }
@@ -77,15 +75,26 @@ const retrieveTransactions = (transactions, status) => {
 const retrieveAmountTransactions = (transactions) => {
   if (!transactions) return 0
   return transactions.filter(transaction => transaction.status === 'captured' || transaction.status === 'partially-refunded' || transaction.status === 'refunded').reduce((acc, transaction) => {
-    return acc + transaction.amount
+    return acc + transaction.finalAmount
   }, 0)
 }
 
+//retrieve the amount of all operations of type refund contained in transaction of status refunded or partially-refunded
 const retrieveAmountRefundedTransactions = (transactions) => {
   if (!transactions) return 0
-  return transactions.filter(transaction => transaction.status === "partially-refunded" || transaction.status === 'refunded').reduce((acc, transaction) => {
-    return acc + transaction.amount
-  }, 0)
+  return transactions.reduce((totalAmount, transaction) => {
+    if (transaction.status === 'refunded' || transaction.status === 'partially-refunded') {
+      const refundOperations = transaction.operations.filter(
+          (operation) => operation.type === 'refund'
+      );
+      const refundAmount = refundOperations.reduce(
+          (total, refundOperation) => total + refundOperation.amount,
+          0
+      );
+      return totalAmount + refundAmount;
+    }
+    return totalAmount;
+  }, 0);
 }
 
 //retrieve amount of transactions per month. function that returns an array of the amount of transactions for the 12 last month (from the current month) for a specific status
@@ -323,17 +332,17 @@ const setStatusTimeChartOptions = () =>  {
 
       <!--Line chart sales status per time-->
       <div class="card salesTimeChart">
-        <Chart type="line" :data="salesTimeChartData" :options="salesTimeChartOptions" class="h-30rem" />
+        <ChartPrime type="line" :data="salesTimeChartData" :options="salesTimeChartOptions" class="h-30rem" />
       </div>
 
       <!--Donut chart transactions status-->
       <div class="card statusChart tw-flex tw-justify-center tw-flex-col">
-        <Chart type="doughnut" :data="statusChartData" :options="statusChartOptions" class="md:w-30rem" />
+        <ChartPrime type="doughnut" :data="statusChartData" :options="statusChartOptions" class="md:w-30rem" />
       </div>
 
       <!--Bar chart transactions status per time-->
       <div class="card statusTimeChart tw-flex tw-justify-center">
-        <Chart type="bar" :data="statusTimeChartData" :options="statusTimeChartOptions" class="md:h-30rem" />
+        <ChartPrime type="bar" :data="statusTimeChartData" :options="statusTimeChartOptions" class="md:h-30rem" />
       </div>
     </div>
   </div>
