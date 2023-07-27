@@ -26,7 +26,6 @@ const confirmRefund = (event) => {
 
 defineProps(['transactions'])
 
-
 const getSeverity = (transaction) => {
   switch (transaction.status) {
     case 'created':
@@ -61,7 +60,7 @@ const filters = ref({
       scrollable
       scrollHeight="flex"
       v-model:filters="filters"
-      :globalFilterFields="['name', 'currency', 'status']"
+      :globalFilterFields="['name', 'email', 'currency', 'status']"
     >
       <template #header>
         <div class="flex justify-content-end">
