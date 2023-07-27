@@ -33,7 +33,7 @@ module.exports = {
 
         const timeoutId = setInterval(() => {
             res.write("data: " +""+ "\n\n");
-        }, 10000);
+        }, 4000);
 
         res.on("close", function () {
             clearInterval(timeoutId);
