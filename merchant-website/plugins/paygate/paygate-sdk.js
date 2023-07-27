@@ -10,6 +10,7 @@ export const loadIframe = (clientToken, transactionToken) => {
     iframe.style.transform = 'translate(-50%)'
     iframe.style.width = '50%'
     iframe.style.height = '700px'
+    iframe.style.zIndex = '99999'
     document.body.appendChild(iframe)
 
     window.addEventListener('message', (event) => {

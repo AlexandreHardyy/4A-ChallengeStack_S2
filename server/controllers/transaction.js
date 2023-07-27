@@ -34,6 +34,7 @@ const TransactionController = {
     }
   },
   cget: async (req, res, next) => {
+    console.log('Armand', req.header('Origin'));
     const {
       _page = 1,
       _itemsPerPage = 10,
@@ -277,6 +278,7 @@ const TransactionController = {
     const origin = req.headers.referer
 
     const transaction = await transactionService.findByToken(transactionToken)
+    if (!transaction) return res.sendStatus(422)
 
     const isTransactionValid = transaction.status === 'created' && transaction.operations.length === 0
 

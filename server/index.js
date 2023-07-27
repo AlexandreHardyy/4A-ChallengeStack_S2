@@ -2,6 +2,7 @@ const express = require("express")
 const app = express()
 const userService = require("./services/user")
 const errorHandler = require("./middlewares/errorHandler");
+const corsOptionsDelegate = require("./middlewares/corsConfig");
 const cors = require('cors')
 const twig = require("twig")
 
@@ -9,7 +10,7 @@ require('dotenv').config();
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors(corsOptionsDelegate));
 
 app.set("twig options", {
   allowAsync: true, // Allow asynchronous compiling
