@@ -1,28 +1,109 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Paygate SDK</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>Welcome on Paygate</h1>
-    <form action="http://localhost:3000/transaction/{{ transactionToken }}/confirm" method="post">
-        <label for="cbName">Card name:</label>
-        <input type="text" id="cbName" name="cbName" required><br>
+<body class="bg-slate-800 text-white">
+    <div class="flex flex-col justify-center items-center">
+        <h1 class="text-3xl mb-10 mt-8">Welcome on Paygate</h1>
+        <form action="http://localhost:3000/transaction/{{ transactionToken }}/confirm" method="post" id="form" class="flex flex-col mb-2 w-9/12 gap-3">
+            <div class="w-full flex flex-col relative">
+                <label for="cbName" class="relative px-2 bg-slate-800 top-3 left-2.5 w-fit">Card name</label>
+                <input class="p-2.5 rounded-md bg-transparent border border-inherit" type="text" id="cbName" name="cbName" required>
+            </div>
+            <div class="w-full flex flex-col relative">
+                <label for="cbNumber" class="relative px-2 bg-slate-800 top-3 left-2.5 w-fit">Card number</label>
+                <input placeholder="1234 1234 1234 1234" class="p-2.5 rounded-md bg-transparent border border-inherit" type="text" id="cbNumber" name="cbNumber" required>
+            </div>
+            <div class="w-full flex flex-col relative">
+                <label for="cvc" class="relative px-2 bg-slate-800 top-3 left-2.5 w-fit">CVC</label>
+                <input placeholder="123"  class="p-2.5 rounded-md bg-transparent border border-inherit" type="text" id="cvc" name="cvc" required>
+            </div>
+            <div class="w-full flex flex-col relative">
+                <label for="expirationDate" class="relative px-2 bg-slate-800 top-3 left-2.5 w-fit">Expiration date</label>
+                <input placeholder="07/26" class="p-2.5 rounded-md bg-transparent border border-inherit" type="text" id="expirationDate" name="expirationDate" required>
+            </div>
+            <button class="bg-green-700 rounded-md p-2.5" type="submit">Submit</button>
+        </form>
+        <form class="w-9/12" action="http://localhost:3000/transaction/{{ transactionToken }}/cancel" method="post">
+            <button class="bg-red-700 rounded-md p-2.5 w-full" type="submit">Cancel</button>
+        </form>
+    </div>
+    <script async defer>
+        function cbIsValid(numeroCarte) {
+            const numeroCarteSansEspaces = numeroCarte.replace(/\s/g, '');
 
-        <label for="cbNumber">Card number:</label>
-        <input type="text" id="cbNumber" name="cbNumber" required><br>
+            if (numeroCarteSansEspaces.length !== 16) {
+                return false;
+            }
+            if (!/^\d+$/.test(numeroCarteSansEspaces)) {
+                return false;
+            }
+            if (!/^(\d{4}\s){3}\d{4}$/.test(numeroCarte)) {
+                return false;
+            }
+            return true;
+        }
 
-        <label for="cvc">CVC:</label>
-        <input type="text" id="cvc" name="cvc" required><br>
+        function cvcIsValid(cvc) {
+            return /^\d{3,4}$/.test(cvc);
+        }
 
-        <label for="expirationDate">Expiration date:</label>
-        <input type="text" id="expirationDate" name="expirationDate" required><br>
+        function expirationIsValide(dateExpiration) {
+            if (!/^\d{2}\/\d{2}$/.test(dateExpiration)) {
+                return false;
+            }
+            const [mois, annee] = dateExpiration.split('/').map(Number);
+            if (mois < 1 || mois > 12) {
+                return false;
+            }
+            const anneeCourante = new Date().getFullYear() % 100; // Garder seulement les deux derniers chiffres de l'année courante
+            if (annee < anneeCourante) {
+                return false;
+            }
+            return true;
+        }
 
-        <button type="submit">Submit</button>
-    </form>
-    <form action="http://localhost:3000/transaction/{{ transactionToken }}/cancel" method="post">
-        <button type="submit">Cancel</button>
+        const cbNumber = document.getElementById('cbNumber');
 
-    </form>
+        cbNumber.addEventListener('input', (e) => {
+            const value = e.target.value;
+            if (cbIsValid(value)) {
+                cbNumber.classList.remove('border-red-700');
+                cbNumber.classList.add('border-green-700');
+            } else {
+                cbNumber.classList.remove('border-green-700');
+                cbNumber.classList.add('border-red-700');
+            }
+        });
+
+        const cvc = document.getElementById('cvc');
+
+        cvc.addEventListener('input', (e) => {
+            const value = e.target.value;
+            if (cvcIsValid(value)) {
+                cvc.classList.remove('border-red-700');
+                cvc.classList.add('border-green-700');
+            } else {
+                cvc.classList.remove('border-green-700');
+                cvc.classList.add('border-red-700');
+            }
+        });
+
+        const expirationDate = document.getElementById('expirationDate');
+
+        expirationDate.addEventListener('input', (e) => {
+            const value = e.target.value;
+            if (expirationIsValide(value)) {
+                expirationDate.classList.remove('border-red-700');
+                expirationDate.classList.add('border-green-700');
+            } else {
+                expirationDate.classList.remove('border-green-700');
+                expirationDate.classList.add('border-red-700');
+            }
+        });
+
+    </script>
 </body>
 </html>

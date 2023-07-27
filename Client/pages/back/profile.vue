@@ -60,13 +60,15 @@ const changeUrl = async ($event) => {
   const { error, data } = await companyService.update({
     id: currentUser.value.companyId,
     urlDirectionConfirm: currentUser.value.Company.urlDirectionConfirm,
-    urlDirectionCancel: currentUser.value.Company.urlDirectionCancel
+    urlDirectionCancel: currentUser.value.Company.urlDirectionCancel,
+    url: currentUser.value.Company.url
   })
   if (error.value !== null) {
     return
   }
   currentUser.value.Company.urlDirectionConfirm = data.value[0].urlDirectionConfirm
   currentUser.value.Company.urlDirectionCancel = data.value[0].urlDirectionCancel
+  currentUser.value.Company.url = data.value[0].url
 }
 
 const copyText = async (value) => {
@@ -142,6 +144,14 @@ const copyText = async (value) => {
           <span class="p-input-icon-right tw-w-full">
             <i class="pi pi-clone tw-cursor-pointer" @click="copyText(currentUser.Company.urlDirectionCancel)" />
             <InputText class="tw-w-full" type="text" v-model="currentUser.Company.urlDirectionCancel" />
+          </span>
+        </div>
+        <div>
+          <h2 class="tw-mt-5">URL of my website</h2>
+          <p class="tw-mb-3 danger-info">Care with this, you need to specify it</p>
+          <span class="p-input-icon-right tw-w-full">
+            <i class="pi pi-clone tw-cursor-pointer" @click="copyText(currentUser.Company.url)" />
+            <InputText class="tw-w-full" type="text" v-model="currentUser.Company.url" />
           </span>
           <div class="tw-mt-8">
             <Button @click="changeUrl" icon="pi pi-save" label="Save" />

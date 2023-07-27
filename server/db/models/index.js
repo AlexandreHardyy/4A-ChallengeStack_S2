@@ -43,8 +43,6 @@ db.User.belongsTo(db.Company, {
 db.User.belongsTo(db.Role, {
   foreignKey: 'roleId'
 })
-db.Role.hasMany(db.User)
-db.Company.hasMany(db.User)
 
 db.Company.hasMany(db.Transaction, {
   foreignKey: 'companyId'
