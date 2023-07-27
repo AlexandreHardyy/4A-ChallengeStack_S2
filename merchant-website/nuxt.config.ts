@@ -24,7 +24,7 @@ export default defineNuxtConfig({
       public: {
           apiBaseClient: process.env.BASEURL_CLIENT || 'http://localhost:3000',
           apiBaseServerMerchant: process.env.BASEURL_MERCHANT_SERVER || 'http://localhost:3009',
-          clientToken: process.env.CLIENT_TOKEN || '65098ec5-f568-4bf5-bf13-db118107fb04',
+          clientToken: process.env.CLIENT_TOKEN || '346d4380-d0c7-4a8b-b32b-2041953efdbb',
       }
   }
 

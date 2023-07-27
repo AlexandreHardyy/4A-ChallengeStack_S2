@@ -11,9 +11,12 @@ const adminAuth = (...params) => {
 
 const authProcess = (req, res, next, isAdmin = false) => {
   const authHeader = req.headers['authorization']
-  const token = authHeader && authHeader.split(' ')[1]
+  if (!authHeader) return res.sendStatus(401)
 
-  if (!token) return res.sendStatus(401)
+  const type = authHeader.split(' ')[0]
+  const token = authHeader.split(' ')[1]
+
+  if (!token || type !== 'Bearer') return res.sendStatus(401)
 
   return jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
 
@@ -27,9 +30,13 @@ const authProcess = (req, res, next, isAdmin = false) => {
 }
 
 const checkCompanyApiToken = async (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1]
+  const authHeader = req.headers['authorization']
+  if (!authHeader) return res.sendStatus(401)
 
-  if (!token) { return res.sendStatus(422) }
+  const type = authHeader.split(' ')[0]
+  const token = authHeader.split(' ')[1]
+
+  if (!token || type !== 'Token') { return res.sendStatus(401) }
 
   const company =  await companyService.findByApiToken(token)
 
@@ -41,25 +48,35 @@ const checkCompanyApiToken = async (req, res, next) => {
   next()
 }
 
-const dualAuth = (req, res, next) => {
+const dualAuth = async (req, res, next) => {
   const authHeader = req.headers['authorization']
-  const token = authHeader && authHeader.split(' ')[1]
+  if (!authHeader) return res.sendStatus(401)
 
-  if (!token) return res.sendStatus(401)
+  const type = authHeader.split(' ')[0]
+  const token = authHeader.split(' ')[1]
 
-  return jwt.verify(token, process.env.JWT_SECRET, async (err, user) => {
-    console.log(err, user)
-    if (err) {
-      const company = await companyService.findByApiToken(token)
-      req.user = {
-        companyId: company.id
+  if (!token || !type) return res.sendStatus(401)
+
+  if (type === 'Bearer') {
+    return jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+      if (err) {
+        return res.sendStatus(403)
+      } else {
+        req.user = user
       }
-    } else {
-      req.user = user
+  
+      next()
+    })
+  } else if (type === 'Token') {
+    const company = await companyService.findByApiToken(token)
+    if (!company) return res.sendStatus(403)
+    req.user = {
+      companyId: company.id
     }
-
     next()
-  })
+  } else {
+    return res.sendStatus(401)
+  }
 }
 
 module.exports = { userAuth, adminAuth, dualAuth, checkCompanyApiToken }
