@@ -3,12 +3,14 @@ import {useField, useForm} from "vee-validate";
 import * as yup from "yup";
 import companyService from "~/services/company";
 
+const kbisRegExp = /^RCS-(\d{9})$/;
+
 const { handleSubmit } = useForm({
   validationSchema: yup.object({
     firstname: yup.string().required(),
     lastname: yup.string().required(),
     name: yup.string().required().label('Company Name'),
-    kbis: yup.string().required(),
+    kbis: yup.string().required().matches(kbisRegExp, "You need to specify you kbis with this format : RCS-999999999"),
     address: yup.string(),
     email: yup.string().required().email(),
     password: yup.string().required().matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*\.])/),
@@ -68,7 +70,7 @@ const submit = handleSubmit(async (values) => {
       </div>
       <div class="tw-flex tw-flex-col tw-gap-1">
         <label for="username">KBIS</label>
-        <InputText v-model="kbis.value.value"/>
+        <InputMask mask="RCS-999999999" v-model="kbis.value.value"/>
         <small class="p-error" id="text-error">{{ kbis.errorMessage.value || '&nbsp;' }}</small>
       </div>
       <div class="tw-flex tw-flex-col tw-gap-1">

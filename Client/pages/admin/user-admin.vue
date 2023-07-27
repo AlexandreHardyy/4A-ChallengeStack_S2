@@ -60,7 +60,7 @@ const removeUser = async () => {
       <Column header="Actions">
         <template #body="slotProps">
           <div class="tw-flex tw-gap-2">
-              <Button @click="() => displayPopUp(slotProps.data.id)" v-tooltip.bottom="'Show is view'" type="button" class="tw-mr-2" severity="danger">
+              <Button @click="() => displayPopUp(slotProps.data.id)" v-tooltip.bottom="'Delete this account'" type="button" class="tw-mr-2" severity="danger">
                 <i class="pi pi-trash"/>
               </Button>
           </div>
