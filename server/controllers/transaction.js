@@ -6,7 +6,7 @@ const event = require("../controllers/event")
 
 const TransactionController = {
   post: async (req, res, next) => {
-    if (!req.body) return res.sendStatus(422)
+    if (!req.body) return res.sendStatus(400)
 
     const { amount } = ( req.body )
     const { companyId } = ( req.user )
@@ -34,7 +34,6 @@ const TransactionController = {
     }
   },
   cget: async (req, res, next) => {
-    console.log('Armand', req.header('Origin'));
     const {
       _page = 1,
       _itemsPerPage = 1000,
@@ -72,7 +71,7 @@ const TransactionController = {
     }
   },
   confirm: async (req, res, next) => {
-    if (!req.body) return res.sendStatus(422)
+    if (!req.body) return res.sendStatus(400)
     
     const transaction = await transactionService.findByToken(req.params.token)
 
@@ -91,9 +90,9 @@ const TransactionController = {
     const sanitizedCbNumber = cbNumber.trim().split('-').join('').split(' ').join('')
     const sanitizedCurrency = currency.trim().toUpperCase()
 
-    if (sanitizedCbNumber.length !== 16 || sanitizedCurrency.length !== 3 || cvc.length > 3) return res.sendStatus(400)
+    if (sanitizedCbNumber.length !== 16 || sanitizedCurrency.length !== 3 || cvc.length > 3) return res.sendStatus(422)
 
-    if (price < 0) return res.sendStatus(400)
+    if (price < 0) return res.sendStatus(422)
 
     try {
       const operation = await operationService.create({
@@ -161,7 +160,7 @@ const TransactionController = {
     }
   },
   pspConfirm: async (req, res, next) => {
-    if (!req.body) return res.sendStatus(422)
+    if (!req.body) return res.sendStatus(400)
 
     const { operationId } = req.body
     const operation = await operationService.findById(operationId)
@@ -200,23 +199,20 @@ const TransactionController = {
     }
   },
   refund: async (req, res, next) => {
-    if (!req.body) return res.sendStatus(422)
+    if (!req.body) return res.sendStatus(400)
 
     const transaction = await transactionService.findByToken(req.params.token)
 
     const { amount } = req.body
 
-    if (amount <= 0) return res.sendStatus(400)
+    if (amount <= 0) return res.sendStatus(422)
 
     if (!transaction) return res.sendStatus(404)
 
     try {
       //get all the operations of the transaction
 
-
       const operations = await operationService.findAll({transactionId: transaction.id})
-
-
 
       //calculate the refundable amount. if the operation.type === 'refund' then add the amount to the operation.amount else if the operation.type === 'capture' then subtract the amount from the operation.amount
       const refundableAmount = operations.reduce((acc, operation) => {
@@ -281,7 +277,7 @@ const TransactionController = {
     const origin = req.headers.referer
 
     const transaction = await transactionService.findByToken(transactionToken)
-    if (!transaction) return res.sendStatus(422)
+    if (!transaction) return res.sendStatus(404)
 
     const isTransactionValid = transaction.status === 'created' && transaction.operations.length === 0
 
