@@ -229,7 +229,6 @@ const TransactionController = {
 
       //check if the request amount is not superior to the transaction amount
       if (refundableAmount >= amount) {
-
         const operation = await operationService.create({
           transactionId: transaction.id,
           amount,
@@ -264,12 +263,12 @@ const TransactionController = {
             await operationHistoryService.create({ operationId: operation.id, status: 'psp-error'})
             await transactionService.update({ id: transaction.id }, { status: 'failed' })
             await transactionHistoryService.create({transactionId: transaction.id, status: 'failed'})
+            console.log('error')
             return res.status(400).json(await transactionService.findById(parseInt(transaction.id)))
           }
         }).catch(() => {
           return res.sendStatus(500)
         })
-
       } else {
         return res.sendStatus(400)
       }
