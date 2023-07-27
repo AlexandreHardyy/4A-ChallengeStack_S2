@@ -11,5 +11,4 @@ router.get("/:id", adminAuth, userController.get)
 router.delete("/:id", adminAuth, userController.delete)
 router.post("/", adminAuth, userController.post) // add admin user
 
-
 module.exports = router

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Paygate SDK</title>
+</head>
+<body>
+    <h1>Your purchase has been canceled. You will be redirected in 5 sec</h1>
+</body>
+<script>
+    const urlDirectionCancel = '{{ urlDirectionCancel }}'
+    setTimeout(() => {
+        window.parent.postMessage(urlDirectionCancel, '*')
+        window.close()
+    }, 5000)
+</script>
+</html>

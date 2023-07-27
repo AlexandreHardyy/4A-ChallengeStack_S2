@@ -16,14 +16,14 @@ app.post("/transaction", async (req, res, next) => {
 		await fetch(`http://server:3000/transaction/`, {
 			method: 'POST',
 			headers: {
-				"Content-Type": "application/json"
+				"Content-Type": "application/json",
+				"Authorization": `Bearer ${process.env.API_TOKEN}`
 			},
 			body: JSON.stringify({
 				name,
 				email,
 				amount,
 				currency: 'EUR',
-				apiToken: process.env.API_TOKEN
 			})
 		}).then(async (response) => {
 			if (response.status === 201) {

@@ -3,11 +3,18 @@ const app = express()
 const userService = require("./services/user")
 const errorHandler = require("./middlewares/errorHandler");
 const cors = require('cors')
+const twig = require("twig")
 
 require('dotenv').config();
 
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+
+app.set("twig options", {
+  allowAsync: true, // Allow asynchronous compiling
+  strict_variables: false
+});
 
 app.use(require("./routes/security")(userService))
 

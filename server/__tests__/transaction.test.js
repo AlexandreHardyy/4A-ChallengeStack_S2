@@ -399,4 +399,75 @@ describe("Transaction Controller", () => {
       expect(res.statusCode).toBe(404)
     })
   })
-})  
+
+  //transaction refund
+  describe('Transaction refund', () => {
+    it('Should refund a transaction and return it', async () => {
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        url: `${baseURL}/transaction/refund/abcd-1234`,
+        params: {
+          token: 'abcd-1234'
+        }
+      })
+
+      const res = httpMocks.createResponse()
+      const next = jest.fn()
+
+      const findTransactionByTokenSpy = jest.spyOn(transactionService, 'findByToken').mockResolvedValue({ id: 1, Operations: [{ status: 'finished' }] })
+      const createOperationSpy = jest.spyOn(operationService, 'create').mockResolvedValue()
+
+      await transactionController.refund(req, res, next)
+
+      expect(findTransactionByTokenSpy).toHaveBeenCalledWith('abcd-1234')
+      expect(createOperationSpy).toHaveBeenCalledWith({
+        transactionId: 1,
+        status: 'refunded',
+      })
+      expect(res.statusCode).toBe(201)
+      expect(res._getJSONData()).toEqual({ id: 1 })
+      expect(transactionService.findByToken).toHaveBeenCalledTimes(1)
+      expect(operationService.create).toHaveBeenCalledTimes(1)
+    })
+    it('Should throw with status 4O4 if the transaction is not found', async () => {
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        url: `${baseURL}/transaction/refund/wrong-token`,
+        params: {
+          token: 'wrong-token'
+        }
+      })
+
+      const res = httpMocks.createResponse()
+      const next = jest.fn()
+
+      const findTransactionByTokenSpy =  jest.spyOn(transactionService, 'findByToken').mockResolvedValue(null)
+
+      await transactionController.refund(req, res, next)
+
+      expect(res.statusCode).toBe(404)
+      expect(findTransactionByTokenSpy).toHaveBeenCalledWith('wrong-token')
+      expect(findTransactionByTokenSpy).toHaveBeenCalledTimes(1)
+    })
+    it('Should throw with status 4O0 if the last operation status is not created', async () => {
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        url: `${baseURL}/transaction/refund/abcd-1234`,
+        params: {
+          token: 'abcd-1234'
+        }
+      })
+
+      const res = httpMocks.createResponse()
+      const next = jest.fn()
+
+      const findTransactionByTokenSpy = jest.spyOn(transactionService, 'findByToken').mockResolvedValue({ id: 1, Operations: [{ status: 'finished' }] })
+
+      await transactionController.pspConfirm(req, res, next)
+
+      expect(res.statusCode).toBe(400)
+      expect(findTransactionByTokenSpy).toHaveBeenCalledWith('abcd-1234')
+      expect(findTransactionByTokenSpy).toHaveBeenCalledTimes(1)
+    })
+  })
+})

@@ -18,13 +18,14 @@
     const finishedTransactions = ref();
     const canceledTransactions = ref();
     const processingTransactions = ref();
-    const refundTransactions = ref();
+    const refundedTransactions = ref();
+    const partiallyRefundTransactions = ref();
 
     const retrieveRevenues = (transactions) => {
         if (!transactions) { return 0 }
         return transactions.reduce((acc, curr) => {
-            if (curr.status !== 'captured') { return acc }
-            return acc + curr.commission
+            if (curr.status !== 'captured' && curr.status !== 'partially-refunded' && curr.status !== 'refunded') { return acc }
+            return Math.round((acc + curr.commission) * 100) / 100
         }, 0)
     }
 
@@ -39,13 +40,6 @@
             return transaction.operations.find(operation => operation.status === 'processing' && operation.type === 'capture')
         })
     }
-
-    // const retrieveRefundTransactions = (transactions) => {
-    //     if (!transactions) { return 0 }
-    //     return transactions.filter(transaction => {
-    //         return transaction.Operations.find(operation => operation.status === 'refund')
-    //     }).length
-    // }
 
     const formatDate = (date) => {
       const formattedDate = new Date(date);
@@ -241,30 +235,6 @@
       buildChart('line', data)
     }
 
-    // const buildChartRefundTransaction = (transactions) => {
-    //   if (!transactions) return undefined
-
-    //   const refundTransactions = transactions.filter(transaction => transaction.Operations.find(operation => operation.status === 'refund'))
-
-    //   const data = buildDateArray(dates.value)
-
-    //   for (const transaction of refundTransactions) {
-    //     const createdOperation = transaction.Operations.find(operation => operation.status === 'finished')
-    //     const date = formatDate(createdOperation.createdAt)
-
-    //     const index = data.map(elem => elem.x).indexOf(date)
-
-    //     if (index > 0) {
-    //       data[index] = {
-    //         ...data[index],
-    //         y: data[index].y + 1
-    //       }
-    //     }
-    //   }
-
-    //   buildChart(data)
-    // }
-
     const onDateChange = async (event) => {
         if (!event[0] || !event[1]) { return }
         const { data } = await transactionService.get({from: event[0], to: event[1]})
@@ -278,8 +248,9 @@
         createdTransactions.value = data.value.length
         finishedTransactions.value = retrieveTransactionsByStatus(data.value, 'captured').length
         canceledTransactions.value = retrieveTransactionsByStatus(data.value, 'canceled').length
+        refundedTransactions.value = retrieveTransactionsByStatus(data.value, 'refunded').length
+        partiallyRefundTransactions.value = retrieveTransactionsByStatus(data.value, 'partially-refunded').length
         processingTransactions.value = retrieveProcessingTransactions(data.value).length
-        // refundTransactions.value = retrieveRefundTransactions(data.value)
     }
 
     const onSelectedMetricChange = (metric) => {
@@ -287,8 +258,7 @@
 
       if (metric === 'Revenues') buildChartRevenues(transactionData.value)
       if (metric === 'Created transaction') buildChartCreatedTransaction(transactionData.value)
-      if (metric === 'Processing transaction') buildChartProcessingTransaction(transactionData.value)
-      // if (metric === 'Refund transaction') buildChartRefundTransaction(transactionData.value)
+      if (metric === 'Status transaction') buildChartProcessingTransaction(transactionData.value)
     }
 
     definePageMeta({
@@ -306,7 +276,8 @@
       finishedTransactions.value = retrieveTransactionsByStatus(data.value, 'captured').length
       canceledTransactions.value = retrieveTransactionsByStatus(data.value, 'canceled').length
       processingTransactions.value = retrieveProcessingTransactions(data.value).length
-      // refundTransactions.value = retrieveRefundTransactions(data.value)
+      refundedTransactions.value = retrieveTransactionsByStatus(data.value, 'refunded').length
+      partiallyRefundTransactions.value = retrieveTransactionsByStatus(data.value, 'partially-refunded').length
     })
 </script>
 
@@ -316,12 +287,12 @@
         <h2>Datas from : </h2>
         <Calendar v-model="dates" selectionMode="range" :manualInput="false" showButtonBar @update:modelValue="onDateChange"/>
       </div>
-      <div class="tw-grid tw-grid-cols-4 tw-gap-4 tw-mt-4">
+      <div class="tw-grid tw-grid-cols-3 tw-gap-3 tw-mt-3">
           <Card @click="onSelectedMetricChange('Revenues')">
               <template #title>Revenues</template>
               <template #content>
                   <p>
-                      {{revenues}}
+                      {{ revenues }}
                   </p>
               </template>
           </Card>
@@ -329,29 +300,23 @@
               <template #title>Created Transaction</template>
               <template #content>
                   <p>
-                      {{createdTransactions}}
+                      {{ createdTransactions }}
                   </p>
               </template>
           </Card>
-          <Card @click="onSelectedMetricChange('Processing transaction')">
+          <Card @click="onSelectedMetricChange('Status transaction')">
               <template #title>Transaction Status</template>
               <template #content>
-                  <p>Finished: {{finishedTransactions}}</p>
-                  <p>Canceled: {{canceledTransactions}}</p>
-                  <p>Processing: {{processingTransactions}}</p>
-              </template>
-          </Card>
-          <Card @click="onSelectedMetricChange('Refund transaction')">
-              <template #title>Refunded transaction</template>
-              <template #content>
-                  <p>
-                      {{refundTransactions}}
-                  </p>
+                  <p>Finished: {{ finishedTransactions }}</p>
+                  <p>Canceled: {{ canceledTransactions }}</p>
+                  <p>Processing: {{ processingTransactions }}</p>
+                  <p>Partially-refunded: {{ partiallyRefundTransactions }}</p>
+                  <p>Refunded: {{ refundedTransactions }}</p>
               </template>
           </Card>
       </div>
       <Card class="tw-mt-4">
-        <template #title> {{selectedMetric}} from {{`${formatDateFr(dates[0])} to ${formatDateFr(dates[1])}`}}</template>
+        <template #title> {{ selectedMetric }} from {{`${ formatDateFr(dates[0]) } to ${ formatDateFr(dates[1]) }`}}</template>
         <template #content>
           <canvas ref="chart"></canvas>
         </template>

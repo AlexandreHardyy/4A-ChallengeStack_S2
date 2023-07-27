@@ -7,8 +7,12 @@ module.exports = {
 
         setTimeout(async () => {
             try {
-                await fetch(`http://server:3000/transaction/psp-confirm/${operationId}`, {
-                    method: 'POST'
+                await fetch(`http://server:3000/transaction/web-hook`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json"
+                      },
+                    body: JSON.stringify({operationId})
                 })
             } catch (err) {
                 console.log(err)
