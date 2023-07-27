@@ -85,25 +85,7 @@ module.exports = {
                           key: 'id'
                       },
                   },
-                  CompanyId: {
-                      type: Sequelize.DataTypes.INTEGER,
-                      references: {
-                          model: {
-                              tableName: 'company'
-                          },
-                          key: 'id'
-                      },
-                  },
                   roleId: {
-                      type: Sequelize.DataTypes.INTEGER,
-                      references: {
-                          model: {
-                              tableName: 'role'
-                          },
-                          key: 'id'
-                      },
-                  },
-                  RoleId: {
                       type: Sequelize.DataTypes.INTEGER,
                       references: {
                           model: {
@@ -200,11 +182,6 @@ module.exports = {
                 date: {
                     type: Sequelize.DATE,
                     defaultValue: Sequelize.NOW,
-                    field: 'created_at',
-                },
-                Date: {
-                    type: Sequelize.DATE,
-                    defaultValue: Sequelize.NOW,
                      field: 'createdAt',
                 },
                 updateAt: {
@@ -230,11 +207,6 @@ module.exports = {
                   },
                   status: Sequelize.STRING,
                   date: {
-                      type: Sequelize.DATE,
-                      defaultValue: Sequelize.NOW,
-                      field: 'created_at',
-                  },
-                  Date: {
                       type: Sequelize.DATE,
                       defaultValue: Sequelize.NOW,
                       field: 'createdAt',

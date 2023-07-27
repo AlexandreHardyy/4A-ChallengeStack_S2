@@ -5,12 +5,7 @@ module.exports = function (connection) {
 
   OperationHistory.init(
     {
-      status: DataTypes.STRING,
-      date: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-        field: 'created_at',
-      }
+      status: DataTypes.STRING
     },
     {
       sequelize: connection,

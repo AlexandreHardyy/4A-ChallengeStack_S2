@@ -60,6 +60,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - 3001:3001
+    restart: always
 
   merchant-server:
     build:
