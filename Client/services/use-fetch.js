@@ -7,16 +7,16 @@ export const useCustomFetch = createFetch({
     baseUrl: config.public.apiBase,
     options: {
       async beforeFetch({ options }) {
-        const { getUser } = useUserStore()
-        const user = getUser()
+        const { getToken } = useUserStore()
+        const token = getToken()
 
         options.headers = {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
 
-        if (user?.token) {
-            options.headers.Authorization = `Bearer ${user.token}`
+        if (token) {
+            options.headers.Authorization = `Bearer ${token}`
         }
   
         return { options }

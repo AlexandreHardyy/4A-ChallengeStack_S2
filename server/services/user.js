@@ -20,14 +20,16 @@ module.exports = {
       /*attributes: { exclude: ['password'] },*/
     })
   },
-  findById: async function (id) {
+  findById: async function (id, options) {
     return User.findByPk(id, {
       include: [{
         model: Company,
         attributes: {  },
         required: true
+      },{
+        model: Role
       }],
-      /*attributes: { exclude: ['password'] },*/
+      ...(options ?? {})
     })
   },
   create: async function (data) {

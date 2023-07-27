@@ -3,7 +3,6 @@ import {useField, useForm} from "vee-validate";
 import * as yup from "yup";
 import userService from "@/services/user";
 import { useUserStore } from "@/store/user";
-import jwt_decode from 'jwt-decode';
 
 const formatErrorPassword = (err) => {
   return err?.includes('password must match') ? 'required: 1 maj, 1 min, 1 number and 1 character special' : err
@@ -19,7 +18,7 @@ const {handleSubmit, handleReset} = useForm({
 const email = useField("email");
 const password = useField("password");
 const loginError = ref(null);
-const { setUser, getUser } = useUserStore()
+const { setToken, getUser } = useUserStore()
 
 const submit = handleSubmit(async (values) => {
   const { error, data } = await userService.login(values)
@@ -27,14 +26,14 @@ const submit = handleSubmit(async (values) => {
     loginError.value = "email or password is not correct"
     return
   }
-  const isUserValid = await setUser(data.value.token)
+  const isUserValid = await setToken(data.value.token)
 
   if (isUserValid === false) {
     loginError.value = "this account is not verified"
     return
   }
 
-  if (getUser().isAdmin)
+  if (await getUser().isAdmin)
     navigateTo("/admin");
   else
     navigateTo("/back/dashboard");

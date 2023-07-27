@@ -4,9 +4,9 @@ import userService from "@/services/user";
 import UserForm from "@/components/forms/UserForm.vue"
 import CompanyForm from "@/components/forms/CompanyForm.vue"
 import companyService from "~/services/company";
-import {useUserStore} from "~/store/user"
 import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
 import {useConfirm} from "primevue/useconfirm";
+import { useUserStore } from "~/store/user";
 
 definePageMeta({
   layout: "back",
@@ -29,10 +29,8 @@ const confirmRegenerateToken = (event, type) => {
 };
 
 onBeforeMount(async () => {
-  const { data } = await userService.getCurrentUser()
-  if (data.value) {
-    currentUser.value = data.value
-  }
+  const { user } = useUserStore()
+  currentUser.value = user
 })
 
 const userSubmit = async (values) => {
@@ -81,8 +79,7 @@ const copyText = async (value) => {
 }
 
 /*const testEvent = async () => {
-  const { getUser } = useUserStore()
-  const user = getUser()
+  const { user } = useUserStore() // ATTE
   const sse = new EventSourcePolyfill("http://localhost:3000/event/subscribe", {
     headers: {
       Authorization: `Bearer ${user.token}`,

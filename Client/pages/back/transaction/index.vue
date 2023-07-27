@@ -5,8 +5,7 @@ import transactionService from '~/services/transaction';
 import { useUserStore } from '~/store/user';
 import Transaction from '@/components/table/transaction.vue'
 
-const { getUser } = useUserStore()
-const user = getUser()
+const { user } = useUserStore()
 
 definePageMeta({
   layout: "back",

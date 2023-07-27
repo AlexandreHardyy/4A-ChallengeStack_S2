@@ -1,14 +1,14 @@
 import { useUserStore } from "@/store/user";
 
-export default defineNuxtRouteMiddleware((to, from) => {
+export default defineNuxtRouteMiddleware( async (to, from) => {
     if (!process.client) return
-    if (to.fullPath.includes('/sdk')) return 
+    if (to.fullPath.includes('/sdk') || to.fullPath === "/") return 
     
-    const { getUser } = useUserStore()
-    const user = getUser()
+    const { getUser, getToken } = useUserStore()
+    const user = await getUser()
 
     if (to.fullPath.includes('/login') || to.fullPath.includes('/register')) {
-      if (user?.token) {
+      if (user?.id) {
         if (user?.isAdmin) {
           return navigateTo('/admin')
         }
@@ -17,7 +17,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
       return
     }
 
-    if (!user?.token && !to.fullPath.includes('/')) {
+    if (!user?.id || !getToken()) {
       return navigateTo('/login')
     }
 

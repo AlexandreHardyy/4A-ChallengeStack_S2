@@ -2,6 +2,8 @@
 
 import userService from "@/services/user";
 import UserForm from "@/components/forms/UserForm.vue"
+import { useUserStore } from "~/store/user";
+
 
 definePageMeta({
   layout: "admin",
@@ -11,10 +13,8 @@ const currentUser = ref({})
 const formMessage = ref(null)
 
 onBeforeMount(async () => {
-  const { data } = await userService.getCurrentUser()
-  if (data.value) {
-    currentUser.value = data.value
-  }
+  const { user } = useUserStore()
+  currentUser.value = user
 })
 
 const updateUser = async (values) => {

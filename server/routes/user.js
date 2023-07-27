@@ -4,7 +4,7 @@ const { userAuth, adminAuth } = require("../middlewares/auth")
 const router = Router()
 
 router.patch("/:id", userAuth, userController.patch)
-router.get("/current", userAuth, userController.getCurrent)
+router.get("/me", userAuth, userController.getMe)
 
 router.get("/", adminAuth, userController.cget)
 router.get("/:id", adminAuth, userController.get)

@@ -48,6 +48,7 @@ const dualAuth = (req, res, next) => {
   if (!token) return res.sendStatus(401)
 
   return jwt.verify(token, process.env.JWT_SECRET, async (err, user) => {
+    console.log(err, user)
     if (err) {
       const company = await companyService.findByApiToken(token)
       req.user = {

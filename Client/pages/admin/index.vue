@@ -186,7 +186,6 @@
       }
 
       for (const transaction of canceledTransactions) {
-        console.log('Armand', canceledTransactions);
         const canceledOperationHistory = transaction.transactionHistory.find(history => history.status === 'canceled')
         const date = formatDate(canceledOperationHistory.date)
 
