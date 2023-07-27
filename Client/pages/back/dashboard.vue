@@ -153,7 +153,7 @@ function getPastMonths(numOfMonths) {
 }
 
 onMounted(async () => {
-  const { data } = await transactionService.getByCompanyId(user.companyId)
+  const { data } = await transactionService.get(user.companyId)
   transactionData.value = data.value
 
   salesTimeChartData.value = setSalesTimeChartData();
