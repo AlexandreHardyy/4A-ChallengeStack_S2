@@ -24,8 +24,7 @@ module.exports = {
     return User.findByPk(id, {
       include: [{
         model: Company,
-        attributes: {  },
-        required: true
+        attributes: {  }
       },{
         model: Role
       }],
