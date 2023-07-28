@@ -23,6 +23,7 @@ import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import ProgressSpinner from 'primevue/progressspinner';
 import Timeline from 'primevue/timeline';
+import Dropdown from 'primevue/dropdown';
 
 export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.use(PrimeVue, {ripple: true})
@@ -50,6 +51,7 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.component('DynamicDialog', DynamicDialog)
     nuxtApp.vueApp.component('Timeline', Timeline)
     nuxtApp.vueApp.component('Dialog', Dialog)
+    nuxtApp.vueApp.component('Dropdown', Dropdown)
 
 
     //other components that you need
