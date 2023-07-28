@@ -284,7 +284,7 @@
       partiallyRefundTransactions.value = retrieveTransactionsByStatus(data, 'partially-refunded').length
       processingTransactions.value = retrieveProcessingTransactions(data).length
 
-      statistics.value.transactionNumber = createdTransactions.value
+      statistics.value.transactionNumber = data.length
       statistics.value.avgTransactionAmount = retrieveAverageTransactionAmount(data)
       statistics.value.percentageRefundedTransactions = refundedTransactionPercentage(data)
       statistics.value.avgOperationsByTransaction = averageOperationPerTransaction(data)
@@ -344,7 +344,7 @@
       </div>
       <div class="tw-grid tw-grid-cols-3 tw-gap-3 tw-mt-3">
         <!--Donut chart transactions status-->
-        <div class="card statusChart tw-flex tw-justify-center tw-flex-col">
+        <div class="card statusChart tw-flex tw-justify-center tw-flex-col tw-p-5">
           <ChartPrime type="doughnut" :data="revenuesChartData" :options="revenuesChartOptions" class="md:w-30rem" />
         </div>
           <Card class="card">
@@ -370,7 +370,7 @@
           </Card>
 
           <!--Donut chart transactions status-->
-          <div class="card statusChart tw-flex tw-justify-center tw-flex-col">
+          <div class="card statusChart tw-flex tw-justify-center tw-flex-col tw-p-5">
             <ChartPrime type="doughnut" :data="statusChartData" :options="statusChartOptions" class="md:w-30rem" />
           </div>
       </div>
