@@ -1,7 +1,7 @@
 <script setup>
     import { ref } from "vue";
     import { Chart } from "chart.js/auto";
-
+    import {useCustomFetch} from "~/services/use-fetch";
     import transactionService from '~/services/transaction';
 
     const today = new Date()
@@ -27,6 +27,12 @@
       percentageRefundedTransactions: 0,
       avgOperationsByTransaction: 0
     })
+
+    const companies = ref([
+      { label: 'All', id: 'all' }
+    ])
+
+    const selectedCompany = ref()
 
     //StatusChart
     const statusChartData = ref();
@@ -290,12 +296,36 @@
 
     const onDateChange = async (event) => {
       if (!event[0] || !event[1]) { return }
-      const { data } = await transactionService.get({from: event[0], to: event[1]})
+      const params = selectedCompany.value && selectedCompany.value.id !== 'all' ? 
+      { from: event[0], to: event[1], companyId: selectedCompany.value.id} :
+      { from: event[0], to: event[1]}
+      const { data } = await transactionService.get(params)
+      setData(data.value)
+    }
+
+    const onSelectedCompanyChange = async () => {
+      const params = selectedCompany.value.id !== 'all' ? 
+      { from: dates.value[0], to: dates.value[1], companyId: selectedCompany.value.id} :
+      { from: dates.value[0], to: dates.value[1]}
+      const { data } = await transactionService.get(params)
       setData(data.value)
     }
 
     onMounted(async () => {
       const { data } = await transactionService.get({from: dates.value[0], to: dates.value[1]})
+      const companyData = await useCustomFetch("user");
+      
+      if (companyData.data) {
+        companies.value.push(companyData.data.value.filter((item) => item.companyId).map(company => {
+          return {
+            label: company.Company.name,
+            id: company.Company.id,
+          }
+        }))
+
+        companies.value = companies.value.flat()
+      }
+
       setData(data.value)
     })
 
@@ -310,6 +340,7 @@
       <div class="tw-flex tw-items-center tw-gap-1.5">
         <h2>Datas from : </h2>
         <Calendar v-model="dates" selectionMode="range" :manualInput="false" showButtonBar @update:modelValue="onDateChange" style="width: 13em"/>
+        <Dropdown v-model="selectedCompany" :options="companies" optionLabel="label" placeholder="Select a Company" @change="onSelectedCompanyChange" class="w-full md:w-14rem" />
       </div>
       <div class="tw-grid tw-grid-cols-3 tw-gap-3 tw-mt-3">
         <!--Donut chart transactions status-->
@@ -325,15 +356,15 @@
                   </div>
                   <div class="alignFlex">
                     <label for="numberOfTransaction">Average amount of a transaction :</label>
-                    <h1 id="numberOfTransaction">{{ statistics.avgTransactionAmount }}€</h1>
+                    <h1 id="numberOfTransaction">{{ statistics.avgTransactionAmount ? `${statistics.avgTransactionAmount}€` : 'no-data' }}</h1>
                   </div>
                   <div class="alignFlex">
                     <label for="numberOfTransaction">Percentage of refunded transactions :</label>
-                    <h1 id="numberOfTransaction">{{ statistics.percentageRefundedTransactions }}%</h1>
+                    <h1 id="numberOfTransaction">{{ statistics.percentageRefundedTransactions ? `${statistics.percentageRefundedTransactions}%` : 'no-data' }}</h1>
                   </div>
                   <div class="alignFlex">
                     <label for="numberOfTransaction">average operation per transaction :</label>
-                    <h1 id="numberOfTransaction">{{ statistics.avgOperationsByTransaction }}</h1>
+                    <h1 id="numberOfTransaction">{{ statistics.avgOperationsByTransaction ? statistics.avgOperationsByTransaction : 'no-data' }}</h1>
                   </div>
               </template>
           </Card>

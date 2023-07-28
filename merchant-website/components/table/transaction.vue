@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { FilterMatchMode } from "primevue/api";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
+import {getSlotProps} from "#app/components/utils";
 
 const config = useRuntimeConfig();
 const toast = useToast();
@@ -94,7 +95,8 @@ const filters = ref({
       </template>
       <Column field="name" header="Name" sortable/>
       <Column field="email" header="Email" sortable/>
-      <Column field="finalAmount" header="Amount" sortable/>
+      <Column field="amount" header="Amount" sortable/>
+      <Column field="finalAmount" header="Amount after refund" sortable/>
       <Column field="currency" header="Currency" sortable/>
       <Column header="Status" sortable>
         <template #body="slotProps">
