@@ -25,6 +25,9 @@ module.exports = {
   post: async (req, res, next) => {
     let company;
     try {
+      const body = req.body
+      if ('roleId' in body) { delete body.roleId}
+      if ('isValid' in body) { delete body.isValid}
       company = await companyService.create(req.body)
       const user = await userService.create({ ...req.body, companyId: company.id })
       await BrevoMail.mailCreation(user.dataValues)
